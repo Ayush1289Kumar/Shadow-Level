@@ -1,14 +1,15 @@
 # ⚔️ Shadow Level — RPG Habit Tracker
 
-**Shadow Level** is a gamified habit tracker inspired by the *Solo Leveling* anime. It transforms your daily routines into an RPG experience where completing habits earns you experience points (EXP), helps you level up, and unlocks rewards.
+**Shadow Level** is a gamified habit tracker inspired by the _Solo Leveling_ anime. It transforms your daily routines into an RPG experience where completing habits earns you experience points (EXP), helps you level up, and unlocks rewards.
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://shadow-level-6qaq.vercel.app/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-97.9%25-3178C6?style=flat&logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=flat&logo=tailwindcss)](https://tailwindcss.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase)](https://supabase.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-![Shadow Level Dashboard Preview](https://via.placeholder.com/800x400?text=Shadow+Level+Dashboard)
+> **🌐 Live Demo**: [https://shadow-level-6qaq.vercel.app/](https://shadow-level-6qaq.vercel.app/)
 
 ---
 
@@ -31,56 +32,52 @@
 
 ## 🛠️ Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| **Frontend Framework** | React 19 with TypeScript |
-| **Routing** | TanStack Router (file-based) |
-| **State Management** | Zustand |
-| **Styling** | Tailwind CSS 4 + shadcn/ui components |
-| **Animations** | Framer Motion + canvas-confetti |
-| **Charts** | Recharts |
-| **Backend & Auth** | Supabase (PostgreSQL, Auth, Storage) |
-| **Build Tool** | Vite |
-| **Forms** | React Hook Form + Zod validation |
-| **Date Handling** | date-fns |
+| Category               | Technology                            |
+| ---------------------- | ------------------------------------- |
+| **Frontend Framework** | React 19 with TypeScript              |
+| **Routing**            | TanStack Router (file-based)          |
+| **State Management**   | Zustand                               |
+| **Styling**            | Tailwind CSS 4 + shadcn/ui components |
+| **Animations**         | Framer Motion + canvas-confetti       |
+| **Charts**             | Recharts                              |
+| **Backend & Auth**     | Supabase (PostgreSQL, Auth, Storage)  |
+| **Build Tool**         | Vite                                  |
+| **Forms**              | React Hook Form + Zod validation      |
+| **Date Handling**      | date-fns                              |
 
 ---
-
 ## 📁 Project Structure
 
-```
 Shadow-Level/
 ├── src/
-│   ├── components/
-│   │   ├── ui/              # shadcn/ui component library
-│   │   ├── AppNav.tsx       # Navigation component
-│   │   ├── ExpBar.tsx       # EXP progress bar
-│   │   └── RequireAuth.tsx  # Protected route wrapper
-│   ├── hooks/               # Custom React hooks
-│   ├── integrations/
-│   │   └── supabase/        # Supabase client configuration
-│   ├── lib/                 # Utility functions
-│   ├── routes/              # File-based routing (TanStack Router)
-│   │   ├── __root.tsx       # Root layout
-│   │   ├── index.tsx        # Landing page
-│   │   ├── auth.tsx         # Login/Signup
-│   │   ├── dashboard.tsx    # Main dashboard
-│   │   ├── habits.tsx       # Habit CRUD
-│   │   ├── analytics.tsx    # Charts & visualizations
-│   │   ├── rewards.tsx      # Reward shop
-│   │   └── profile/         # Public profile routes
-│   ├── router.tsx           # Router configuration
-│   ├── server.ts            # Server entry (TanStack Start)
-│   ├── start.ts             # App entry point
-│   └── styles.css           # Global styles
+│ ├── components/
+│ │ ├── ui/ # shadcn/ui component library
+│ │ ├── AppNav.tsx # Navigation component
+│ │ ├── ExpBar.tsx # EXP progress bar
+│ │ └── RequireAuth.tsx # Protected route wrapper
+│ ├── hooks/ # Custom React hooks
+│ ├── integrations/
+│ │ └── supabase/ # Supabase client configuration
+│ ├── lib/ # Utility functions
+│ ├── routes/ # File-based routing (TanStack Router)
+│ │ ├── __root.tsx # Root layout
+│ │ ├── index.tsx # Landing page
+│ │ ├── auth.tsx # Login/Signup
+│ │ ├── dashboard.tsx # Main dashboard
+│ │ ├── habits.tsx # Habit CRUD
+│ │ ├── analytics.tsx # Charts & visualizations
+│ │ ├── rewards.tsx # Reward shop
+│ │ └── profile/ # Public profile routes
+│ ├── router.tsx # Router configuration
+│ ├── server.ts # Server entry (TanStack Start)
+│ ├── start.ts # App entry point
+│ └── styles.css # Global styles
 ├── supabase/
-│   └── migrations/          # Database schema migrations
-├── public/                  # Static assets
+│ └── migrations/ # Database schema migrations
+├── public/ # Static assets
 ├── package.json
 ├── vite.config.ts
 ├── tsconfig.json
-└── .env.example
-```
 
 ---
 
@@ -97,30 +94,19 @@ Shadow-Level/
 ```bash
 git clone https://github.com/Ayush1289Kumar/Shadow-Level.git
 cd Shadow-Level
-```
-
-### 2. Install Dependencies
-
-```bash
+2. Install Dependencies
+bash
 npm install
-```
+3. Set Up Environment Variables
+Create a .env file in the root directory:
 
-### 3. Set Up Environment Variables
-
-Create a `.env` file in the root directory:
-
-```env
+env
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
+You can find these credentials in your Supabase dashboard under Settings → API.
 
-> You can find these credentials in your Supabase dashboard under **Settings → API**.
-
-### 4. Set Up Supabase Database
-
+4. Set Up Supabase Database
 Run the following SQL in your Supabase SQL Editor to create the required tables:
-
-```sql
 -- Create profiles table
 CREATE TABLE IF NOT EXISTS profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -187,15 +173,14 @@ CREATE POLICY "Users can CRUD own rewards" ON rewards FOR ALL USING (auth.uid() 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_habit_logs_user_date ON habit_logs(user_id, completed_at);
 CREATE INDEX IF NOT EXISTS idx_habits_user_active ON habits(user_id, is_active);
-```
+5. Set Up Storage Bucket
+In Supabase, go to Storage → Create Bucket.
 
-### 5. Set Up Storage Bucket
+Name it avatars and set it to Public.
 
-1. In Supabase, go to **Storage → Create Bucket**.
-2. Name it `avatars` and set it to **Public**.
-3. Add the following policies:
+Add the following policies:
 
-```sql
+sql
 -- Allow public read access
 CREATE POLICY "Public read access" ON storage.objects FOR SELECT TO public USING (bucket_id = 'avatars');
 
@@ -206,86 +191,85 @@ CREATE POLICY "Authenticated upload" ON storage.objects FOR INSERT TO authentica
 CREATE POLICY "Authenticated delete own" ON storage.objects FOR DELETE TO authenticated USING (
     bucket_id = 'avatars' AND (SELECT auth.jwt()->>'sub') = owner_id
 );
-```
-
-### 6. Run the Development Server
-
-```bash
+6. Run the Development Server
+bash
 npm run dev
-```
+The app will be available at http://localhost:5173.
 
-The app will be available at `http://localhost:5173`.
+🎮 Game Mechanics
+EXP & Leveling
+Positive habits → Earn EXP when checked
 
----
+Negative habits → Lose EXP when checked (punishment)
 
-## 🎮 Game Mechanics
+Level formula: Level = floor(sqrt(total_exp / 100)) + 1
 
-### EXP & Leveling
+Level-up triggers a confetti celebration! 🎊
 
-- **Positive habits** → Earn EXP when checked
-- **Negative habits** → Lose EXP when checked (punishment)
-- **Level formula:** `Level = floor(sqrt(total_exp / 100)) + 1`
-- Level-up triggers a confetti celebration! 🎊
+Streak System
+Complete at least one positive habit daily to maintain your streak
 
-### Streak System
+Missing a day resets your streak to 0
 
-- Complete at least one positive habit daily to maintain your streak
-- Missing a day resets your streak to 0
-- Tracks both **current** and **longest** streaks
+Tracks both current and longest streaks
 
-### Reward Shop
+Reward Shop
+Spend EXP to purchase rewards
 
-- Spend EXP to purchase rewards
-- **No refunds** — purchases are permanent
-- Purchased rewards display a badge
+No refunds — purchases are permanent
 
----
+Purchased rewards display a badge
 
-## 🚢 Deployment
+🚢 Deployment
+The live application is successfully deployed and accessible at:
+👉 https://shadow-level-6qaq.vercel.app/
 
-### Deploy to Vercel (Recommended)
+Deploy to Vercel (Recommended)
+Push your code to GitHub.
 
-1. Push your code to GitHub.
-2. Go to [Vercel](https://vercel.com) and import your repository.
-3. Add the environment variables:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-4. Deploy!
+Go to Vercel and import your repository.
 
-### Deploy to Netlify
+Add the environment variables:
 
-1. Push your code to GitHub.
-2. Go to [Netlify](https://netlify.com) and import your repository.
-3. Add the same environment variables.
-4. Deploy!
+VITE_SUPABASE_URL
 
----
+VITE_SUPABASE_ANON_KEY
 
-## 🤝 Contributing
+Deploy!
 
+Deploy to Netlify
+Push your code to GitHub.
+
+Go to Netlify and import your repository.
+
+Add the same environment variables.
+
+Deploy!
+
+🤝 Contributing
 Contributions are welcome! Feel free to open issues or submit pull requests.
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Fork the repository
 
----
+Create your feature branch (git checkout -b feature/amazing-feature)
 
-## 📝 License
+Commit your changes (git commit -m 'Add some amazing feature')
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+Push to the branch (git push origin feature/amazing-feature)
 
----
+Open a Pull Request
 
-## 🙏 Acknowledgments
+📝 License
+This project is licensed under the MIT License — see the LICENSE file for details.
 
-- Inspired by the *Solo Leveling* anime and manhwa
-- Built with [TanStack Start](https://tanstack.com/start)
-- UI components from [shadcn/ui](https://ui.shadcn.com/)
-- Icons from [Lucide](https://lucide.dev/)
+🙏 Acknowledgments
+Inspired by the Solo Leveling anime and manhwa
 
----
+Built with TanStack Start
 
-**Made with ❤️ by Ayush Kumar**
+UI components from shadcn/ui
+
+Icons from Lucide
+
+Made with ❤️ by Ayush Kumar
+```
