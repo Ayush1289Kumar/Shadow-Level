@@ -10,9 +10,8 @@ export default defineConfig({
     viteReact(),
     // tsconfig paths resolved via Vite's native resolve.tsconfigPaths option
     tailwindcss(),
-  },
+  ],
   resolve: {
     tsconfigPaths: true,
   },
-  ],
 })
