@@ -61,7 +61,7 @@ function PublicProfile() {
         className="mx-auto max-w-xl"
       >
         <div className="glass-strong p-8 text-center">
-          <Avatar className="mx-auto h-28 w-28 border-2 border-primary/50 shadow-[0_0_30px_rgba(0,229,255,0.5)]">
+          <Avatar className="mx-auto h-28 w-28 border-2 border-primary/50 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
             <AvatarImage src={profile.avatar_url ?? undefined} />
             <AvatarFallback className="bg-primary/20 text-primary font-display text-2xl">
               {(profile.username ?? "P").slice(0, 2).toUpperCase()}
@@ -70,7 +70,7 @@ function PublicProfile() {
           <div className="mt-4 text-xs uppercase tracking-widest text-muted-foreground">
             Shadow Hunter
           </div>
-          <h1 className="font-display text-3xl text-glow-cyan text-primary">
+          <h1 className="font-display text-3xl text-glow-primary text-primary">
             {profile.username}
           </h1>
           <div className="mt-1 text-sm text-muted-foreground">

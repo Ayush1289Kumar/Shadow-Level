@@ -59,10 +59,10 @@ function AuthPage() {
         className="glass-strong w-full max-w-md p-8"
       >
         <div className="mb-6 flex flex-col items-center gap-3 text-center">
-          <div className="rounded-xl bg-gradient-to-br from-primary to-accent p-3 shadow-[0_0_30px_rgba(0,229,255,0.6)]">
+          <div className="rounded-xl bg-gradient-to-br from-primary to-accent p-3 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
             <Sword className="h-6 w-6 text-black" />
           </div>
-          <h1 className="font-display text-3xl font-bold text-glow-cyan text-primary">
+          <h1 className="font-display text-3xl font-bold text-glow-primary text-primary">
             SHADOW MONARCH
           </h1>
           <p className="text-sm text-muted-foreground">

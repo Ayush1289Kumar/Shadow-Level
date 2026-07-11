@@ -28,8 +28,8 @@ export function AppNav() {
       {/* Desktop sidebar */}
       <aside className="hidden md:flex fixed left-0 top-0 h-screen w-60 flex-col gap-2 border-r border-white/5 bg-black/30 p-4 backdrop-blur-xl z-30">
         <Link to="/dashboard" className="mb-4 flex items-center gap-2 px-2">
-          <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-primary to-accent shadow-[0_0_20px_rgba(0,229,255,0.5)]" />
-          <span className="font-display text-lg font-bold text-glow-cyan">SHADOW</span>
+          <img src="/logo.png" alt="Shadow Monarch Logo" className="h-9 w-9 object-contain" />
+          <span className="font-display text-sm font-bold text-glow-primary whitespace-nowrap overflow-hidden text-ellipsis">SHADOW MONARCH</span>
         </Link>
         {items.map((it) => {
           const Icon = it.icon;
@@ -40,7 +40,7 @@ export function AppNav() {
               to={it.to}
               className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition ${
                 active
-                  ? "bg-primary/10 text-primary text-glow-cyan"
+                  ? "bg-primary/10 text-primary text-glow-primary"
                   : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
               }`}
             >

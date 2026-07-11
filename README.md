@@ -22,6 +22,7 @@
   - Monthly heatmap (GitHub-style activity grid)
   - Positive vs. Negative habit impact pie chart
 - **🔥 Streak System** — Maintain daily streaks just like GitHub and LeetCode. Track your current and longest streaks.
+- **⚠️ Penalty Zone** — Fail to complete 75% of your daily habits? Face the consequences! Set custom penalties in your profile to keep yourself accountable.
 - **🎁 Reward Shop** — Spend your hard-earned EXP to purchase rewards. Purchases are **permanent** — no refunds!
 - **👤 Shareable Profile** — Each user gets a public profile page (`/profile/[username]`) with their level, EXP, streak, and avatar. Share it with anyone!
 - **🖼️ Custom Avatar** — Upload your own character image (max 1MB) stored securely in Supabase Storage.
@@ -206,12 +207,15 @@ Level formula: Level = floor(sqrt(total_exp / 100)) + 1
 
 Level-up triggers a confetti celebration! 🎊
 
-Streak System
-Complete at least one positive habit daily to maintain your streak
+### Streak System
+- Complete at least one positive habit daily to maintain your streak
+- Missing a day resets your streak to 0
+- Tracks both current and longest streaks
 
-Missing a day resets your streak to 0
-
-Tracks both current and longest streaks
+### Penalty Zone
+- You must complete at least 75% of your daily habits to satisfy the System.
+- If you fail, you will enter the Penalty Zone the next day and must complete a strict penalty to proceed.
+- Customize your penalty requirement (e.g., 100 pushups, 5km run) in your Profile Settings!
 
 Reward Shop
 Spend EXP to purchase rewards

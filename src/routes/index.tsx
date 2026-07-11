@@ -20,7 +20,7 @@ function Index() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-monarch-radial">
       <div className="text-center">
-        <h1 className="font-display text-5xl font-bold text-glow-cyan text-primary">SHADOW MONARCH</h1>
+        <h1 className="font-display text-5xl font-bold text-glow-primary text-primary">SHADOW MONARCH</h1>
         <p className="mt-2 text-muted-foreground">Arise.</p>
         <Loader2 className="mx-auto mt-6 h-6 w-6 animate-spin text-primary" />
       </div>

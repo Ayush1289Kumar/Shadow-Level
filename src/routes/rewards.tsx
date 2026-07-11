@@ -89,7 +89,7 @@ function Rewards() {
     <div className="mx-auto max-w-5xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-3xl text-glow-purple text-accent">Reward Shop</h1>
+          <h1 className="font-display text-3xl text-glow-accent text-accent">Reward Shop</h1>
           <p className="text-sm text-muted-foreground">
             Balance: <span className="text-primary font-display">{profile.total_exp} EXP</span>
           </p>
@@ -146,7 +146,7 @@ function Rewards() {
                 <h3 className="mt-3 font-display text-lg">{r.name}</h3>
                 {r.description && <p className="mt-1 text-xs text-muted-foreground">{r.description}</p>}
                 <div className="mt-4 flex items-center justify-between">
-                  <div className="font-display text-primary text-glow-cyan">{r.cost} EXP</div>
+                  <div className="font-display text-primary text-glow-primary">{r.cost} EXP</div>
                   <div className="flex gap-1">
                     {!r.is_purchased && (
                       <Button

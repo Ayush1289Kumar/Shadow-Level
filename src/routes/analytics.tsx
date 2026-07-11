@@ -59,8 +59,8 @@ function Analytics() {
   const positive = logs.filter((l) => l.exp_earned > 0).length;
   const negative = logs.filter((l) => l.exp_earned < 0).length;
   const pie = [
-    { name: "Positive", value: positive, color: "#00e5ff" },
-    { name: "Negative", value: negative, color: "#f43f5e" },
+    { name: "Positive", value: positive, color: "#3b82f6" },
+    { name: "Negative", value: negative, color: "#dc2626" },
   ];
 
   // Heatmap 90 days
@@ -77,7 +77,7 @@ function Analytics() {
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
-        <h1 className="font-display text-3xl text-glow-purple text-accent">Analytics</h1>
+        <h1 className="font-display text-3xl text-glow-accent text-accent">Analytics</h1>
         <p className="text-sm text-muted-foreground">Your hunter stats over time.</p>
       </div>
 
@@ -90,12 +90,12 @@ function Analytics() {
               <YAxis stroke="rgba(255,255,255,0.4)" fontSize={12} />
               <Tooltip
                 contentStyle={{
-                  background: "#10141d",
+                  background: "#030308",
                   border: "1px solid rgba(255,255,255,0.1)",
                   borderRadius: 8,
                 }}
               />
-              <Bar dataKey="exp" fill="#00e5ff" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="exp" fill="#3b82f6" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -112,7 +112,7 @@ function Analytics() {
               <Legend wrapperStyle={{ fontSize: 12 }} />
               <Tooltip
                 contentStyle={{
-                  background: "#10141d",
+                  background: "#030308",
                   border: "1px solid rgba(255,255,255,0.1)",
                   borderRadius: 8,
                 }}
@@ -133,7 +133,7 @@ function Analytics() {
             const bg =
               h.count === 0
                 ? "rgba(255,255,255,0.04)"
-                : `rgba(0, 229, 255, ${0.25 + intensity * 0.75})`;
+                : `rgba(168, 85, 247, ${0.25 + intensity * 0.75})`;
             return (
               <div
                 key={h.date}
@@ -150,7 +150,7 @@ function Analytics() {
             <div
               key={v}
               className="h-3 w-3 rounded-sm"
-              style={{ background: `rgba(0,229,255,${v})` }}
+              style={{ background: `rgba(168,85,247,${v})` }}
             />
           ))}
           <span>More</span>

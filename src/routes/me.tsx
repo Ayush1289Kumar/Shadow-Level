@@ -27,6 +27,9 @@ function MePage() {
   const [username, setUsername] = useState(profile.username ?? "");
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [penaltyText, setPenaltyText] = useState(() => 
+    typeof window !== "undefined" ? localStorage.getItem("shadow_penalty") || "Complete 100 Pushups immediately to escape." : ""
+  );
 
   const publicUrl =
     typeof window !== "undefined" && profile.username
@@ -51,7 +54,7 @@ function MePage() {
   async function upload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 1024 * 1024) return toast.error("Max 1MB");
+    if (file.size > 5 * 1024 * 1024) return toast.error("Max 5MB");
     const ext = file.name.split(".").pop();
     const path = `${profile.id}/avatar.${ext}`;
     const { error: upErr } = await supabase.storage
@@ -71,12 +74,26 @@ function MePage() {
     toast.success("Avatar updated");
   }
 
+  async function removeAvatar() {
+    setSaving(true);
+    const { data: updated, error } = await supabase
+      .from("profiles")
+      .update({ avatar_url: null })
+      .eq("id", profile.id)
+      .select("*")
+      .single();
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    setProfile(updated as any);
+    toast.success("Avatar removed");
+  }
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-strong p-6">
         <div className="flex flex-col items-center gap-4 md:flex-row">
           <div className="relative">
-            <Avatar className="h-24 w-24 border-2 border-primary/50 shadow-[0_0_20px_rgba(0,229,255,0.4)]">
+            <Avatar className="h-24 w-24 border-2 border-primary/50 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
               <AvatarImage src={profile.avatar_url ?? undefined} />
               <AvatarFallback className="bg-primary/20 text-primary font-display text-xl">
                 {(profile.username ?? "P").slice(0, 2).toUpperCase()}
@@ -98,7 +115,14 @@ function MePage() {
                 Save
               </Button>
             </div>
-            <div className="mt-2 text-xs text-muted-foreground">Avatar max 1MB.</div>
+            <div className="mt-2 flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">Avatar max 5MB.</span>
+              {profile.avatar_url && (
+                <Button onClick={removeAvatar} disabled={saving} variant="outline" size="sm" className="text-destructive border-destructive/20 hover:bg-destructive/10 h-7 text-xs">
+                  Remove Avatar
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -126,6 +150,40 @@ function MePage() {
         </div>
       </div>
 
+      <div className="glass p-6">
+        <h2 className="font-display text-lg text-destructive">Penalty Configuration</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Set the penalty you must pay if you fail your Daily Quests.
+        </p>
+        <div className="mt-3 flex gap-2">
+          <Input 
+            value={penaltyText} 
+            onChange={(e) => setPenaltyText(e.target.value)} 
+            placeholder="e.g. Complete 100 Pushups" 
+          />
+          <Button
+            onClick={() => {
+              localStorage.setItem("shadow_penalty", penaltyText);
+              toast.success("Penalty updated");
+            }}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/80"
+          >
+            Save
+          </Button>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {["Complete 100 Pushups", "Run 5km", "5-minute Cold Shower", "No social media for 24h", "Read 20 pages of a book"].map(p => (
+            <button
+              key={p}
+              onClick={() => setPenaltyText(p)}
+              className="text-xs border border-destructive/30 rounded-full px-3 py-1 text-destructive hover:bg-destructive/10 transition-colors"
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <Stat label="Level" value={profile.level} />
         <Stat label="Total EXP" value={profile.total_exp.toLocaleString()} />
@@ -140,7 +198,7 @@ function Stat({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="glass p-4 text-center">
       <div className="text-[10px] uppercase text-muted-foreground">{label}</div>
-      <div className="mt-1 font-display text-2xl text-glow-cyan text-primary">{value}</div>
+      <div className="mt-1 font-display text-2xl text-glow-primary text-primary">{value}</div>
     </div>
   );
 }

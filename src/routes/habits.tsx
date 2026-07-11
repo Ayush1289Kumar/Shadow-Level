@@ -116,7 +116,7 @@ function HabitsPage() {
     <div className="mx-auto max-w-4xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-3xl text-glow-cyan text-primary">Habit Forge</h1>
+          <h1 className="font-display text-3xl text-glow-primary text-primary">Habit Forge</h1>
           <p className="text-sm text-muted-foreground">Design your daily quests.</p>
         </div>
         <Button

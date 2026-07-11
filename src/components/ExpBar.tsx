@@ -16,7 +16,7 @@ export function ExpBar({ totalExp }: { totalExp: number }) {
           initial={{ width: 0 }}
           animate={{ width: `${lp.pct}%` }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="h-full rounded-full bg-gradient-to-r from-primary via-accent to-primary shadow-[0_0_20px_rgba(0,229,255,0.6)]"
+          className="h-full rounded-full bg-gradient-to-r from-primary via-accent to-primary shadow-[0_0_10px_rgba(59,130,246,0.2)]"
         />
       </div>
       <div className="mt-1 text-right text-[10px] text-muted-foreground">

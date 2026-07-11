@@ -4,6 +4,7 @@ import { useAppStore } from "@/lib/store";
 import { ensureProfile } from "@/lib/profile";
 import { AppNav } from "./AppNav";
 import { Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export function RequireAuth({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
@@ -22,7 +23,14 @@ export function RequireAuth({ children }: { children: ReactNode }) {
       let cancelled = false;
       ensureProfile(session.user.id)
         .then((p) => !cancelled && setProfile(p))
-        .catch((e) => console.error(e));
+        .catch(async (e) => {
+          console.error("Profile fetch failed:", e);
+          if (!cancelled) {
+            await supabase.auth.signOut();
+            useAppStore.getState().setSession(null);
+            navigate({ to: "/auth", replace: true });
+          }
+        });
       return () => {
         cancelled = true;
       };

@@ -43,6 +43,8 @@ function Dashboard() {
   const qc = useQueryClient();
   const [busy, setBusy] = useState<string | null>(null);
   const [prevLevel, setPrevLevel] = useState(profile.level);
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [leveledUpTo, setLeveledUpTo] = useState(profile.level);
 
   const { data: habits = [] } = useQuery({
     queryKey: ["habits", profile.id],
@@ -71,17 +73,52 @@ function Dashboard() {
     },
   });
 
+  const { data: yesterdayLogs = [] } = useQuery({
+    queryKey: ["logs", profile.id, "yesterday"],
+    queryFn: async () => {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().slice(0, 10);
+      const { data, error } = await supabase
+        .from("habit_logs")
+        .select("*")
+        .eq("user_id", profile.id)
+        .eq("completed_at", yesterdayStr);
+      if (error) throw error;
+      return data as { id: string; habit_id: string; exp_earned: number }[];
+    },
+  });
+
   const doneMap = new Map(todayLogs.map((l) => [l.habit_id, l]));
+  
+  const positiveHabitsCount = habits.filter(h => h.habit_type === "positive").length;
+  const yesterdayPositiveCount = yesterdayLogs.filter(l => l.exp_earned > 0).length;
+  
+  // Penalty Zone Logic: If they had active habits, and yesterday they completed LESS than their total positive habits, they failed the Daily Quest.
+  // We only trigger this if they have at least one positive habit, and we use a local storage flag to only show it once per day.
+  const [showPenaltyZone, setShowPenaltyZone] = useState(false);
+
+  useEffect(() => {
+    // Only evaluate if they actually have positive habits to complete.
+    if (positiveHabitsCount > 0) { 
+        const penaltyKey = `penalty_checked_${today()}`;
+        // Must complete at least 75% of daily quests to avoid the penalty zone
+        const requiredCompletions = Math.ceil(positiveHabitsCount * 0.75);
+        
+        // If they checked the app yesterday but didn't meet the 75% quota (or didn't check it at all)
+        if (yesterdayPositiveCount < requiredCompletions && !localStorage.getItem(penaltyKey)) {
+            setShowPenaltyZone(true);
+            localStorage.setItem(penaltyKey, "true");
+        }
+    }
+  }, [positiveHabitsCount, yesterdayPositiveCount]);
 
   useEffect(() => {
     if (profile.level > prevLevel) {
-      confetti({
-        particleCount: 180,
-        spread: 90,
-        origin: { y: 0.6 },
-        colors: ["#00e5ff", "#a855f7", "#10b981", "#f43f5e"],
-      });
-      toast.success(`⚡ LEVEL UP! You are now Lv. ${profile.level}`);
+      setLeveledUpTo(profile.level);
+      setShowLevelUp(true);
+      toast.success(`[NOTICE] LEVEL UP: LV. ${profile.level}`);
+      setTimeout(() => setShowLevelUp(false), 4000);
     }
     setPrevLevel(profile.level);
   }, [profile.level, prevLevel]);
@@ -130,6 +167,69 @@ function Dashboard() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
+      <AnimatePresence>
+        {showLevelUp && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 1 } }}
+          >
+            <motion.div
+              initial={{ scale: 0.8, filter: "blur(10px)" }}
+              animate={{ scale: 1, filter: "blur(0px)" }}
+              exit={{ scale: 1.1, filter: "blur(10px)" }}
+              transition={{ duration: 0.5, type: "spring", bounce: 0.4 }}
+              className="text-center relative"
+            >
+              <div className="text-sm md:text-xl uppercase tracking-[0.5em] text-primary mb-4 font-mono animate-pulse">System Alert</div>
+              <h1 className="font-display text-6xl md:text-8xl font-bold text-glow-primary text-primary mb-4 uppercase">Arise</h1>
+              <div className="text-2xl md:text-4xl text-white font-display">Level {leveledUpTo} Reached</div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] -z-10 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.3)_0%,transparent_70%)] rounded-full blur-2xl" />
+            </motion.div>
+          </motion.div>
+        )}
+
+        {showPenaltyZone && (
+          <motion.div
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md px-4 text-center overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, filter: "blur(10px)" }}
+          >
+            <motion.div
+              className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(220,38,38,0.2)_0%,transparent_70%)]"
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }} 
+              animate={{ scale: 1, y: 0 }}
+              className="glass border-destructive/50 shadow-[0_0_50px_rgba(220,38,38,0.3)] max-w-lg p-8 relative overflow-hidden"
+            >
+              <div className="text-destructive font-mono text-xl tracking-[0.3em] mb-2 uppercase animate-pulse">[Warning]</div>
+              <h2 className="font-display text-4xl text-white mb-6 uppercase tracking-wider">The Penalty Zone</h2>
+              <p className="text-muted-foreground mb-8 text-lg">
+                You failed to complete at least 75% of your Daily Quests yesterday. The System has determined your lack of discipline requires a penalty.
+              </p>
+              
+              <div className="bg-destructive/10 border border-destructive/30 p-4 rounded-md mb-8 text-left">
+                <p className="text-destructive font-mono text-sm uppercase">Penalty Requirement:</p>
+                <p className="text-white mt-1">{localStorage.getItem("shadow_penalty") || "Complete 100 Pushups immediately to escape."}</p>
+              </div>
+
+              <Button 
+                onClick={() => setShowPenaltyZone(false)}
+                className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/80 font-display text-xl h-14"
+              >
+                I Have Paid the Penalty
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -138,7 +238,7 @@ function Dashboard() {
       >
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16 border-2 border-primary/50 shadow-[0_0_20px_rgba(0,229,255,0.4)]">
+            <Avatar className="h-16 w-16 border-2 border-primary/50 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
               <AvatarImage src={profile.avatar_url ?? undefined} />
               <AvatarFallback className="bg-primary/20 text-primary font-display">
                 {(profile.username ?? "P").slice(0, 2).toUpperCase()}
@@ -146,7 +246,7 @@ function Dashboard() {
             </Avatar>
             <div>
               <div className="text-xs uppercase tracking-widest text-muted-foreground">Shadow Hunter</div>
-              <h1 className="font-display text-2xl font-bold text-glow-cyan text-primary">
+              <h1 className="font-display text-2xl font-bold text-glow-primary text-primary">
                 {profile.username}
               </h1>
               <div className="text-sm text-muted-foreground">
@@ -240,7 +340,7 @@ function Dashboard() {
                     </div>
                     <div
                       className={`font-display text-sm ${
-                        positive ? "text-primary text-glow-cyan" : "text-destructive"
+                        positive ? "text-primary text-glow-primary" : "text-destructive"
                       }`}
                     >
                       {positive ? "+" : "−"}
@@ -253,6 +353,119 @@ function Dashboard() {
           </ul>
         )}
       </div>
+      
+      {/* Stat Points & Shadows (Solo Leveling Mechanics) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <StatAllocation profile={profile} />
+        <ShadowArmy profile={profile} />
+      </div>
+
+      {/* Weekly Dungeon Raid */}
+      <DungeonRaid profile={profile} />
+    </div>
+  );
+}
+
+function StatAllocation({ profile }: { profile: any }) {
+  const totalAvailable = (profile.level - 1) * 5;
+  const storageKey = `stats_${profile.id}`;
+  
+  const [stats, setStats] = useState({ strength: 10, agility: 10, intelligence: 10 });
+  
+  useEffect(() => {
+    const saved = localStorage.getItem(storageKey);
+    if (saved) setStats(JSON.parse(saved));
+  }, [storageKey]);
+
+  const allocated = (stats.strength - 10) + (stats.agility - 10) + (stats.intelligence - 10);
+  const unallocated = totalAvailable - allocated;
+
+  const allocate = (stat: keyof typeof stats) => {
+    if (unallocated > 0) {
+      const newStats = { ...stats, [stat]: stats[stat] + 1 };
+      setStats(newStats);
+      localStorage.setItem(storageKey, JSON.stringify(newStats));
+    }
+  };
+
+  return (
+    <div className="glass p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="font-display text-xl text-primary text-glow-primary uppercase tracking-widest">Status</h2>
+        <div className="text-sm font-mono text-muted-foreground">Points: <span className="text-primary">{unallocated}</span></div>
+      </div>
+      <div className="space-y-4">
+        {[
+          { key: "strength", label: "Strength" },
+          { key: "agility", label: "Agility" },
+          { key: "intelligence", label: "Intelligence" }
+        ].map((s) => (
+          <div key={s.key} className="flex items-center justify-between">
+            <div className="font-mono text-sm uppercase text-muted-foreground">{s.label}</div>
+            <div className="flex items-center gap-4">
+              <div className="font-display text-xl">{stats[s.key as keyof typeof stats]}</div>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="h-8 w-8 p-0 border-primary/20 text-primary hover:bg-primary/20"
+                disabled={unallocated <= 0}
+                onClick={() => allocate(s.key as keyof typeof stats)}
+              >
+                +
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ShadowArmy({ profile }: { profile: any }) {
+  const shadows = [
+    { name: "Igris", unlockAt: 5, buff: "+5% EXP", color: "text-rose-glow" },
+    { name: "Tank", unlockAt: 15, buff: "Dungeon Pass", color: "text-emerald-glow" },
+    { name: "Beru", unlockAt: 30, buff: "+20% EXP", color: "text-purple-glow" },
+  ];
+
+  return (
+    <div className="glass p-6">
+      <h2 className="font-display text-xl text-accent text-glow-accent uppercase tracking-widest mb-6">Shadow Army</h2>
+      <div className="space-y-4">
+        {shadows.map(s => {
+          const unlocked = profile.level >= s.unlockAt;
+          return (
+            <div key={s.name} className={`flex items-center justify-between border-b border-white/5 pb-2 ${unlocked ? "opacity-100" : "opacity-30 grayscale"}`}>
+              <div>
+                <div className={`font-display text-lg ${unlocked ? s.color : "text-muted-foreground"}`}>{unlocked ? s.name : "???"}</div>
+                <div className="text-xs text-muted-foreground font-mono">{s.buff}</div>
+              </div>
+              {!unlocked && <div className="text-xs font-mono">Unlocks Lv.{s.unlockAt}</div>}
+              {unlocked && <div className="text-xs font-mono text-primary uppercase animate-pulse">Extracted</div>}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  );
+}
+
+function DungeonRaid({ profile }: { profile: any }) {
+  // Weekly Dungeon rank derived from current streak
+  let rank = "E-Rank";
+  let color = "text-muted-foreground";
+  
+  if (profile.current_streak >= 3) { rank = "D-Rank"; color = "text-blue-400"; }
+  if (profile.current_streak >= 7) { rank = "C-Rank"; color = "text-emerald-400"; }
+  if (profile.current_streak >= 14) { rank = "B-Rank"; color = "text-purple-400"; }
+  if (profile.current_streak >= 30) { rank = "A-Rank"; color = "text-rose-500"; }
+  if (profile.current_streak >= 90) { rank = "S-Rank"; color = "text-yellow-500 text-glow-amber"; }
+
+  return (
+    <div className="glass-strong p-6 text-center border-t-2 border-t-primary/20">
+      <div className="uppercase tracking-[0.3em] text-xs text-muted-foreground font-mono mb-2">Current Dungeon Raid</div>
+      <div className={`font-display text-5xl font-bold uppercase ${color} mb-2`}>{rank} Gate</div>
+      <p className="text-sm text-muted-foreground">Maintain your streak to clear higher ranked dungeons.</p>
     </div>
   );
 }
