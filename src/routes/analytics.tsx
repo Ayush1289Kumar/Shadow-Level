@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import {
   BarChart,
   Bar,
@@ -12,12 +11,11 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import { supabase } from "@/integrations/supabase/client";
+import { getHabitLogsSince } from "@/lib/local-db";
 import { useAppStore } from "@/lib/store";
 import { RequireAuth } from "@/components/RequireAuth";
 
 export const Route = createFileRoute("/analytics")({
-  ssr: false,
   component: () => (
     <RequireAuth>
       <Analytics />
@@ -28,22 +26,9 @@ export const Route = createFileRoute("/analytics")({
 function Analytics() {
   const profile = useAppStore((s) => s.profile)!;
 
-  const { data } = useQuery({
-    queryKey: ["analytics", profile.id],
-    queryFn: async () => {
-      const from = new Date();
-      from.setDate(from.getDate() - 90);
-      const { data, error } = await supabase
-        .from("habit_logs")
-        .select("completed_at, exp_earned")
-        .eq("user_id", profile.id)
-        .gte("completed_at", from.toISOString().slice(0, 10));
-      if (error) throw error;
-      return data as { completed_at: string; exp_earned: number }[];
-    },
-  });
-
-  const logs = data ?? [];
+  const from = new Date();
+  from.setDate(from.getDate() - 90);
+  const logs = getHabitLogsSince(profile.id, from.toISOString().slice(0, 10));
 
   // 7-day bar
   const week: { day: string; exp: number }[] = [];
@@ -59,8 +44,8 @@ function Analytics() {
   const positive = logs.filter((l) => l.exp_earned > 0).length;
   const negative = logs.filter((l) => l.exp_earned < 0).length;
   const pie = [
-    { name: "Positive", value: positive, color: "#3b82f6" },
-    { name: "Negative", value: negative, color: "#dc2626" },
+    { name: "Positive", value: positive, color: "#a855f7" },
+    { name: "Negative", value: negative, color: "#be123c" },
   ];
 
   // Heatmap 90 days
@@ -95,7 +80,7 @@ function Analytics() {
                   borderRadius: 8,
                 }}
               />
-              <Bar dataKey="exp" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="exp" fill="#a855f7" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
+import { createAccount, loginAccount, setSession } from "@/lib/local-db";
 import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,6 @@ import { toast } from "sonner";
 import { Loader2, Sword } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
-  ssr: false,
   component: AuthPage,
 });
 
@@ -20,27 +19,29 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const session = useAppStore((s) => s.session);
+  const userId = useAppStore((s) => s.userId);
+  const setUserId = useAppStore((s) => s.setUserId);
+  const setProfile = useAppStore((s) => s.setProfile);
 
   useEffect(() => {
-    if (session) navigate({ to: "/dashboard", replace: true });
-  }, [session, navigate]);
+    if (userId) navigate({ to: "/dashboard", replace: true });
+  }, [userId, navigate]);
 
-  async function submit(e: React.FormEvent) {
+  function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin + "/dashboard" },
-        });
-        if (error) throw error;
-        toast.success("Account created. Check your inbox if confirmation is required.");
+        const profile = createAccount(email, password);
+        setSession(profile.id);
+        setUserId(profile.id);
+        setProfile(profile);
+        toast.success("Account created. Welcome, hunter.");
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        const profile = loginAccount(email, password);
+        setSession(profile.id);
+        setUserId(profile.id);
+        setProfile(profile);
         toast.success("Welcome back, hunter.");
       }
     } catch (err: any) {

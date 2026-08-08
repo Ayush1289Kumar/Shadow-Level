@@ -1,59 +1,31 @@
-import { supabase } from "@/integrations/supabase/client";
+import { getProfile, updateProfile, getHabitLogs } from "./local-db";
 import { levelProgress } from "./leveling";
 import type { Profile } from "./store";
 
-export async function ensureProfile(userId: string): Promise<Profile> {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", userId)
-    .maybeSingle();
-  if (error) throw error;
-  if (data) return data as Profile;
-
-  const username = "Player_" + Math.random().toString(36).slice(2, 8);
-  const { data: created, error: insErr } = await supabase
-    .from("profiles")
-    .insert({ id: userId, username, total_exp: 0, level: 1 })
-    .select("*")
-    .single();
-  if (insErr) throw insErr;
-  return created as Profile;
+export function ensureProfile(userId: string): Profile {
+  const p = getProfile(userId);
+  if (!p) throw new Error("Profile not found");
+  return p as Profile;
 }
 
-export async function applyExpDelta(
-  profile: Profile,
-  delta: number,
-): Promise<Profile> {
+export function applyExpDelta(profile: Profile, delta: number): Profile {
   const newExp = Math.max(0, (profile.total_exp || 0) + delta);
   const lp = levelProgress(newExp);
-  const { data, error } = await supabase
-    .from("profiles")
-    .update({
-      total_exp: newExp,
-      level: lp.level,
-      exp_to_next_level: lp.toNext,
-    })
-    .eq("id", profile.id)
-    .select("*")
-    .single();
-  if (error) throw error;
-  return data as Profile;
+  const updated = updateProfile(profile.id, {
+    total_exp: newExp,
+    level: lp.level,
+    exp_to_next_level: lp.toNext,
+  });
+  return updated as Profile;
 }
 
-export async function updateStreak(profile: Profile): Promise<Profile> {
-  // Compute streak from habit_logs (positive habit completions)
-  const { data: logs, error } = await supabase
-    .from("habit_logs")
-    .select("completed_at, habits!inner(habit_type)")
-    .eq("user_id", profile.id)
-    .eq("habits.habit_type", "positive")
-    .order("completed_at", { ascending: false })
-    .limit(400);
-  if (error) throw error;
+export function updateStreak(profile: Profile): Profile {
+  const logs = getHabitLogs(profile.id);
+  // Only count positive habit completions for streak
+  const positiveLogs = logs.filter((l) => l.exp_earned > 0);
 
   const days = new Set<string>();
-  (logs || []).forEach((l: any) => l.completed_at && days.add(l.completed_at));
+  positiveLogs.forEach((l) => l.completed_at && days.add(l.completed_at));
 
   let streak = 0;
   const today = new Date();
@@ -67,12 +39,9 @@ export async function updateStreak(profile: Profile): Promise<Profile> {
     else break;
   }
   const longest = Math.max(profile.longest_streak || 0, streak);
-  const { data, error: uerr } = await supabase
-    .from("profiles")
-    .update({ current_streak: streak, longest_streak: longest })
-    .eq("id", profile.id)
-    .select("*")
-    .single();
-  if (uerr) throw uerr;
-  return data as Profile;
+  const updated = updateProfile(profile.id, {
+    current_streak: streak,
+    longest_streak: longest,
+  });
+  return updated as Profile;
 }

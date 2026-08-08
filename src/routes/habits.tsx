@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Plus, Trash2, Pencil, Save, X } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { getHabits, createHabit, updateHabit, deleteHabit, type HabitRow } from "@/lib/local-db";
 import { useAppStore } from "@/lib/store";
 import { RequireAuth } from "@/components/RequireAuth";
 import { Button } from "@/components/ui/button";
@@ -20,23 +19,12 @@ import {
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/habits")({
-  ssr: false,
   component: () => (
     <RequireAuth>
       <HabitsPage />
     </RequireAuth>
   ),
 });
-
-interface Habit {
-  id: string;
-  name: string;
-  description: string | null;
-  exp_value: number | null;
-  frequency: string | null;
-  habit_type: string;
-  is_active: boolean | null;
-}
 
 const empty = {
   name: "",
@@ -48,59 +36,49 @@ const empty = {
 
 function HabitsPage() {
   const profile = useAppStore((s) => s.profile)!;
-  const qc = useQueryClient();
   const [form, setForm] = useState(empty);
   const [editing, setEditing] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [tick, setTick] = useState(0);
+  const shouldReduceMotion = useReducedMotion();
 
-  const { data: habits = [], isLoading } = useQuery({
-    queryKey: ["habits", profile.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("habits")
-        .select("*")
-        .eq("user_id", profile.id)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data as Habit[];
-    },
-  });
+  const habits = getHabits(profile.id);
 
-  async function save() {
+  function save() {
     if (!form.name.trim()) return toast.error("Name required");
     try {
       if (editing) {
-        const { error } = await supabase
-          .from("habits")
-          .update({ ...form })
-          .eq("id", editing);
-        if (error) throw error;
+        updateHabit(editing, { ...form, exp_value: form.exp_value, habit_type: form.habit_type as "positive" | "negative" });
         toast.success("Habit updated");
       } else {
-        const { error } = await supabase
-          .from("habits")
-          .insert({ ...form, user_id: profile.id, is_active: true });
-        if (error) throw error;
+        createHabit({
+          ...form,
+          user_id: profile.id,
+          is_active: true,
+          exp_value: form.exp_value,
+          habit_type: form.habit_type as "positive" | "negative",
+          description: form.description || null,
+          frequency: form.frequency,
+        });
         toast.success("Habit forged");
       }
       setForm(empty);
       setEditing(null);
       setShowForm(false);
-      qc.invalidateQueries({ queryKey: ["habits", profile.id] });
+      setTick((t) => t + 1);
     } catch (e: any) {
       toast.error(e.message);
     }
   }
 
-  async function remove(id: string) {
+  function remove(id: string) {
     if (!confirm("Delete this habit? Its logs will remain.")) return;
-    const { error } = await supabase.from("habits").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    deleteHabit(id);
     toast.success("Habit removed");
-    qc.invalidateQueries({ queryKey: ["habits", profile.id] });
+    setTick((t) => t + 1);
   }
 
-  function edit(h: Habit) {
+  function edit(h: HabitRow) {
     setEditing(h.id);
     setForm({
       name: h.name,
@@ -134,9 +112,9 @@ function HabitsPage() {
       <AnimatePresence>
         {showForm && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
+            animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, height: "auto" }}
+            exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
             className="glass-strong overflow-hidden p-6"
           >
             <div className="grid gap-4 md:grid-cols-2">
@@ -211,9 +189,7 @@ function HabitsPage() {
         )}
       </AnimatePresence>
 
-      {isLoading ? (
-        <div className="py-12 text-center text-muted-foreground">Loading...</div>
-      ) : habits.length === 0 ? (
+      {habits.length === 0 ? (
         <div className="glass p-12 text-center">
           <p className="text-muted-foreground">No habits yet.</p>
         </div>
@@ -224,8 +200,8 @@ function HabitsPage() {
             return (
               <motion.li
                 key={h.id}
-                layout
-                whileHover={{ scale: 1.01 }}
+                layout={!shouldReduceMotion}
+                whileHover={shouldReduceMotion ? {} : { scale: 1.01 }}
                 className={`glass p-4 ${
                   positive ? "border-l-2 border-l-primary" : "border-l-2 border-l-destructive"
                 }`}

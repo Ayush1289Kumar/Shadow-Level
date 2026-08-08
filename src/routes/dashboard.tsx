@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import confetti from "canvas-confetti";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { useQueryClient } from "@tanstack/react-query";
 import { Flame, Plus, Sparkles, TrendingUp, Trophy } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { getHabits, getHabitLogsByDate, createHabitLog, deleteHabitLog } from "@/lib/local-db";
 import { useAppStore } from "@/lib/store";
 import { applyExpDelta, updateStreak } from "@/lib/profile";
 import { RequireAuth } from "@/components/RequireAuth";
@@ -16,7 +15,6 @@ import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/dashboard")({
-  ssr: false,
   component: () => (
     <RequireAuth>
       <Dashboard />
@@ -28,9 +26,9 @@ interface Habit {
   id: string;
   name: string;
   description: string | null;
-  exp_value: number | null;
+  exp_value: number;
   habit_type: string;
-  is_active: boolean | null;
+  is_active: boolean;
 }
 
 function today() {
@@ -40,76 +38,37 @@ function today() {
 function Dashboard() {
   const profile = useAppStore((s) => s.profile)!;
   const setProfile = useAppStore((s) => s.setProfile);
-  const qc = useQueryClient();
   const [busy, setBusy] = useState<string | null>(null);
   const [prevLevel, setPrevLevel] = useState(profile.level);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [leveledUpTo, setLeveledUpTo] = useState(profile.level);
+  const [tick, setTick] = useState(0); // force re-read from localStorage
+  const shouldReduceMotion = useReducedMotion();
 
-  const { data: habits = [] } = useQuery({
-    queryKey: ["habits", profile.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("habits")
-        .select("*")
-        .eq("user_id", profile.id)
-        .eq("is_active", true)
-        .order("created_at", { ascending: true });
-      if (error) throw error;
-      return data as Habit[];
-    },
-  });
+  const habits = getHabits(profile.id, true) as Habit[];
+  const todayLogs = getHabitLogsByDate(profile.id, today());
 
-  const { data: todayLogs = [] } = useQuery({
-    queryKey: ["logs", profile.id, today()],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("habit_logs")
-        .select("*")
-        .eq("user_id", profile.id)
-        .eq("completed_at", today());
-      if (error) throw error;
-      return data as { id: string; habit_id: string; exp_earned: number }[];
-    },
-  });
-
-  const { data: yesterdayLogs = [] } = useQuery({
-    queryKey: ["logs", profile.id, "yesterday"],
-    queryFn: async () => {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayStr = yesterday.toISOString().slice(0, 10);
-      const { data, error } = await supabase
-        .from("habit_logs")
-        .select("*")
-        .eq("user_id", profile.id)
-        .eq("completed_at", yesterdayStr);
-      if (error) throw error;
-      return data as { id: string; habit_id: string; exp_earned: number }[];
-    },
-  });
+  // Yesterday logs for penalty zone
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().slice(0, 10);
+  const yesterdayLogs = getHabitLogsByDate(profile.id, yesterdayStr);
 
   const doneMap = new Map(todayLogs.map((l) => [l.habit_id, l]));
-  
+
   const positiveHabitsCount = habits.filter(h => h.habit_type === "positive").length;
   const yesterdayPositiveCount = yesterdayLogs.filter(l => l.exp_earned > 0).length;
-  
-  // Penalty Zone Logic: If they had active habits, and yesterday they completed LESS than their total positive habits, they failed the Daily Quest.
-  // We only trigger this if they have at least one positive habit, and we use a local storage flag to only show it once per day.
+
   const [showPenaltyZone, setShowPenaltyZone] = useState(false);
 
   useEffect(() => {
-    // Only evaluate if they actually have positive habits to complete.
-    if (positiveHabitsCount > 0) { 
-        const penaltyKey = `penalty_checked_${today()}`;
-        // Must complete at least 75% of daily quests to avoid the penalty zone
-        const requiredCompletions = Math.ceil(positiveHabitsCount * 0.75);
-        
-        // If they checked the app yesterday but didn't meet the 75% quota (or didn't check it at all)
-        if (yesterdayPositiveCount < requiredCompletions && !localStorage.getItem(penaltyKey)) {
-            setShowPenaltyZone(true);
-            localStorage.setItem(penaltyKey, "true");
-        }
+    if (positiveHabitsCount > 0) {
+      const penaltyKey = `penalty_checked_${today()}`;
+      const requiredCompletions = Math.ceil(positiveHabitsCount * 0.75);
+      if (yesterdayPositiveCount < requiredCompletions && !localStorage.getItem(penaltyKey)) {
+        setShowPenaltyZone(true);
+        localStorage.setItem(penaltyKey, "true");
+      }
     }
   }, [positiveHabitsCount, yesterdayPositiveCount]);
 
@@ -123,7 +82,7 @@ function Dashboard() {
     setPrevLevel(profile.level);
   }, [profile.level, prevLevel]);
 
-  async function toggle(habit: Habit) {
+  function toggle(habit: Habit) {
     if (busy) return;
     setBusy(habit.id);
     try {
@@ -131,31 +90,26 @@ function Dashboard() {
       const exp = habit.exp_value ?? 10;
       const isPositive = habit.habit_type === "positive";
       if (existing) {
-        // undo
-        const { error } = await supabase.from("habit_logs").delete().eq("id", existing.id);
-        if (error) throw error;
-        // refund: positive removed => -exp, negative removed => +exp
+        deleteHabitLog(existing.id);
         const delta = isPositive ? -exp : exp;
-        const updated = await applyExpDelta(profile, delta);
-        const withStreak = await updateStreak(updated);
+        const updated = applyExpDelta(profile, delta);
+        const withStreak = updateStreak(updated);
         setProfile(withStreak);
       } else {
         const gained = isPositive ? exp : -exp;
-        const { error } = await supabase.from("habit_logs").insert({
+        createHabitLog({
           habit_id: habit.id,
           user_id: profile.id,
           completed_at: today(),
           exp_earned: gained,
         });
-        if (error) throw error;
-        const updated = await applyExpDelta(profile, gained);
-        const withStreak = await updateStreak(updated);
+        const updated = applyExpDelta(profile, gained);
+        const withStreak = updateStreak(updated);
         setProfile(withStreak);
         if (isPositive) toast.success(`+${exp} EXP · ${habit.name}`);
         else toast.error(`-${exp} EXP · ${habit.name}`);
       }
-      qc.invalidateQueries({ queryKey: ["logs", profile.id, today()] });
-      qc.invalidateQueries({ queryKey: ["analytics", profile.id] });
+      setTick((t) => t + 1);
     } catch (e: any) {
       toast.error(e.message ?? "Failed");
     } finally {
@@ -176,10 +130,10 @@ function Dashboard() {
             exit={{ opacity: 0, transition: { duration: 1 } }}
           >
             <motion.div
-              initial={{ scale: 0.8, filter: "blur(10px)" }}
-              animate={{ scale: 1, filter: "blur(0px)" }}
-              exit={{ scale: 1.1, filter: "blur(10px)" }}
-              transition={{ duration: 0.5, type: "spring", bounce: 0.4 }}
+              initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.8, filter: "blur(10px)" }}
+              animate={shouldReduceMotion ? { opacity: 1 } : { scale: 1, filter: "blur(0px)" }}
+              exit={shouldReduceMotion ? { opacity: 0 } : { scale: 1.1, filter: "blur(10px)" }}
+              transition={shouldReduceMotion ? { duration: 0.3 } : { duration: 0.5, type: "spring", bounce: 0.4 }}
               className="text-center relative"
             >
               <div className="text-sm md:text-xl uppercase tracking-[0.5em] text-primary mb-4 font-mono animate-pulse">System Alert</div>
@@ -202,10 +156,10 @@ function Dashboard() {
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
-            
-            <motion.div 
-              initial={{ scale: 0.9, y: 20 }} 
-              animate={{ scale: 1, y: 0 }}
+
+            <motion.div
+              initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.9, y: 20 }}
+              animate={shouldReduceMotion ? { opacity: 1 } : { scale: 1, y: 0 }}
               className="glass border-destructive/50 shadow-[0_0_50px_rgba(220,38,38,0.3)] max-w-lg p-8 relative overflow-hidden"
             >
               <div className="text-destructive font-mono text-xl tracking-[0.3em] mb-2 uppercase animate-pulse">[Warning]</div>
@@ -213,13 +167,13 @@ function Dashboard() {
               <p className="text-muted-foreground mb-8 text-lg">
                 You failed to complete at least 75% of your Daily Quests yesterday. The System has determined your lack of discipline requires a penalty.
               </p>
-              
+
               <div className="bg-destructive/10 border border-destructive/30 p-4 rounded-md mb-8 text-left">
                 <p className="text-destructive font-mono text-sm uppercase">Penalty Requirement:</p>
                 <p className="text-white mt-1">{localStorage.getItem("shadow_penalty") || "Complete 100 Pushups immediately to escape."}</p>
               </div>
 
-              <Button 
+              <Button
                 onClick={() => setShowPenaltyZone(false)}
                 className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/80 font-display text-xl h-14"
               >
@@ -307,11 +261,11 @@ function Dashboard() {
                 return (
                   <motion.li
                     key={h.id}
-                    layout
-                    initial={{ opacity: 0, x: -10 }}
+                    layout={!shouldReduceMotion}
+                    initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0 }}
-                    whileHover={{ scale: 1.01 }}
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.01 }}
                     className={`flex items-center gap-4 rounded-xl border p-4 transition ${
                       done
                         ? positive
@@ -353,8 +307,8 @@ function Dashboard() {
           </ul>
         )}
       </div>
-      
-      {/* Stat Points & Shadows (Solo Leveling Mechanics) */}
+
+      {/* Stat Points & Shadows */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <StatAllocation profile={profile} />
         <ShadowArmy profile={profile} />
@@ -369,9 +323,9 @@ function Dashboard() {
 function StatAllocation({ profile }: { profile: any }) {
   const totalAvailable = (profile.level - 1) * 5;
   const storageKey = `stats_${profile.id}`;
-  
+
   const [stats, setStats] = useState({ strength: 10, agility: 10, intelligence: 10 });
-  
+
   useEffect(() => {
     const saved = localStorage.getItem(storageKey);
     if (saved) setStats(JSON.parse(saved));
@@ -404,9 +358,9 @@ function StatAllocation({ profile }: { profile: any }) {
             <div className="font-mono text-sm uppercase text-muted-foreground">{s.label}</div>
             <div className="flex items-center gap-4">
               <div className="font-display text-xl">{stats[s.key as keyof typeof stats]}</div>
-              <Button 
-                size="sm" 
-                variant="outline" 
+              <Button
+                size="sm"
+                variant="outline"
                 className="h-8 w-8 p-0 border-primary/20 text-primary hover:bg-primary/20"
                 disabled={unallocated <= 0}
                 onClick={() => allocate(s.key as keyof typeof stats)}
@@ -451,10 +405,9 @@ function ShadowArmy({ profile }: { profile: any }) {
 }
 
 function DungeonRaid({ profile }: { profile: any }) {
-  // Weekly Dungeon rank derived from current streak
   let rank = "E-Rank";
   let color = "text-muted-foreground";
-  
+
   if (profile.current_streak >= 3) { rank = "D-Rank"; color = "text-blue-400"; }
   if (profile.current_streak >= 7) { rank = "C-Rank"; color = "text-emerald-400"; }
   if (profile.current_streak >= 14) { rank = "B-Rank"; color = "text-purple-400"; }

@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import type { Session } from "@supabase/supabase-js";
 
 export interface Profile {
   id: string;
@@ -13,25 +12,24 @@ export interface Profile {
 }
 
 interface AppState {
-  session: Session | null;
+  /** True once we've checked localStorage for an existing session */
   sessionLoaded: boolean;
+  /** The logged-in user's ID (null = not logged in) */
+  userId: string | null;
+  /** Loaded profile data */
   profile: Profile | null;
-  setSession: (s: Session | null) => void;
+  setSessionLoaded: () => void;
+  setUserId: (id: string | null) => void;
   setProfile: (p: Profile | null) => void;
+  signOut: () => void;
 }
 
-export const useAppStore = create<AppState>((set, get) => ({
-  session: null,
+export const useAppStore = create<AppState>((set) => ({
   sessionLoaded: false,
+  userId: null,
   profile: null,
-  setSession: (session) => {
-    const prev = get().session;
-    const sameUser = prev?.user?.id && session?.user?.id === prev.user.id;
-    set({
-      session,
-      sessionLoaded: true,
-      profile: session ? (sameUser ? get().profile : null) : null,
-    });
-  },
+  setSessionLoaded: () => set({ sessionLoaded: true }),
+  setUserId: (userId) => set({ userId }),
   setProfile: (profile) => set({ profile }),
+  signOut: () => set({ userId: null, profile: null }),
 }));

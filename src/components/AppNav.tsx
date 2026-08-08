@@ -1,6 +1,6 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { LayoutDashboard, ListChecks, BarChart3, Gift, User, LogOut } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { clearSession } from "@/lib/local-db";
 import { useAppStore } from "@/lib/store";
 import { toast } from "sonner";
 
@@ -16,9 +16,11 @@ export function AppNav() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const profile = useAppStore((s) => s.profile);
+  const signOut = useAppStore((s) => s.signOut);
 
-  async function signOut() {
-    await supabase.auth.signOut();
+  function handleSignOut() {
+    clearSession();
+    signOut();
     toast.success("Signed out");
     navigate({ to: "/auth" });
   }
@@ -57,7 +59,7 @@ export function AppNav() {
             </div>
           )}
           <button
-            onClick={signOut}
+            onClick={handleSignOut}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
           >
             <LogOut className="h-4 w-4" /> Sign out

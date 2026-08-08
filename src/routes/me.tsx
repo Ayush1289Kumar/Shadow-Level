@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Copy, Upload } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { updateProfile } from "@/lib/local-db";
 import { useAppStore } from "@/lib/store";
 import { RequireAuth } from "@/components/RequireAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,7 +13,6 @@ import { ExpBar } from "@/components/ExpBar";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/me")({
-  ssr: false,
   component: () => (
     <RequireAuth>
       <MePage />
@@ -27,70 +26,59 @@ function MePage() {
   const [username, setUsername] = useState(profile.username ?? "");
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-  const [penaltyText, setPenaltyText] = useState(() => 
+  const [penaltyText, setPenaltyText] = useState(() =>
     typeof window !== "undefined" ? localStorage.getItem("shadow_penalty") || "Complete 100 Pushups immediately to escape." : ""
   );
+  const shouldReduceMotion = useReducedMotion();
 
   const publicUrl =
     typeof window !== "undefined" && profile.username
       ? `${window.location.origin}/profile/${profile.username}`
       : "";
 
-  async function saveUsername() {
+  function saveUsername() {
     if (!username.trim()) return;
     setSaving(true);
-    const { data, error } = await supabase
-      .from("profiles")
-      .update({ username: username.trim() })
-      .eq("id", profile.id)
-      .select("*")
-      .single();
-    setSaving(false);
-    if (error) return toast.error(error.message);
-    setProfile(data as any);
-    toast.success("Username updated");
+    try {
+      const updated = updateProfile(profile.id, { username: username.trim() });
+      setProfile(updated as any);
+      toast.success("Username updated");
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setSaving(false);
+    }
   }
 
-  async function upload(e: React.ChangeEvent<HTMLInputElement>) {
+  function upload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) return toast.error("Max 5MB");
-    const ext = file.name.split(".").pop();
-    const path = `${profile.id}/avatar.${ext}`;
-    const { error: upErr } = await supabase.storage
-      .from("avatars")
-      .upload(path, file, { upsert: true, contentType: file.type });
-    if (upErr) return toast.error(upErr.message);
-    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
-    const url = data.publicUrl + `?v=${Date.now()}`;
-    const { data: updated, error } = await supabase
-      .from("profiles")
-      .update({ avatar_url: url })
-      .eq("id", profile.id)
-      .select("*")
-      .single();
-    if (error) return toast.error(error.message);
-    setProfile(updated as any);
-    toast.success("Avatar updated");
+
+    // Convert to data URL for localStorage storage
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      const updated = updateProfile(profile.id, { avatar_url: dataUrl });
+      setProfile(updated as any);
+      toast.success("Avatar updated");
+    };
+    reader.readAsDataURL(file);
   }
 
-  async function removeAvatar() {
-    setSaving(true);
-    const { data: updated, error } = await supabase
-      .from("profiles")
-      .update({ avatar_url: null })
-      .eq("id", profile.id)
-      .select("*")
-      .single();
-    setSaving(false);
-    if (error) return toast.error(error.message);
+  function removeAvatar() {
+    const updated = updateProfile(profile.id, { avatar_url: null });
     setProfile(updated as any);
     toast.success("Avatar removed");
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-strong p-6">
+    <main className="mx-auto max-w-3xl space-y-6">
+      <motion.div
+        initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
+        animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+        className="glass-strong p-6"
+      >
         <div className="flex flex-col items-center gap-4 md:flex-row">
           <div className="relative">
             <Avatar className="h-24 w-24 border-2 border-primary/50 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
@@ -156,10 +144,10 @@ function MePage() {
           Set the penalty you must pay if you fail your Daily Quests.
         </p>
         <div className="mt-3 flex gap-2">
-          <Input 
-            value={penaltyText} 
-            onChange={(e) => setPenaltyText(e.target.value)} 
-            placeholder="e.g. Complete 100 Pushups" 
+          <Input
+            value={penaltyText}
+            onChange={(e) => setPenaltyText(e.target.value)}
+            placeholder="e.g. Complete 100 Pushups"
           />
           <Button
             onClick={() => {
@@ -190,7 +178,7 @@ function MePage() {
         <Stat label="Streak" value={`${profile.current_streak}d`} />
         <Stat label="Best" value={`${profile.longest_streak}d`} />
       </div>
-    </div>
+    </main>
   );
 }
 

@@ -1,14 +1,12 @@
 import { defineConfig } from 'vite'
 import viteReact from '@vitejs/plugin-react'
-import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import tailwindcss from '@tailwindcss/vite'
-import { nitro } from 'nitro/vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
+import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 
 export default defineConfig({
   plugins: [
-    tanstackStart(),
-    nitro(),
+    TanStackRouterVite(),
     viteReact(),
     tailwindcss(),
     tsconfigPaths(),

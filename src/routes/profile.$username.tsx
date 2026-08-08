@@ -1,43 +1,20 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { motion, useReducedMotion } from "framer-motion";
 import { Flame, Trophy } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { getProfileByUsername } from "@/lib/local-db";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ExpBar } from "@/components/ExpBar";
-import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/profile/$username")({
-  ssr: false,
   component: PublicProfile,
 });
 
 function PublicProfile() {
   const { username } = Route.useParams();
+  const profile = getProfileByUsername(username);
+  const shouldReduceMotion = useReducedMotion();
 
-  const { data: profile, isLoading, error } = useQuery({
-    queryKey: ["public-profile", username],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("username, avatar_url, total_exp, level, current_streak, longest_streak")
-        .eq("username", username)
-        .maybeSingle();
-      if (error) throw error;
-      if (!data) throw notFound();
-      return data;
-    },
-  });
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-monarch-radial">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (error || !profile) {
+  if (!profile) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-monarch-radial px-4">
         <div className="glass p-8 text-center">
@@ -54,10 +31,10 @@ function PublicProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-monarch-radial px-4 py-12">
+    <main className="min-h-screen bg-monarch-radial px-4 py-12">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
+        animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
         className="mx-auto max-w-xl"
       >
         <div className="glass-strong p-8 text-center">
@@ -99,6 +76,6 @@ function PublicProfile() {
           </Link>
         </div>
       </motion.div>
-    </div>
+    </main>
   );
 }

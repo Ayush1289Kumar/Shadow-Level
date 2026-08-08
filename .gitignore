@@ -16,9 +16,21 @@ dist-ssr
 .nitro
 *.local
 
+# Environment
+.env
+.env.*
+!.env.example
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars
+
+# Lovable (removed)
+.lovable/
+
+# Bun (not used)
+bun.lock
+bunfig.toml
 
 # Editor directories and files
 .vscode/*

@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Check, Gift, Lock, Plus, Trash2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { getRewards, createReward, purchaseReward, deleteReward, type RewardRow } from "@/lib/local-db";
 import { useAppStore } from "@/lib/store";
 import { applyExpDelta } from "@/lib/profile";
 import { RequireAuth } from "@/components/RequireAuth";
@@ -14,7 +13,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/rewards")({
-  ssr: false,
   component: () => (
     <RequireAuth>
       <Rewards />
@@ -22,67 +20,40 @@ export const Route = createFileRoute("/rewards")({
   ),
 });
 
-interface Reward {
-  id: string;
-  name: string;
-  description: string | null;
-  cost: number;
-  is_purchased: boolean | null;
-  purchased_at: string | null;
-}
-
 function Rewards() {
   const profile = useAppStore((s) => s.profile)!;
   const setProfile = useAppStore((s) => s.setProfile);
-  const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ name: "", description: "", cost: 100 });
+  const [tick, setTick] = useState(0);
+  const shouldReduceMotion = useReducedMotion();
 
-  const { data: rewards = [] } = useQuery({
-    queryKey: ["rewards", profile.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("rewards")
-        .select("*")
-        .eq("user_id", profile.id)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data as Reward[];
-    },
-  });
+  const rewards = getRewards(profile.id);
 
-  async function create() {
+  function create() {
     if (!form.name.trim() || form.cost < 1) return toast.error("Invalid reward");
-    const { error } = await supabase
-      .from("rewards")
-      .insert({ ...form, user_id: profile.id });
-    if (error) return toast.error(error.message);
+    createReward({ ...form, user_id: profile.id, description: form.description || null });
     setForm({ name: "", description: "", cost: 100 });
     setShowForm(false);
     toast.success("Reward added");
-    qc.invalidateQueries({ queryKey: ["rewards", profile.id] });
+    setTick((t) => t + 1);
   }
 
-  async function purchase(r: Reward) {
+  function purchase(r: RewardRow) {
     if (r.is_purchased) return;
     if (profile.total_exp < r.cost) return toast.error("Not enough EXP");
     if (!confirm(`Spend ${r.cost} EXP on "${r.name}"? This cannot be refunded.`)) return;
-    const { error } = await supabase
-      .from("rewards")
-      .update({ is_purchased: true, purchased_at: new Date().toISOString() })
-      .eq("id", r.id);
-    if (error) return toast.error(error.message);
-    const updated = await applyExpDelta(profile, -r.cost);
+    purchaseReward(r.id);
+    const updated = applyExpDelta(profile, -r.cost);
     setProfile(updated);
     toast.success(`Unlocked: ${r.name}`);
-    qc.invalidateQueries({ queryKey: ["rewards", profile.id] });
+    setTick((t) => t + 1);
   }
 
-  async function remove(id: string) {
+  function remove(id: string) {
     if (!confirm("Remove this reward?")) return;
-    const { error } = await supabase.from("rewards").delete().eq("id", id);
-    if (error) return toast.error(error.message);
-    qc.invalidateQueries({ queryKey: ["rewards", profile.id] });
+    deleteReward(id);
+    setTick((t) => t + 1);
   }
 
   return (
@@ -100,7 +71,11 @@ function Rewards() {
       </div>
 
       {showForm && (
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="glass-strong p-6">
+        <motion.div
+          initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -10 }}
+          animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+          className="glass-strong p-6"
+        >
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <Label>Name</Label>
@@ -134,7 +109,7 @@ function Rewards() {
             return (
               <motion.div
                 key={r.id}
-                whileHover={{ scale: r.is_purchased ? 1 : 1.02 }}
+                whileHover={shouldReduceMotion ? {} : { scale: r.is_purchased ? 1 : 1.02 }}
                 className={`glass p-5 relative ${r.is_purchased ? "opacity-70" : ""}`}
               >
                 {r.is_purchased && (

@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useAppStore } from "@/lib/store";
+import { getSession } from "@/lib/local-db";
+import { ensureProfile } from "@/lib/profile";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -9,13 +11,33 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const navigate = useNavigate();
-  const session = useAppStore((s) => s.session);
   const sessionLoaded = useAppStore((s) => s.sessionLoaded);
+  const userId = useAppStore((s) => s.userId);
+  const setUserId = useAppStore((s) => s.setUserId);
+  const setProfile = useAppStore((s) => s.setProfile);
+  const setSessionLoaded = useAppStore((s) => s.setSessionLoaded);
+
+  useEffect(() => {
+    // Check localStorage for existing session
+    if (!sessionLoaded) {
+      const session = getSession();
+      if (session) {
+        setUserId(session.userId);
+        try {
+          const p = ensureProfile(session.userId);
+          setProfile(p);
+        } catch {
+          setUserId(null);
+        }
+      }
+      setSessionLoaded();
+    }
+  }, [sessionLoaded, setUserId, setProfile, setSessionLoaded]);
 
   useEffect(() => {
     if (!sessionLoaded) return;
-    navigate({ to: session ? "/dashboard" : "/auth", replace: true });
-  }, [session, sessionLoaded, navigate]);
+    navigate({ to: userId ? "/dashboard" : "/auth", replace: true });
+  }, [userId, sessionLoaded, navigate]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-monarch-radial">
