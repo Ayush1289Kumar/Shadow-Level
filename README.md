@@ -9,7 +9,7 @@
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase)](https://supabase.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-> **🌐 Live Demo**: [https://shadow-level-6qaq.vercel.app/](https://shadow-level-6qaq.vercel.app/)
+> **🌐 Live Demo**: [https://shadow-level-alpha.vercel.app/](https://shadow-level-alpha.vercel.app/)
 
 ---
 
