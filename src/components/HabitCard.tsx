@@ -27,13 +27,17 @@ export function HabitCard({ habit, done, busy, shouldReduceMotion, onToggle }: H
       initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 10 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.01 }}
-      className={`group flex items-center gap-4 p-5 transition-all duration-300 cursor-pointer relative overflow-hidden ${
+      whileHover={shouldReduceMotion ? {} : { y: -4, scale: 1.02 }}
+      className={`group flex items-center gap-4 p-5 transition-all duration-300 cursor-pointer relative overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mana focus-visible:ring-offset-2 focus-visible:ring-offset-abyss ${
         done
           ? positive 
             ? "glass-strong border-mana/50 box-glow-mana" 
             : "glass-strong border-penalty/50 box-glow-penalty"
-          : "glass border-mist hover:border-mana/30 hover:bg-shade/50"
+          : `glass border-mist hover:bg-shade/50 ${
+              positive 
+                ? "hover:border-mana/50 hover:shadow-[0_0_20px_rgba(0,229,255,0.15)]" 
+                : "hover:border-penalty/50 hover:shadow-[0_0_20px_rgba(255,0,60,0.15)]"
+            }`
       }`}
       onClick={() => {
         if (!busy) onToggle(habit);
@@ -77,7 +81,7 @@ export function HabitCard({ habit, done, busy, shouldReduceMotion, onToggle }: H
       
       {/* Decorative gradient overlay */}
       <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none ${
-        positive ? "bg-gradient-to-r from-transparent via-mana/5 to-transparent" : "bg-gradient-to-r from-transparent via-penalty/5 to-transparent"
+        positive ? "bg-gradient-to-r from-transparent via-mana/10 to-transparent" : "bg-gradient-to-r from-transparent via-penalty/10 to-transparent"
       }`} />
     </motion.li>
   );

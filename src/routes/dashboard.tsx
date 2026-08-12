@@ -146,7 +146,7 @@ function Dashboard() {
   return (
     <>
       <LightLines />
-      <div className="mx-auto max-w-5xl space-y-6 relative z-10">
+      <div className="mx-auto max-w-5xl space-y-12 relative z-10 pb-24">
         {createPortal(
         <AnimatePresence>
           {showLevelUp && (
@@ -203,7 +203,12 @@ function Dashboard() {
       )}
 
       {/* Dashboard Top Section: Level > XP > Streaks */}
-      <div className="flex flex-col lg:flex-row gap-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="flex flex-col lg:flex-row gap-8"
+      >
         <div className="flex-1">
           <LevelProgress totalExp={profile.total_exp} rank={
             profile.current_streak >= 90 ? "S" :
@@ -214,28 +219,34 @@ function Dashboard() {
           } />
         </div>
         <div className="flex flex-col gap-4">
-          <div className="glass px-6 py-4 flex items-center justify-between gap-6 h-full">
+          <div className="glass px-8 py-6 flex items-center justify-between gap-8 h-full">
             <div className="text-center">
-              <Flame className="mx-auto h-6 w-6 text-danger mb-1" />
-              <div className="font-display text-2xl text-foreground">{profile.current_streak}</div>
-              <div className="text-xs uppercase font-mono tracking-wider text-muted-foreground">
+              <Flame className="mx-auto h-8 w-8 text-danger mb-2" />
+              <div className="font-display text-3xl text-foreground">{profile.current_streak}</div>
+              <div className="text-xs uppercase font-mono tracking-wider text-muted-foreground mt-1">
                 {STRINGS.dashboard.streak_label}
               </div>
             </div>
-            <div className="w-px h-12 bg-border"></div>
+            <div className="w-px h-16 bg-border/50"></div>
             <div className="text-center">
-              <Trophy className="mx-auto h-6 w-6 text-warning mb-1" />
-              <div className="font-display text-2xl text-foreground">{profile.longest_streak}</div>
-              <div className="text-xs uppercase font-mono tracking-wider text-muted-foreground">
+              <Trophy className="mx-auto h-8 w-8 text-warning mb-2" />
+              <div className="font-display text-3xl text-foreground">{profile.longest_streak}</div>
+              <div className="text-xs uppercase font-mono tracking-wider text-muted-foreground mt-1">
                 {STRINGS.dashboard.longest_streak_label}
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Quick stats */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="grid grid-cols-2 gap-4 md:grid-cols-4"
+      >
         <StatCard
           label="Today Done"
           value={positiveDoneToday}
@@ -260,10 +271,16 @@ function Dashboard() {
           icon={<Trophy className="h-4 w-4" />}
           tone="cyan"
         />
-      </div>
+      </motion.div>
 
       {/* Habits list */}
-      <div className="glass p-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="glass p-8"
+      >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-display text-xl">{STRINGS.dashboard.title}</h2>
           <Link to="/habits">
@@ -298,16 +315,29 @@ function Dashboard() {
             </AnimatePresence>
           </ul>
         )}
-      </div>
+      </motion.div>
 
       {/* Stat Points & Shadows */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="grid grid-cols-1 md:grid-cols-2 gap-8"
+      >
         <StatAllocation profile={profile} />
         <ShadowArmy profile={profile} />
-      </div>
+      </motion.div>
 
       {/* Weekly Dungeon Raid */}
-      <DungeonRaid profile={profile} />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <DungeonRaid profile={profile} />
+      </motion.div>
     </div>
     </>
   );
