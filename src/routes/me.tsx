@@ -38,7 +38,7 @@ function MePage() {
 
   const publicUrl =
     typeof window !== "undefined" && profile.username
-      ? `${window.location.origin}/Shadow-Level/profile/${profile.username}`
+      ? `${window.location.origin}/profile/${profile.username}`
       : "";
 
   function saveUsername() {
