@@ -52,16 +52,19 @@
 Shadow-Level/
 ├── src/
 │ ├── components/
-│ │ ├── ui/ # shadcn/ui component library
-│ │ ├── AppNav.tsx # Navigation component
-│ │ ├── ExpBar.tsx # EXP progress bar
-│ │ └── RequireAuth.tsx # Protected route wrapper
-│ ├── hooks/ # Custom React hooks
+│ │ ├── ui/                 # shadcn/ui component library
+│ │ ├── AppNav.tsx          # Navigation component
+│ │ ├── ExpBar.tsx          # Subtle gradient EXP progress bar
+│ │ ├── HabitCard.tsx       # Reusable habit quest card
+│ │ ├── LevelProgress.tsx   # Core progression UI (Level, Rank, EXP)
+│ │ ├── RankBadge.tsx       # Ranking visualizer (E to S rank)
+│ │ └── RequireAuth.tsx     # Protected route wrapper
+│ ├── hooks/                # Custom React hooks
 │ ├── integrations/
-│ │ └── supabase/ # Supabase client configuration
-│ ├── lib/ # Utility functions
-│ ├── routes/ # File-based routing (TanStack Router)
-│ │ ├── __root.tsx # Root layout
+│ │ └── supabase/           # Supabase client configuration
+│ ├── lib/                  # Utility functions
+│ ├── routes/               # File-based routing (TanStack Router)
+│ │ ├── __root.tsx          # Root layout
 │ │ ├── index.tsx # Landing page
 │ │ ├── auth.tsx # Login/Signup
 │ │ ├── dashboard.tsx # Main dashboard
@@ -74,11 +77,12 @@ Shadow-Level/
 │ ├── start.ts # App entry point
 │ └── styles.css # Global styles
 ├── supabase/
-│ └── migrations/ # Database schema migrations
-├── public/ # Static assets
+│ └── migrations/       # Database schema migrations
+├── public/             # Static assets
 ├── package.json
 ├── vite.config.ts
 ├── tsconfig.json
+├── vercel.json         # Vercel SPA routing configuration
 
 ---
 
