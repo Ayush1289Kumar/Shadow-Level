@@ -9,7 +9,6 @@ import { motion, AnimatePresence } from "framer-motion";
 const items = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/habits", label: "Habits", icon: ListChecks },
-  { to: "/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/rewards", label: "Rewards", icon: Gift },
   { to: "/me", label: "Profile", icon: User },
 ] as const;

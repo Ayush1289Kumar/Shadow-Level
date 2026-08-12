@@ -83,15 +83,6 @@ export const STRINGS = {
     insufficient_exp: "Insufficient EXP. Keep hunting.",
   },
 
-  analytics: {
-    page_title: "HUNTER RECORDS",
-    page_subtitle: "Track your growth through the ranks.",
-    weekly_chart_title: "7-Day EXP Earned",
-    pie_chart_title: "Quest Breakdown",
-    heatmap_title: "90-Day Activity",
-    no_data: "No records yet. Complete quests to see your growth.",
-  },
-
   profile: {
     page_title: "HUNTER STATUS",
     username_label: "Hunter Name",
@@ -139,7 +130,6 @@ export const STRINGS = {
     dashboard: "Daily Quests",
     habits: "Dungeon Forge",
     rewards: "Treasury",
-    analytics: "Records",
     profile: "Hunter Status",
   },
 } as const;

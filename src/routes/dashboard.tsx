@@ -92,7 +92,7 @@ function Dashboard() {
       setTimeout(() => {
         setShowLevelUp(false);
         toast.success(STRINGS.dashboard.level_up_toast(profile.level));
-      }, 8000);
+      }, 4000);
     }
     setPrevLevel(profile.level);
   }, [profile.level, prevLevel]);
@@ -128,7 +128,7 @@ function Dashboard() {
               };
               
               if (willLevelUp) {
-                setTimeout(showToast, 8100);
+                setTimeout(showToast, 4100);
               } else {
                 showToast();
               }
