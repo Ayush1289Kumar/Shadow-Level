@@ -3,24 +3,20 @@ import { levelProgress } from "@/lib/leveling";
 
 export function ExpBar({ totalExp }: { totalExp: number }) {
   const lp = levelProgress(totalExp);
+  
   return (
-    <div className="w-full">
-      <div className="mb-1 flex justify-between text-xs text-muted-foreground">
-        <span className="font-display">Lv. {lp.level}</span>
-        <span>
-          {lp.intoLevel} / {lp.span} EXP
-        </span>
+    <div className="w-full flex flex-col gap-2">
+      <div className="flex justify-between items-end font-mono text-xs uppercase tracking-widest text-muted-foreground">
+        <span>{lp.intoLevel} / {lp.span} XP</span>
+        <span className="text-right">{lp.toNext} XP to next level</span>
       </div>
-      <div className="relative h-3 w-full overflow-hidden rounded-full bg-white/5 border border-white/10">
+      <div className="relative h-2 w-full overflow-hidden rounded-full bg-surface border border-border">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${lp.pct}%` }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="h-full rounded-full bg-gradient-to-r from-primary via-accent to-primary shadow-[0_0_10px_rgba(59,130,246,0.2)]"
+          className="h-full rounded-full bg-gradient-to-r from-accent to-primary"
         />
-      </div>
-      <div className="mt-1 text-right text-[10px] text-muted-foreground">
-        {lp.toNext} EXP to Lv. {lp.level + 1}
       </div>
     </div>
   );

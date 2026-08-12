@@ -1,16 +1,16 @@
 # Graph Report - Shadow-Level  (2026-08-12)
 
 ## Corpus Check
-- 92 files · ~55,405 words
+- 97 files · ~152,176 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 828 nodes · 1414 edges · 117 communities (53 shown, 64 thin omitted)
+- 853 nodes · 1447 edges · 121 communities (56 shown, 65 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b1b5e932`
+- Built from commit: `c9a44a7b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,7 +19,7 @@
 - cn
 - devDependencies
 - routeTree.gen.ts
-- pagination.tsx
+- carousel.tsx
 - sidebar.tsx
 - compilerOptions
 - components.json
@@ -27,18 +27,18 @@
 - menubar.tsx
 - 🚀 AI Project Operating System (AI-POS) — Local Development
 - form.tsx
-- carousel.tsx
+- me.tsx
 - dependencies
 - env
 - chart.tsx
 - UI/UX, Animation & Design — Agent Skill Reference
 - utils.ts
-- drawer.tsx
+- Shadow Level Design System
 - navigation-menu.tsx
 - SECURITY.md — Local Development
 - toggle-group.tsx
 - alert.tsx
-- input-otp.tsx
+- dropdown-menu.tsx
 - class-variance-authority
 - clsx
 - cmdk
@@ -87,7 +87,7 @@
 - zod
 - zustand
 - ⚔️ Shadow Level — RPG Habit Tracker
-- breadcrumb.tsx
+- sheet.tsx
 - select.tsx
 - 12. Gamification Mechanics
 - 5. Core Features Analysis
@@ -109,25 +109,29 @@
 - setup.ts
 - 10. Component Library
 - 6. Data Layer
-- 8. State Management
+- card.tsx
 - 9. Routing Structure
 - rules/graphify.md
 - workflows/graphify.md
 - eslint
 - eslint-config-prettier
 - eslint-plugin-prettier
-- eslint-plugin-react-hooks
+- HabitCard.tsx
 - eslint-plugin-react-refresh
-- jsdom
+- tabs.tsx
 - @radix-ui/react-scroll-area
 - prettier
 - @types/canvas-confetti
 - @types/react
 - @types/react-dom
 - typescript
-- typescript-eslint
+- 13. Security Considerations
 - vite
 - @vitejs/plugin-react
+- @eslint/js
+- @types/node
+- @vitest/ui
+- vercel.json
 
 ## God Nodes (most connected - your core abstractions)
 1. `cn()` - 220 edges
@@ -137,9 +141,9 @@
 5. `🚀 AI Project Operating System (AI-POS) — Local Development` - 16 edges
 6. `write()` - 12 edges
 7. `Button` - 11 edges
-8. `UI/UX, Animation & Design — Agent Skill Reference` - 11 edges
-9. `📋 Required Documentation` - 11 edges
-10. `getProfile()` - 10 edges
+8. `levelProgress()` - 11 edges
+9. `UI/UX, Animation & Design — Agent Skill Reference` - 11 edges
+10. `📋 Required Documentation` - 11 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `AlertDialogOverlay` --calls--> `cn()`  [EXTRACTED]
@@ -156,31 +160,31 @@
 ## Import Cycles
 - None detected.
 
-## Communities (117 total, 64 thin omitted)
+## Communities (121 total, 65 thin omitted)
 
 ### Community 0 - "queries.ts"
-Cohesion: 0.06
-Nodes (83): AppNav(), items, ExpBar(), RequireAuth(), Avatar, AvatarFallback, AvatarImage, Button (+75 more)
+Cohesion: 0.08
+Nodes (67): AppNav(), items, RequireAuth(), Textarea, qk, useCompleteHabit(), useCreateHabit(), useCreateReward() (+59 more)
 
 ### Community 1 - "cn"
 Cohesion: 0.08
-Nodes (39): AccordionContent, AccordionItem, AccordionTrigger, Card, CardContent, CardDescription, CardFooter, CardHeader (+31 more)
+Nodes (36): AccordionContent, AccordionItem, AccordionTrigger, Breadcrumb, BreadcrumbEllipsis(), BreadcrumbItem, BreadcrumbLink, BreadcrumbList (+28 more)
 
 ### Community 2 - "devDependencies"
 Cohesion: 0.18
-Nodes (11): @eslint/js, globals, devDependencies, @eslint/js, globals, @types/node, vitest, @vitest/ui (+3 more)
+Nodes (11): eslint-plugin-react-hooks, globals, jsdom, devDependencies, eslint-plugin-react-hooks, globals, jsdom, typescript-eslint (+3 more)
 
 ### Community 3 - "routeTree.gen.ts"
 Cohesion: 0.06
 Nodes (36): ErrorBoundary, Props, State, SmoothScrollProvider(), Toaster(), ToasterProps, queryClient, router (+28 more)
 
-### Community 4 - "pagination.tsx"
-Cohesion: 0.11
-Nodes (20): AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter(), AlertDialogHeader(), AlertDialogOverlay, AlertDialogTitle (+12 more)
+### Community 4 - "carousel.tsx"
+Cohesion: 0.07
+Nodes (34): AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter(), AlertDialogHeader(), AlertDialogOverlay, AlertDialogTitle (+26 more)
 
 ### Community 5 - "sidebar.tsx"
-Cohesion: 0.06
-Nodes (39): Separator, SheetContent, SheetContentProps, SheetDescription, SheetFooter(), SheetHeader(), SheetOverlay, SheetTitle (+31 more)
+Cohesion: 0.07
+Nodes (32): Input, Separator, Sidebar, SidebarContent, SidebarContext, SidebarContextProps, SidebarFooter, SidebarGroup (+24 more)
 
 ### Community 6 - "compilerOptions"
 Cohesion: 0.07
@@ -203,12 +207,12 @@ Cohesion: 0.06
 Nodes (33): `01_prd.md`, `02_architecture.md`, `03_implementation_plan.md`, `04_task_today.md`, `05_rules.md`, `06_audit.md`, `07_decisions.md`, `08_changelog.md` (+25 more)
 
 ### Community 11 - "form.tsx"
-Cohesion: 0.23
-Nodes (10): FormControl, FormDescription, FormFieldContext, FormFieldContextValue, FormItem, FormItemContext, FormItemContextValue, FormLabel (+2 more)
-
-### Community 12 - "carousel.tsx"
 Cohesion: 0.19
-Nodes (13): Carousel, CarouselApi, CarouselContent, CarouselContext, CarouselContextProps, CarouselItem, CarouselNext, CarouselOptions (+5 more)
+Nodes (12): FormControl, FormDescription, FormFieldContext, FormFieldContextValue, FormItem, FormItemContext, FormItemContextValue, FormLabel (+4 more)
+
+### Community 12 - "me.tsx"
+Cohesion: 0.18
+Nodes (14): ExpBar(), LevelProgress(), RankBadge(), Avatar, AvatarFallback, AvatarImage, compressAvatar(), computeLevel() (+6 more)
 
 ### Community 13 - "dependencies"
 Cohesion: 0.15
@@ -228,11 +232,11 @@ Nodes (29): 1. Component Libraries, 2. Smooth Scroll, 3. Design Taste & Quality 
 
 ### Community 17 - "utils.ts"
 Cohesion: 0.09
-Nodes (12): Checkbox, HoverCardContent, PopoverContent, Progress, RadioGroup, RadioGroupItem, ResizableHandle(), ResizablePanelGroup() (+4 more)
+Nodes (13): HoverCardContent, InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot, PopoverContent, Progress, ResizableHandle() (+5 more)
 
-### Community 18 - "drawer.tsx"
-Cohesion: 0.25
-Nodes (6): DrawerContent, DrawerDescription, DrawerFooter(), DrawerHeader(), DrawerOverlay, DrawerTitle
+### Community 18 - "Shadow Level Design System"
+Cohesion: 0.17
+Nodes (11): Backgrounds, Changing the Design, Color Palette, Custom Utilities & Components, Design Philosophy, Glassmorphism, Glow Effects, Key Pillars (+3 more)
 
 ### Community 19 - "navigation-menu.tsx"
 Cohesion: 0.29
@@ -250,21 +254,21 @@ Nodes (5): ToggleGroup, ToggleGroupContext, ToggleGroupItem, Toggle, toggleVaria
 Cohesion: 0.50
 Nodes (4): Alert, AlertDescription, AlertTitle, alertVariants
 
-### Community 23 - "input-otp.tsx"
-Cohesion: 0.40
-Nodes (4): InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot
+### Community 23 - "dropdown-menu.tsx"
+Cohesion: 0.20
+Nodes (9): DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut(), DropdownMenuSubContent (+1 more)
 
 ### Community 50 - "CODEBASE_AUDIT.md"
 Cohesion: 0.22
-Nodes (8): 13. Security Considerations, 16. Areas for Improvement, 4. Project Structure, Conclusion, Current Implementation, Executive Summary, Recommendations for Production:, Table of Contents
+Nodes (8): 16. Areas for Improvement, 4. Project Structure, 8. State Management, Conclusion, Executive Summary, Local State Patterns, Table of Contents, Zustand Store (store.ts)
 
 ### Community 75 - "⚔️ Shadow Level — RPG Habit Tracker"
 Cohesion: 0.25
 Nodes (7): 1. Clone the Repository, ✨ Features, 🚀 Getting Started, Prerequisites, 📁 Project Structure, ⚔️ Shadow Level — RPG Habit Tracker, 🛠️ Tech Stack
 
-### Community 76 - "breadcrumb.tsx"
+### Community 76 - "sheet.tsx"
 Cohesion: 0.25
-Nodes (7): Breadcrumb, BreadcrumbEllipsis(), BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator()
+Nodes (8): SheetContent, SheetContentProps, SheetDescription, SheetFooter(), SheetHeader(), SheetOverlay, SheetTitle, sheetVariants
 
 ### Community 77 - "select.tsx"
 Cohesion: 0.25
@@ -291,8 +295,8 @@ Cohesion: 0.33
 Nodes (5): 2026-08-09 — Major Migration, Added, Changed, Removed, Shadow Level — Changelog
 
 ### Community 83 - "scripts"
-Cohesion: 0.33
-Nodes (6): scripts, build, deploy, dev, predeploy, preview
+Cohesion: 0.22
+Nodes (9): scripts, build, deploy, dev, predeploy, preview, test, test:ui (+1 more)
 
 ### Community 84 - "15. Code Quality Assessment"
 Cohesion: 0.40
@@ -346,33 +350,45 @@ Nodes (3): 10. Component Library, Custom Components, shadcn/ui Components (50+)
 Cohesion: 0.67
 Nodes (3): 6. Data Layer, CRUD Operations (local-db.ts), localStorage Keys
 
-### Community 98 - "8. State Management"
-Cohesion: 0.67
-Nodes (3): 8. State Management, Local State Patterns, Zustand Store (store.ts)
+### Community 98 - "card.tsx"
+Cohesion: 0.29
+Nodes (6): Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
 
 ### Community 99 - "9. Routing Structure"
 Cohesion: 0.67
 Nodes (3): 9. Routing Structure, File-Based Routing, Route Protection
 
+### Community 105 - "HabitCard.tsx"
+Cohesion: 0.40
+Nodes (4): Habit, HabitCard(), HabitCardProps, Checkbox
+
+### Community 107 - "tabs.tsx"
+Cohesion: 0.50
+Nodes (3): TabsContent, TabsList, TabsTrigger
+
+### Community 114 - "13. Security Considerations"
+Cohesion: 0.67
+Nodes (3): 13. Security Considerations, Current Implementation, Recommendations for Production:
+
 ## Knowledge Gaps
-- **319 isolated node(s):** `$schema`, `ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, `ANTHROPIC_MODEL`, `ANTHROPIC_DEFAULT_HAIKU_MODEL` (+314 more)
+- **333 isolated node(s):** `$schema`, `ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, `ANTHROPIC_MODEL`, `ANTHROPIC_DEFAULT_HAIKU_MODEL` (+328 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **64 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **65 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `cn` to `queries.ts`, `pagination.tsx`, `sidebar.tsx`, `command.tsx`, `menubar.tsx`, `form.tsx`, `breadcrumb.tsx`, `carousel.tsx`, `select.tsx`, `chart.tsx`, `utils.ts`, `drawer.tsx`, `navigation-menu.tsx`, `toggle-group.tsx`, `alert.tsx`, `input-otp.tsx`, `badge.tsx`?**
-  _High betweenness centrality (0.181) - this node is a cross-community bridge._
+- **Why does `cn()` connect `cn` to `queries.ts`, `carousel.tsx`, `sidebar.tsx`, `command.tsx`, `menubar.tsx`, `form.tsx`, `me.tsx`, `chart.tsx`, `utils.ts`, `navigation-menu.tsx`, `toggle-group.tsx`, `alert.tsx`, `dropdown-menu.tsx`, `sheet.tsx`, `select.tsx`, `badge.tsx`, `card.tsx`, `HabitCard.tsx`, `tabs.tsx`?**
+  _High betweenness centrality (0.175) - this node is a cross-community bridge._
 - **Why does `dependencies` connect `dependencies` to `class-variance-authority`, `clsx`, `cmdk`, `date-fns`, `embla-carousel-react`, `framer-motion`, `input-otp`, `lenis`, `lucide-react`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-menubar`, `@radix-ui/react-popover`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `canvas-confetti`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toggle`, `@radix-ui/react-toggle-group`, `@radix-ui/react-tooltip`, `react-dom`, `react-hook-form`, `react-resizable-panels`, `recharts`, `sonner`, `tailwind-merge`, `@tailwindcss/vite`, `@tanstack/react-query`, `@tanstack/react-router`, `@tanstack/router-plugin`, `tw-animate-css`, `vaul`, `vite-tsconfig-paths`, `zod`, `zustand`, `package.json`, `@radix-ui/react-scroll-area`?**
-  _High betweenness centrality (0.032) - this node is a cross-community bridge._
-- **Why does `devDependencies` connect `devDependencies` to `eslint`, `eslint-config-prettier`, `eslint-plugin-prettier`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `jsdom`, `prettier`, `@types/canvas-confetti`, `@types/react`, `@types/react-dom`, `typescript`, `typescript-eslint`, `vite`, `@vitejs/plugin-react`, `package.json`?**
+  _High betweenness centrality (0.031) - this node is a cross-community bridge._
+- **Why does `devDependencies` connect `devDependencies` to `eslint`, `eslint-config-prettier`, `eslint-plugin-prettier`, `eslint-plugin-react-refresh`, `prettier`, `@types/canvas-confetti`, `@types/react`, `@types/react-dom`, `typescript`, `vite`, `@vitejs/plugin-react`, `@eslint/js`, `@types/node`, `package.json`, `@vitest/ui`?**
   _High betweenness centrality (0.015) - this node is a cross-community bridge._
 - **What connects `$schema`, `ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN` to the rest of the system?**
-  _319 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _333 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `queries.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.0601067887109077 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07863113897596656 - nodes in this community are weakly interconnected._
 - **Should `cn` be split into smaller, more focused modules?**
-  _Cohesion score 0.08282828282828283 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08416389811738649 - nodes in this community are weakly interconnected._
 - **Should `routeTree.gen.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.05612244897959184 - nodes in this community are weakly interconnected._

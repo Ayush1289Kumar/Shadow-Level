@@ -15,6 +15,8 @@ import { getHabitLogsByDate } from "@/lib/local-db";
 import { STRINGS } from "@/lib/strings";
 import { RequireAuth } from "@/components/RequireAuth";
 import { ExpBar } from "@/components/ExpBar";
+import { LevelProgress } from "@/components/LevelProgress";
+import { HabitCard } from "@/components/HabitCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -134,17 +136,13 @@ function Dashboard() {
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 1 } }}
+            exit={{ opacity: 0, transition: { duration: 0.3 } }}
           >
             <motion.div
-              initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.8, filter: "blur(10px)" }}
+              initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.9, filter: "blur(10px)" }}
               animate={shouldReduceMotion ? { opacity: 1 } : { scale: 1, filter: "blur(0px)" }}
-              exit={shouldReduceMotion ? { opacity: 0 } : { scale: 1.1, filter: "blur(10px)" }}
-              transition={
-                shouldReduceMotion
-                  ? { duration: 0.3 }
-                  : { duration: 0.5, type: "spring", bounce: 0.4 }
-              }
+              exit={shouldReduceMotion ? { opacity: 0 } : { scale: 1.05, filter: "blur(10px)" }}
+              transition={{ duration: 1, ease: "easeOut" }}
               className="text-center relative"
             >
               <div className="text-sm md:text-xl uppercase tracking-[0.5em] text-primary mb-4 font-mono animate-pulse">
@@ -156,7 +154,7 @@ function Dashboard() {
               <div className="text-2xl md:text-4xl text-white font-display">
                 Level {leveledUpTo} Reached
               </div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] -z-10 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.3)_0%,transparent_70%)] rounded-full blur-2xl" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] -z-10 bg-[radial-gradient(ellipse_at_center,rgba(168,85,247,0.3)_0%,transparent_70%)] rounded-full blur-2xl" />
             </motion.div>
           </motion.div>
         )}
@@ -205,53 +203,37 @@ function Dashboard() {
         )}
       </AnimatePresence>
 
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass-strong p-6"
-      >
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16 border-2 border-primary/50 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
-              <AvatarImage src={profile.avatar_url ?? undefined} />
-              <AvatarFallback className="bg-primary/20 text-primary font-display">
-                {(profile.username ?? "P").slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <div className="text-xs uppercase tracking-widest text-muted-foreground">
-                Shadow Hunter
-              </div>
-              <h1 className="font-display text-2xl font-bold text-glow-primary text-primary">
-                {profile.username}
-              </h1>
-              <div className="text-sm text-muted-foreground">
-                {profile.total_exp.toLocaleString()} Total EXP
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="glass px-4 py-2 text-center">
-              <Flame className="mx-auto h-5 w-5 text-rose-500" />
-              <div className="font-display text-lg">{profile.current_streak}</div>
-              <div className="text-[10px] uppercase text-muted-foreground">
+      {/* Dashboard Top Section: Level > XP > Streaks */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex-1">
+          <LevelProgress totalExp={profile.total_exp} rank={
+            profile.current_streak >= 90 ? "S" :
+            profile.current_streak >= 30 ? "A" :
+            profile.current_streak >= 14 ? "B" :
+            profile.current_streak >= 7 ? "C" :
+            profile.current_streak >= 3 ? "D" : "E"
+          } />
+        </div>
+        <div className="flex flex-col gap-4">
+          <div className="glass px-6 py-4 flex items-center justify-between gap-6 h-full">
+            <div className="text-center">
+              <Flame className="mx-auto h-6 w-6 text-danger mb-1" />
+              <div className="font-display text-2xl text-foreground">{profile.current_streak}</div>
+              <div className="text-xs uppercase font-mono tracking-wider text-muted-foreground">
                 {STRINGS.dashboard.streak_label}
               </div>
             </div>
-            <div className="glass px-4 py-2 text-center">
-              <Trophy className="mx-auto h-5 w-5 text-yellow-500" />
-              <div className="font-display text-lg">{profile.longest_streak}</div>
-              <div className="text-[10px] uppercase text-muted-foreground">
+            <div className="w-px h-12 bg-border"></div>
+            <div className="text-center">
+              <Trophy className="mx-auto h-6 w-6 text-warning mb-1" />
+              <div className="font-display text-2xl text-foreground">{profile.longest_streak}</div>
+              <div className="text-xs uppercase font-mono tracking-wider text-muted-foreground">
                 {STRINGS.dashboard.longest_streak_label}
               </div>
             </div>
           </div>
         </div>
-        <div className="mt-6">
-          <ExpBar totalExp={profile.total_exp} />
-        </div>
-      </motion.div>
+      </div>
 
       {/* Quick stats */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -304,54 +286,16 @@ function Dashboard() {
         ) : (
           <ul className="space-y-2">
             <AnimatePresence>
-              {(habits as Habit[]).map((h) => {
-                const done = doneMap.has(h.id);
-                const positive = h.habit_type === "positive";
-                return (
-                  <motion.li
-                    key={h.id}
-                    layout={!shouldReduceMotion}
-                    initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0 }}
-                    whileHover={shouldReduceMotion ? {} : { scale: 1.01 }}
-                    className={`flex items-center gap-4 rounded-xl border p-4 transition ${
-                      done
-                        ? positive
-                          ? "border-primary/40 bg-primary/5"
-                          : "border-destructive/40 bg-destructive/5"
-                        : "border-white/5 bg-white/[0.02] hover:bg-white/5"
-                    }`}
-                  >
-                    <Checkbox
-                      checked={done}
-                      disabled={busy === h.id}
-                      onCheckedChange={() => toggle(h)}
-                      className={
-                        positive
-                          ? "data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                          : "data-[state=checked]:bg-destructive data-[state=checked]:border-destructive"
-                      }
-                    />
-                    <div className="flex-1">
-                      <div className={`font-medium ${done ? "line-through text-muted-foreground" : ""}`}>
-                        {h.name}
-                      </div>
-                      {h.description && (
-                        <div className="text-xs text-muted-foreground">{h.description}</div>
-                      )}
-                    </div>
-                    <div
-                      className={`font-display text-sm ${
-                        positive ? "text-primary text-glow-primary" : "text-destructive"
-                      }`}
-                    >
-                      {positive ? "+" : "−"}
-                      {h.exp_value ?? 10} EXP
-                    </div>
-                  </motion.li>
-                );
-              })}
+              {(habits as Habit[]).map((h) => (
+                <HabitCard 
+                  key={h.id}
+                  habit={h}
+                  done={doneMap.has(h.id)}
+                  busy={busy === h.id}
+                  shouldReduceMotion={!!shouldReduceMotion}
+                  onToggle={toggle}
+                />
+              ))}
             </AnimatePresence>
           </ul>
         )}
