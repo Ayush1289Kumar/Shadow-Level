@@ -16,6 +16,7 @@
 ## ✨ Features
 
 - **🎮 RPG-Style Progression** — Complete habits to earn EXP, level up, and track your progress like a true hunter.
+- **🎨 Multi-Theme Support** — Choose between 4 distinct aesthetic themes: Shadow Level, Mystic Nebula, Crimson Moon, and Deep Forest.
 - **✅ Habit Tracking** — Create **Positive** habits (gain EXP) and **Negative** habits (lose EXP). Check and uncheck tasks with real-time EXP updates.
 - **✨ Cyber Glitch Aesthetics** — Built with Framer Motion, Lenis Smooth Scrolling, and sharp neon notifications to bring the anime interface to life.
 - **🔥 Streak System** — Maintain daily streaks just like GitHub and LeetCode. Track your current and longest streaks.
@@ -23,7 +24,7 @@
 - **🎁 Reward Shop** — Spend your hard-earned EXP to purchase rewards. Purchases are **permanent** — no refunds!
 - **👤 Shareable Profile** — Each user gets a public profile page (`/profile/[username]`) with their level, EXP, streak, and avatar. Share it with anyone!
 - **🖼️ Custom Avatar** — Upload your own character image (max 1MB) stored securely in Supabase Storage.
-- **📱 Fully Responsive** — Works seamlessly on desktop, tablet, and mobile devices.
+- **📱 Fully Responsive** — Works seamlessly on desktop, tablet, and mobile devices, featuring a toggleable top/left navigation layout.
 - **🔐 Authentication** — Secure sign-up and sign-in powered by Supabase Auth.
 
 ---

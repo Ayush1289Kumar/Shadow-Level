@@ -1,5 +1,16 @@
 # Shadow Level — Changelog
 
+## 2026-08-13 — Theme Engine & UI Polish
+
+### Added
+- **Multi-Theme Support** — Added an interactive theme switcher with 4 distinct palettes: Shadow Level (Default), Mystic Nebula, Crimson Moon, and Deep Forest.
+- **Navigation Layout Toggle** — Added the ability to toggle the navigation bar position between the left sidebar and the top of the screen.
+
+### Changed
+- **Auth Screen Redesign** — Overhauled the authentication page with the new `glass-strong` frosted effect, proportional inputs, and sleek glow animations.
+- **Default Theme Polish** — Softened the default `--mana` cyan color (`#06B6D4`) for better eye comfort and accessibility, reducing harsh brightness on solid backgrounds.
+- **Vercel Deployment** — Fixed the Vite base path configuration (`base: '/'`) to ensure proper asset loading when deployed to Vercel's root domain.
+
 ## 2026-08-12 — UI/UX Overhaul & Graphify Integration
 
 ### Removed
