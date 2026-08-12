@@ -96,7 +96,7 @@
   --ash: #6B6680;
   --shadow-text: #3D3A4D;
 
-  --mana: #00E5FF;
+  --mana: #06B6D4;
   --mana-bright: #3B82F6;
   --mana-dark: #1D4ED8;
   --mana-light: #93C5FD;
@@ -108,7 +108,7 @@
   --amber: #F59E0B;
   --amber-dark: #92400E;
 
-  --glow-mana: rgba(0, 229, 255, 0.25);
+  --glow-mana: rgba(6, 182, 212, 0.25);
   --glow-mana-bright: rgba(59, 130, 246, 0.15);
   --glow-penalty: rgba(255, 0, 60, 0.15);
   --glow-success: rgba(16, 185, 129, 0.15);
