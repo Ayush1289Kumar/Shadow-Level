@@ -5,6 +5,7 @@ import { useAppStore } from "@/lib/store";
 import { toast } from "sonner";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 
 const items = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -69,6 +70,8 @@ export function AppNav() {
           </div>
 
           <div className="w-px h-8 md:w-8 md:h-px bg-mist/50 my-1 mx-2 md:mx-0 md:my-2" />
+
+          <ThemeSwitcher />
 
           <button
             onClick={handleSignOut}
