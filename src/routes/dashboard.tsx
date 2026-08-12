@@ -18,6 +18,8 @@ import { RequireAuth } from "@/components/RequireAuth";
 import { ExpBar } from "@/components/ExpBar";
 import { LevelProgress } from "@/components/LevelProgress";
 import { HabitCard } from "@/components/HabitCard";
+import { LevelUpSequence } from "@/components/LevelUpSequence";
+import { LightLines } from "@/components/ui/light-lines";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -90,7 +92,7 @@ function Dashboard() {
       setTimeout(() => {
         setShowLevelUp(false);
         toast.success(STRINGS.dashboard.level_up_toast(profile.level));
-      }, 4000);
+      }, 8000);
     }
     setPrevLevel(profile.level);
   }, [profile.level, prevLevel]);
@@ -126,7 +128,7 @@ function Dashboard() {
               };
               
               if (willLevelUp) {
-                setTimeout(showToast, 4100);
+                setTimeout(showToast, 8100);
               } else {
                 showToast();
               }
@@ -142,35 +144,16 @@ function Dashboard() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      {createPortal(
+    <>
+      <LightLines />
+      <div className="mx-auto max-w-5xl space-y-6 relative z-10">
+        {createPortal(
         <AnimatePresence>
           {showLevelUp && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.3 } }}
-          >
-            <motion.div
-              initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.9, filter: "blur(10px)" }}
-              animate={shouldReduceMotion ? { opacity: 1 } : { scale: 1, filter: "blur(0px)" }}
-              exit={shouldReduceMotion ? { opacity: 0 } : { scale: 1.05, filter: "blur(10px)" }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="text-center relative"
-            >
-              <div className="text-sm md:text-xl uppercase tracking-[0.5em] text-primary mb-4 font-mono animate-pulse">
-                System Alert
-              </div>
-              <h1 className="font-display text-6xl md:text-8xl font-bold text-glow-primary text-primary mb-4 uppercase">
-                Arise
-              </h1>
-              <div className="text-2xl md:text-4xl text-white font-display">
-                Level {leveledUpTo} Reached
-              </div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] -z-10 bg-[radial-gradient(ellipse_at_center,rgba(168,85,247,0.3)_0%,transparent_70%)] rounded-full blur-2xl" />
-            </motion.div>
-          </motion.div>
+          <LevelUpSequence 
+            leveledUpTo={leveledUpTo} 
+            onComplete={() => setShowLevelUp(false)} 
+          />
         )}
 
         {showPenaltyZone && (
@@ -326,6 +309,7 @@ function Dashboard() {
       {/* Weekly Dungeon Raid */}
       <DungeonRaid profile={profile} />
     </div>
+    </>
   );
 }
 

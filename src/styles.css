@@ -249,6 +249,33 @@
   100% { background-position: 100% 100%; }
 }
 
+@keyframes systemGlitch {
+  0% { transform: translate(0); text-shadow: none; opacity: 1; }
+  2% { transform: translate(-2px, 2px); text-shadow: 2px 0 var(--mana-bright), -2px 0 var(--penalty); opacity: 0.8; }
+  4% { transform: translate(2px, -2px); text-shadow: -2px 0 var(--mana-bright), 2px 0 var(--penalty); opacity: 0.9; }
+  6% { transform: translate(0); text-shadow: none; opacity: 1; }
+  100% { transform: translate(0); text-shadow: none; opacity: 1; }
+}
+
+@keyframes screenShake {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px) translateY(2px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px) translateY(-2px); }
+}
+
+@keyframes lightBeam {
+  0% { transform: scaleX(0) scaleY(10); opacity: 0; }
+  20% { transform: scaleX(1) scaleY(10); opacity: 1; }
+  40% { transform: scaleX(4) scaleY(1); opacity: 1; }
+  100% { transform: scaleX(4) scaleY(1); opacity: 0; }
+}
+
+@keyframes particleFloat {
+  0% { transform: translateY(0) scale(1); opacity: 0; }
+  20% { opacity: 0.8; }
+  100% { transform: translateY(-100px) scale(0.5); opacity: 0; }
+}
+
 /* Animation Utilities */
 @utility anim-micro {
   transition: all 150ms cubic-bezier(0.32, 0.72, 0, 1);
