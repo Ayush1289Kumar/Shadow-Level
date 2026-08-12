@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react"
 
-export type Theme = "shadow" | "radiant" | "crimson" | "forest"
+export type Theme = "shadow" | "mystic" | "crimson" | "forest"
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -34,7 +34,7 @@ export function ThemeProvider({
     const root = window.document.documentElement
 
     // Remove all previous theme classes
-    root.classList.remove("theme-shadow", "theme-radiant", "theme-crimson", "theme-forest")
+    root.classList.remove("theme-shadow", "theme-mystic", "theme-crimson", "theme-forest")
 
     // We add the specific theme class (e.g. theme-shadow).
     root.classList.add(`theme-${theme}`)

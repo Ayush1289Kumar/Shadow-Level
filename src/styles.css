@@ -115,36 +115,36 @@
   --glow-moonlight: rgba(242, 240, 255, 0.04);
 }
 
-.theme-radiant {
-  /* Radiant / Light Side */
-  --void: #F8FAFC;
-  --abyss: #FFFFFF;
-  --depth: #F1F5F9;
-  --shade: #E2E8F0;
-  --mist: #CBD5E1;
+.theme-mystic {
+  /* Mystic Nebula */
+  --void: #08080D;
+  --abyss: #0D0D14;
+  --depth: #12121C;
+  --shade: #1A1A28;
+  --mist: #242436;
 
-  --moonlight: #0F172A;
-  --silver: #334155;
-  --ash: #64748B;
-  --shadow-text: #94A3B8;
+  --moonlight: #F2F0FF;
+  --silver: #A8A4C0;
+  --ash: #6B6680;
+  --shadow-text: #3D3A4D;
 
-  --mana: #EAB308;
-  --mana-bright: #3B82F6;
-  --mana-dark: #1D4ED8;
-  --mana-light: #93C5FD;
+  --mana: #7C3AED;
+  --mana-bright: #8B5CF6;
+  --mana-dark: #5B21B6;
+  --mana-light: #C4B5FD;
 
-  --penalty: #EF4444;
+  --penalty: #DC2626;
   --penalty-dark: #991B1B;
   --success: #10B981;
   --success-dark: #065F46;
   --amber: #F59E0B;
   --amber-dark: #92400E;
 
-  --glow-mana: rgba(234, 179, 8, 0.25);
-  --glow-mana-bright: rgba(59, 130, 246, 0.15);
-  --glow-penalty: rgba(239, 68, 68, 0.15);
-  --glow-success: rgba(16, 185, 129, 0.15);
-  --glow-moonlight: rgba(15, 23, 42, 0.04);
+  --glow-mana: rgba(124, 58, 237, 0.15);
+  --glow-mana-bright: rgba(139, 92, 246, 0.10);
+  --glow-penalty: rgba(220, 38, 38, 0.08);
+  --glow-success: rgba(16, 185, 129, 0.08);
+  --glow-moonlight: rgba(242, 240, 255, 0.04);
 }
 
 .theme-crimson {
@@ -215,9 +215,6 @@
 @layer base {
   html {
     color-scheme: dark;
-  }
-  .theme-radiant {
-    color-scheme: light;
   }
   * {
     border-color: var(--mist);
