@@ -15,7 +15,6 @@ Shadow Level is a gamified habit tracker inspired by the *Solo Leveling* anime. 
 - **Streak System** — Current + longest streak tracking
 - **Penalty Zone** — 75% daily completion threshold enforcement
 - **Reward Shop** — Spend EXP on self-defined rewards (permanent, no refunds)
-- **Analytics Dashboard** — 7-day EXP bar chart, positive/negative pie, 90-day heatmap
 - **Profile & Avatar** — Customizable username, avatar upload, shareable public profile
 - **Authentication** — Local email/password auth (localStorage-based)
 - **Responsive Design** — Desktop sidebar + mobile bottom nav

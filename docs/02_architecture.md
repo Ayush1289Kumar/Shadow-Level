@@ -8,8 +8,8 @@
 | **Routing** | TanStack Router (file-based) |
 | **State Management** | Zustand |
 | **Styling** | Tailwind CSS 4 + shadcn/ui |
-| **Animations** | Framer Motion + canvas-confetti |
-| **Charts** | Recharts |
+| **Animations / Scroll** | Framer Motion + Lenis Smooth Scroll |
+| **Notifications** | Sonner (Cyber Glitch Theme) |
 | **Data Storage** | localStorage (via `src/lib/local-db.ts`) |
 | **Build Tool** | Vite |
 | **Forms** | React Hook Form + Zod |

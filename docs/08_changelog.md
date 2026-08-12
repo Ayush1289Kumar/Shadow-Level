@@ -1,5 +1,20 @@
 # Shadow Level — Changelog
 
+## 2026-08-12 — UI/UX Overhaul & Graphify Integration
+
+### Removed
+- **Analytics Dashboard** — Removed `analytics.tsx` and all related Recharts rendering logic for a leaner UI.
+
+### Added
+- **Lenis Smooth Scrolling** — Integrated physics-based momentum scrolling across the application.
+- **Framer Motion Cascades** — Staggered `whileInView` reveals added to all dashboard sections.
+- **Graphify Integration** — Integrated `.agents/workflows/graphify.md` for codebase AST mapping.
+
+### Changed
+- **Sonner Notifications** — Overhauled system toasts to match the "Cyber Glitch" aesthetic (neon glow, monospace, sharp edges, 2.5s duration).
+- **Level Up Sequence** — Reduced duration and removed lag for a snappier "ARISE" animation.
+- **Habit Cards** — Enhanced hover states with custom colored glowing borders.
+
 ## 2026-08-09 — Major Migration
 
 ### Removed

@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "src/components/AppNav.tsx": {
-    "mtime": 1786558901.103927,
-    "ast_hash": "aa46c59a2b80ac5c22cc8fd9efecec76",
+    "mtime": 1786555735.1337214,
+    "ast_hash": "84a83992db9de19cba6840764903e3cb",
     "semantic_hash": ""
   },
   "src/components/ExpBar.tsx": {
@@ -230,8 +230,8 @@
     "semantic_hash": "f51437b9ee04349e8af16e6366c28fee"
   },
   "src/components/ui/sonner.tsx": {
-    "mtime": 1786559656.369059,
-    "ast_hash": "a11f3b49aac652a1473a8f3048285eb4",
+    "mtime": 1786556230.6644678,
+    "ast_hash": "62709adbbc68a370b75228399010456f",
     "semantic_hash": ""
   },
   "src/components/ui/switch.tsx": {
@@ -305,9 +305,9 @@
     "semantic_hash": ""
   },
   "src/routeTree.gen.ts": {
-    "mtime": 1786558894.6621082,
-    "ast_hash": "1c0ef43fe9ec87606ba8997e8be88aed",
-    "semantic_hash": ""
+    "mtime": 1786211771.1159148,
+    "ast_hash": "05e32ad3b12e72060dd2d7c87644e951",
+    "semantic_hash": "05e32ad3b12e72060dd2d7c87644e951"
   },
   "src/router.tsx": {
     "mtime": 1786548205.3002417,
@@ -319,14 +319,19 @@
     "ast_hash": "68b4476ac7e0fe00e25419942d570274",
     "semantic_hash": ""
   },
+  "src/routes/analytics.tsx": {
+    "mtime": 1786555807.2597435,
+    "ast_hash": "bc792066a6f64974acb94e469675485c",
+    "semantic_hash": ""
+  },
   "src/routes/auth.tsx": {
     "mtime": 1786547107.8252733,
     "ast_hash": "a7df045e50ab68c5eb8c9726d1c93815",
     "semantic_hash": ""
   },
   "src/routes/dashboard.tsx": {
-    "mtime": 1786559070.301817,
-    "ast_hash": "78e8a40aeb7407ca08d80370782c1dd3",
+    "mtime": 1786557591.1312835,
+    "ast_hash": "f48a6faff06959f0c7dca76b8cab80a9",
     "semantic_hash": ""
   },
   "src/routes/habits.tsx": {
@@ -400,8 +405,8 @@
     "semantic_hash": ""
   },
   "src/lib/strings.ts": {
-    "mtime": 1786558992.196446,
-    "ast_hash": "60e0f4323e721444076c4927f35c397e",
+    "mtime": 1786548332.7261395,
+    "ast_hash": "563f7d0f81e07a389e6da3aec0ba0d62",
     "semantic_hash": ""
   },
   ".agents/rules/graphify.md": {
@@ -434,24 +439,29 @@
     "ast_hash": "059f69a3254852922363ee4bb1f126df",
     "semantic_hash": ""
   },
+  "CODEBASE_AUDIT.md": {
+    "mtime": 1786215098.380198,
+    "ast_hash": "3772c50b42471632e80c6afe14ff34e0",
+    "semantic_hash": ""
+  },
   "README.md": {
-    "mtime": 1786559942.265757,
-    "ast_hash": "433e6489241ee1f16c11cb6d353bd292",
+    "mtime": 1786550225.0419147,
+    "ast_hash": "67855bba3a3826a95e49f486dbcb74ab",
     "semantic_hash": ""
   },
   "docs/01_prd.md": {
-    "mtime": 1786559899.7179446,
-    "ast_hash": "372e16f1485f398daf8ad70e0573d660",
+    "mtime": 1786211647.5503407,
+    "ast_hash": "e9ec23d69970a6d3df1f0acf4238257f",
     "semantic_hash": ""
   },
   "docs/02_architecture.md": {
-    "mtime": 1786559907.7942393,
-    "ast_hash": "daf1a05d096b59ef6974aca17eb562c8",
+    "mtime": 1786211656.7466269,
+    "ast_hash": "d932400b27f2cdb913ff7cba58d3198f",
     "semantic_hash": ""
   },
   "docs/08_changelog.md": {
-    "mtime": 1786559917.818773,
-    "ast_hash": "51111c72eae8d17158b15c16823fd3aa",
+    "mtime": 1786211658.7798038,
+    "ast_hash": "acbac5e53e145634e8bebf4dbddfb728",
     "semantic_hash": ""
   },
   "index.html": {
@@ -465,8 +475,8 @@
     "semantic_hash": ""
   },
   "src/components/HabitCard.tsx": {
-    "mtime": 1786558678.8817847,
-    "ast_hash": "3e43f0d9cc474dc85c2eb768e0ad8e8f",
+    "mtime": 1786555653.0654328,
+    "ast_hash": "7fc0ea6118371eecc1202e51cf73c783",
     "semantic_hash": ""
   },
   "src/components/LevelProgress.tsx": {
@@ -484,6 +494,11 @@
     "ast_hash": "61bd31a2b0ac08f10f13c932b32d6ca1",
     "semantic_hash": ""
   },
+  "design.md": {
+    "mtime": 1786550205.6181233,
+    "ast_hash": "c765b732e8f813107f30fb3469eb8cb1",
+    "semantic_hash": ""
+  },
   "public/favicon.png": {
     "mtime": 1786549106.684,
     "ast_hash": "1dee14878cb74327efe9ed5f048a0b65",
@@ -495,8 +510,8 @@
     "semantic_hash": ""
   },
   "src/components/LevelUpSequence.tsx": {
-    "mtime": 1786558339.9074197,
-    "ast_hash": "eb696a91045c1ab641d4a6ca5f0c01c4",
+    "mtime": 1786557532.6014855,
+    "ast_hash": "be049da93223f8a49e371b60ccdfad5e",
     "semantic_hash": ""
   },
   "src/components/ui/cyber-glitch-text.tsx": {
@@ -512,6 +527,11 @@
   "src/components/ui/morph-text.tsx": {
     "mtime": 1786557335.6346645,
     "ast_hash": "b10fd9522ade167aab388c90dc75fbb1",
+    "semantic_hash": ""
+  },
+  "kimi_design.md": {
+    "mtime": 1786553315.3729784,
+    "ast_hash": "24fccd27d2f1578637109e3293448d20",
     "semantic_hash": ""
   }
 }

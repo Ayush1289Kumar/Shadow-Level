@@ -17,10 +17,7 @@
 
 - **🎮 RPG-Style Progression** — Complete habits to earn EXP, level up, and track your progress like a true hunter.
 - **✅ Habit Tracking** — Create **Positive** habits (gain EXP) and **Negative** habits (lose EXP). Check and uncheck tasks with real-time EXP updates.
-- **📊 Analytics Dashboard** — Visualize your progress with interactive charts:
-  - Daily EXP bar chart (last 7 days)
-  - Monthly heatmap (GitHub-style activity grid)
-  - Positive vs. Negative habit impact pie chart
+- **✨ Cyber Glitch Aesthetics** — Built with Framer Motion, Lenis Smooth Scrolling, and sharp neon notifications to bring the anime interface to life.
 - **🔥 Streak System** — Maintain daily streaks just like GitHub and LeetCode. Track your current and longest streaks.
 - **⚠️ Penalty Zone** — Fail to complete 75% of your daily habits? Face the consequences! Set custom penalties in your profile to keep yourself accountable.
 - **🎁 Reward Shop** — Spend your hard-earned EXP to purchase rewards. Purchases are **permanent** — no refunds!
@@ -38,9 +35,9 @@
 | **Frontend Framework** | React 19 with TypeScript              |
 | **Routing**            | TanStack Router (file-based)          |
 | **State Management**   | Zustand                               |
-| **Styling**            | Tailwind CSS 4 + shadcn/ui components |
-| **Animations**         | Framer Motion + canvas-confetti       |
-| **Charts**             | Recharts                              |
+| **Styling**            | Tailwind CSS 4 + shadcn/ui            |
+| **Animations / Scroll**| Framer Motion + Lenis Smooth Scroll   |
+| **Notifications**      | Sonner (Cyber Glitch Theme)           |
 | **Backend & Auth**     | Supabase (PostgreSQL, Auth, Storage)  |
 | **Build Tool**         | Vite                                  |
 | **Forms**              | React Hook Form + Zod validation      |
