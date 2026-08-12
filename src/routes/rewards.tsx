@@ -66,17 +66,17 @@ function Rewards() {
     <div className="mx-auto max-w-5xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-3xl text-glow-accent text-accent">
+          <h1 className="font-display text-3xl text-glow-mana-bright text-mana-bright">
             {STRINGS.rewards.page_title}
           </h1>
           <p className="text-sm text-muted-foreground">
             {STRINGS.rewards.page_subtitle} Balance:{" "}
-            <span className="text-primary font-display">{profile.total_exp} EXP</span>
+            <span className="text-mana font-display">{profile.total_exp} EXP</span>
           </p>
         </div>
         <Button
           onClick={() => setShowForm(!showForm)}
-          className="bg-accent text-accent-foreground"
+          className="bg-mana text-abyss hover:bg-mana-bright"
         >
           <Plus className="mr-1 h-4 w-4" /> {STRINGS.rewards.create_cta}
         </Button>
@@ -115,7 +115,7 @@ function Rewards() {
             </div>
           </div>
           <div className="mt-4 flex gap-2">
-            <Button onClick={create} className="bg-primary text-primary-foreground">
+            <Button onClick={create} className="bg-mana text-abyss hover:bg-mana-bright">
               Create
             </Button>
             <Button variant="outline" onClick={() => setShowForm(false)}>
@@ -141,24 +141,24 @@ function Rewards() {
                 className={`glass p-5 relative ${r.is_purchased ? "opacity-70" : ""}`}
               >
                 {r.is_purchased && (
-                  <span className="absolute right-3 top-3 rounded-full bg-emerald-glow/20 px-2 py-0.5 text-[10px] uppercase text-emerald-glow border border-emerald-glow/30">
+                  <span className="absolute right-3 top-3 rounded-full bg-success/20 px-2 py-0.5 text-[10px] uppercase text-success border border-success/30 box-glow-success">
                     <Check className="inline h-3 w-3" /> {STRINGS.rewards.purchased_label}
                   </span>
                 )}
-                <Gift className="h-6 w-6 text-accent" />
+                <Gift className="h-6 w-6 text-mana-bright" />
                 <h3 className="mt-3 font-display text-lg">{r.name}</h3>
                 {r.description && (
                   <p className="mt-1 text-xs text-muted-foreground">{r.description}</p>
                 )}
                 <div className="mt-4 flex items-center justify-between">
-                  <div className="font-display text-primary text-glow-primary">{r.cost} EXP</div>
+                  <div className="font-display text-mana text-glow-mana">{r.cost} EXP</div>
                   <div className="flex gap-1">
                     {!r.is_purchased && (
                       <Button
                         size="sm"
                         disabled={!affordable}
                         onClick={() => purchase(r)}
-                        className={affordable ? "bg-primary text-primary-foreground" : ""}
+                        className={affordable ? "bg-mana text-abyss hover:bg-mana-bright" : ""}
                       >
                         {affordable ? (
                           STRINGS.rewards.purchase_cta

@@ -24,25 +24,27 @@ export function HabitCard({ habit, done, busy, shouldReduceMotion, onToggle }: H
   return (
     <motion.li
       layout={!shouldReduceMotion}
-      initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 5 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
-      whileHover={shouldReduceMotion ? {} : { y: -2 }}
-      className={`group flex items-center gap-4 rounded-xl border p-5 transition-all duration-200 cursor-pointer ${
+      initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.01 }}
+      className={`group flex items-center gap-4 p-5 transition-all duration-300 cursor-pointer relative overflow-hidden ${
         done
-          ? "border-mist bg-depth shadow-[0_0_24px_var(--glow-soul)]"
-          : "border-mist bg-depth hover:border-[rgba(255,255,255,0.1)] hover:bg-shade hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+          ? positive 
+            ? "glass-strong border-mana/50 box-glow-mana" 
+            : "glass-strong border-penalty/50 box-glow-penalty"
+          : "glass border-mist hover:border-mana/30 hover:bg-shade/50"
       }`}
       onClick={() => {
         if (!busy) onToggle(habit);
       }}
       whileTap={{ scale: 0.98 }}
     >
-      <div className="flex-1">
-        <div className="text-micro uppercase tracking-[0.15em] text-silver mb-1">
+      <div className="flex-1 relative z-10">
+        <div className={`text-micro uppercase tracking-[0.2em] mb-1 font-bold ${positive ? "text-mana-light" : "text-penalty-dark"}`}>
           {habit.habit_type}
         </div>
-        <div className={`text-headline transition-colors ${done ? "line-through text-ash" : "text-moonlight"}`}>
+        <div className={`text-headline transition-colors ${done ? "line-through text-ash opacity-50" : "text-moonlight text-glow-mana-bright"}`}>
           {habit.name}
         </div>
         {habit.description && (
@@ -50,8 +52,8 @@ export function HabitCard({ habit, done, busy, shouldReduceMotion, onToggle }: H
         )}
       </div>
       
-      <div className="flex items-center gap-4">
-        <div className="flex items-center justify-center px-2 py-1 rounded glass text-micro text-monarch font-semibold">
+      <div className="flex items-center gap-4 relative z-10">
+        <div className={`flex items-center justify-center px-3 py-1 rounded glass text-micro font-bold tracking-wider ${positive ? "text-mana text-glow-mana" : "text-penalty text-glow-penalty"}`}>
           {positive ? "+" : "−"}
           {habit.exp_value ?? 10} XP
         </div>
@@ -61,13 +63,22 @@ export function HabitCard({ habit, done, busy, shouldReduceMotion, onToggle }: H
           disabled={busy}
           onCheckedChange={() => onToggle(habit)}
           onClick={(e) => e.stopPropagation()}
-          className={`h-6 w-6 rounded-[4px] transition-all duration-300 ${
+          className={`h-6 w-6 rounded-[4px] transition-all duration-300 border-2 ${
             done
-              ? "bg-monarch border-monarch box-glow-monarch text-moonlight"
-              : "border-mist bg-transparent data-[state=checked]:bg-monarch data-[state=checked]:border-monarch"
+              ? positive
+                ? "bg-mana border-mana box-glow-mana text-abyss"
+                : "bg-penalty border-penalty box-glow-penalty text-moonlight"
+              : positive 
+                ? "border-mist bg-transparent data-[state=checked]:bg-mana data-[state=checked]:border-mana"
+                : "border-mist bg-transparent data-[state=checked]:bg-penalty data-[state=checked]:border-penalty"
           }`}
         />
       </div>
+      
+      {/* Decorative gradient overlay */}
+      <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none ${
+        positive ? "bg-gradient-to-r from-transparent via-mana/5 to-transparent" : "bg-gradient-to-r from-transparent via-penalty/5 to-transparent"
+      }`} />
     </motion.li>
   );
 }

@@ -30,108 +30,59 @@ export function AppNav() {
 
   return (
     <>
-      {/* Floating Island Nav (Desktop & Base Mobile Pill) */}
-      <nav className="fixed top-0 left-0 right-0 z-40 flex justify-center mt-6 pointer-events-none px-4">
-        <div className="glass rounded-full h-12 flex items-center px-2 pointer-events-auto shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
-          <Link to="/dashboard" className="flex items-center gap-2 pl-2 pr-4" onClick={() => setMobileOpen(false)}>
-            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Shadow Level Logo" className="h-6 w-6 object-contain" />
-            <span className="font-display text-sm font-bold text-moonlight hidden md:block">SHADOW LEVEL</span>
+      {/* Floating Sidebar (Desktop) / Bottom Dock (Mobile) */}
+      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-6 md:-translate-x-0 md:top-1/2 md:-translate-y-1/2 md:bottom-auto z-40 pointer-events-none transition-all duration-500">
+        <div className="glass-strong rounded-full md:rounded-3xl flex flex-row md:flex-col items-center justify-center gap-2 p-2 pointer-events-auto shadow-[0_4px_32px_rgba(0,0,0,0.5)] border-mana/20">
+          
+          <Link to="/dashboard" className="hidden md:flex items-center justify-center w-12 h-12 mb-2 rounded-2xl hover:bg-white/5 transition-colors group">
+            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Logo" className="h-7 w-7 object-contain group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_8px_var(--glow-mana-bright)]" />
           </Link>
           
-          <div className="hidden md:flex items-center gap-1 border-l border-mist pl-2">
+          <div className="flex md:flex-col items-center gap-1 md:gap-2">
             {items.map((it) => {
               const active = pathname === it.to || pathname.startsWith(it.to + "/");
               return (
                 <Link
                   key={it.to}
                   to={it.to}
-                  className={`flex items-center rounded-full px-4 py-1.5 text-caption transition-all duration-300 ${
+                  title={it.label}
+                  className={`flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 relative group ${
                     active
-                      ? "text-moonlight text-glow-monarch bg-white/5"
-                      : "text-silver hover:text-moonlight hover:bg-white/5"
+                      ? "text-mana-bright bg-mana-bright/10 box-glow-mana"
+                      : "text-silver hover:text-moonlight hover:bg-white/10"
                   }`}
                 >
-                  {it.label}
+                  <it.icon className="w-5 h-5" />
+                  {active && (
+                    <motion.div
+                      layoutId="nav-indicator"
+                      className="absolute inset-0 border border-mana-bright rounded-full pointer-events-none"
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    />
+                  )}
+                  {/* Tooltip for desktop */}
+                  <span className="absolute left-16 px-3 py-1.5 rounded-md glass text-micro tracking-widest uppercase text-moonlight opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all duration-300 pointer-events-none hidden md:block whitespace-nowrap">
+                    {it.label}
+                  </span>
                 </Link>
               );
             })}
           </div>
 
-          <div className="hidden md:flex items-center border-l border-mist ml-2 pl-2 pr-1">
-            <button
-              onClick={handleSignOut}
-              className="p-2 rounded-full text-silver hover:text-ember transition-colors"
-              title="Sign Out"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
+          <div className="w-px h-8 md:w-8 md:h-px bg-mist/50 my-1 mx-2 md:mx-0 md:my-2" />
 
-          <div className="flex md:hidden items-center border-l border-mist ml-2 pl-2 pr-1">
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-2 rounded-full text-moonlight transition-all duration-300"
-            >
-              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
-          </div>
+          <button
+            onClick={handleSignOut}
+            className="flex items-center justify-center w-12 h-12 rounded-full text-silver hover:text-penalty hover:bg-penalty/10 transition-all duration-300 relative group"
+            title="Sign Out"
+          >
+            <LogOut className="h-5 w-5" />
+            <span className="absolute left-16 px-3 py-1.5 rounded-md glass text-micro tracking-widest uppercase text-penalty opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all duration-300 pointer-events-none hidden md:block whitespace-nowrap">
+              Sign Out
+            </span>
+          </button>
         </div>
       </nav>
-
-      {/* Mobile Full-Screen Overlay */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { delay: 0.2, duration: 0.2 } }}
-            className="fixed inset-0 z-30 bg-abyss/95 backdrop-blur-3xl flex flex-col justify-center px-6"
-          >
-            <div className="flex flex-col gap-6">
-              {items.map((it, i) => {
-                const active = pathname === it.to || pathname.startsWith(it.to + "/");
-                return (
-                  <motion.div
-                    key={it.to}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10, transition: { duration: 0.2 } }}
-                    transition={{ delay: i * 0.08, duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-                  >
-                    <Link
-                      to={it.to}
-                      onClick={() => setMobileOpen(false)}
-                      className={`block text-center text-display transition-colors ${
-                        active ? "text-monarch text-glow-monarch" : "text-moonlight"
-                      }`}
-                    >
-                      {it.label}
-                    </Link>
-                  </motion.div>
-                );
-              })}
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ delay: items.length * 0.08, duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-                className="mt-8 flex justify-center"
-              >
-                <button
-                  onClick={() => {
-                    setMobileOpen(false);
-                    handleSignOut();
-                  }}
-                  className="flex items-center gap-3 text-headline text-ember"
-                >
-                  <LogOut className="h-6 w-6" /> Sign Out
-                </button>
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }

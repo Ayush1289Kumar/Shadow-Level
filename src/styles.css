@@ -43,22 +43,22 @@
   --color-ash: var(--ash);
   --color-shadow-text: var(--shadow-text);
 
-  --color-monarch: var(--monarch);
-  --color-violet: var(--violet);
-  --color-amethyst: var(--amethyst);
-  --color-lavender: var(--lavender);
+  --color-mana: var(--mana);
+  --color-mana-bright: var(--mana-bright);
+  --color-mana-dark: var(--mana-dark);
+  --color-mana-light: var(--mana-light);
 
-  --color-ember: var(--ember);
-  --color-ember-dark: var(--ember-dark);
-  --color-soul: var(--soul);
-  --color-soul-dark: var(--soul-dark);
+  --color-penalty: var(--penalty);
+  --color-penalty-dark: var(--penalty-dark);
+  --color-success: var(--success);
+  --color-success-dark: var(--success-dark);
   --color-amber: var(--amber);
   --color-amber-dark: var(--amber-dark);
   
-  --color-glow-monarch: var(--glow-monarch);
-  --color-glow-violet: var(--glow-violet);
-  --color-glow-ember: var(--glow-ember);
-  --color-glow-soul: var(--glow-soul);
+  --color-glow-mana: var(--glow-mana);
+  --color-glow-mana-bright: var(--glow-mana-bright);
+  --color-glow-penalty: var(--glow-penalty);
+  --color-glow-success: var(--glow-success);
   --color-glow-moonlight: var(--glow-moonlight);
   
   /* Fallback aliases for Shadcn components if they exist */
@@ -68,19 +68,19 @@
   --color-card-foreground: var(--moonlight);
   --color-popover: var(--shade);
   --color-popover-foreground: var(--moonlight);
-  --color-primary: var(--monarch);
+  --color-primary: var(--mana);
   --color-primary-foreground: #ffffff;
   --color-secondary: var(--shade);
   --color-secondary-foreground: var(--moonlight);
   --color-muted: var(--mist);
   --color-muted-foreground: var(--silver);
-  --color-accent: var(--violet);
+  --color-accent: var(--mana-bright);
   --color-accent-foreground: #ffffff;
-  --color-destructive: var(--ember);
+  --color-destructive: var(--penalty);
   --color-destructive-foreground: #ffffff;
   --color-border: var(--mist);
   --color-input: var(--mist);
-  --color-ring: var(--monarch);
+  --color-ring: var(--mana);
 }
 
 :root, .dark {
@@ -96,22 +96,22 @@
   --ash: #6B6680;
   --shadow-text: #3D3A4D;
 
-  --monarch: #7C3AED;
-  --violet: #8B5CF6;
-  --amethyst: #5B21B6;
-  --lavender: #C4B5FD;
+  --mana: #00E5FF;
+  --mana-bright: #3B82F6;
+  --mana-dark: #1D4ED8;
+  --mana-light: #93C5FD;
 
-  --ember: #DC2626;
-  --ember-dark: #991B1B;
-  --soul: #10B981;
-  --soul-dark: #065F46;
+  --penalty: #FF003C;
+  --penalty-dark: #991B1B;
+  --success: #10B981;
+  --success-dark: #065F46;
   --amber: #F59E0B;
   --amber-dark: #92400E;
 
-  --glow-monarch: rgba(124, 58, 237, 0.15);
-  --glow-violet: rgba(139, 92, 246, 0.10);
-  --glow-ember: rgba(220, 38, 38, 0.08);
-  --glow-soul: rgba(16, 185, 129, 0.08);
+  --glow-mana: rgba(0, 229, 255, 0.25);
+  --glow-mana-bright: rgba(59, 130, 246, 0.15);
+  --glow-penalty: rgba(255, 0, 60, 0.15);
+  --glow-success: rgba(16, 185, 129, 0.15);
   --glow-moonlight: rgba(242, 240, 255, 0.04);
 }
 
@@ -195,42 +195,45 @@
 }
 
 @utility glass-strong {
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(139, 92, 246, 0.08));
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.08), rgba(59, 130, 246, 0.08));
   backdrop-filter: blur(24px) saturate(140%);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(0, 229, 255, 0.2);
   border-radius: var(--radius-2xl);
 }
 
 /* Glow Effects */
-@utility text-glow-monarch {
-  text-shadow: 0 0 20px var(--glow-monarch), 0 0 40px var(--glow-monarch);
+@utility text-glow-mana {
+  text-shadow: 0 0 20px var(--glow-mana), 0 0 40px var(--glow-mana);
 }
-@utility text-glow-violet {
-  text-shadow: 0 0 20px var(--glow-violet), 0 0 40px var(--glow-violet);
+@utility text-glow-mana-bright {
+  text-shadow: 0 0 20px var(--glow-mana-bright), 0 0 40px var(--glow-mana-bright);
 }
-@utility text-glow-soul {
-  text-shadow: 0 0 16px var(--glow-soul);
+@utility text-glow-success {
+  text-shadow: 0 0 16px var(--glow-success);
 }
-@utility text-glow-ember {
-  text-shadow: 0 0 16px var(--glow-ember);
+@utility text-glow-penalty {
+  text-shadow: 0 0 16px var(--glow-penalty);
 }
 
-@utility box-glow-monarch {
-  box-shadow: 0 0 24px var(--glow-monarch);
+@utility box-glow-mana {
+  box-shadow: 0 0 24px var(--glow-mana);
 }
-@utility box-glow-violet {
-  box-shadow: 0 0 24px var(--glow-violet);
+@utility box-glow-mana-bright {
+  box-shadow: 0 0 24px var(--glow-mana-bright);
 }
 @utility box-glow-success {
-  box-shadow: 0 0 24px var(--glow-soul);
+  box-shadow: 0 0 24px var(--glow-success);
+}
+@utility box-glow-penalty {
+  box-shadow: 0 0 24px var(--glow-penalty);
 }
 
 /* Backgrounds */
-@utility bg-monarch-radial {
+@utility bg-mana-radial {
   background: 
-    radial-gradient(1200px 800px at 20% 30%, rgba(124, 58, 237, 0.04), transparent 70%),
-    radial-gradient(1400px 900px at 80% 70%, rgba(139, 92, 246, 0.04), transparent 70%),
-    radial-gradient(1000px 1000px at 50% 100%, rgba(91, 33, 182, 0.08), transparent 60%),
+    radial-gradient(1200px 800px at 20% 30%, rgba(0, 229, 255, 0.06), transparent 70%),
+    radial-gradient(1400px 900px at 80% 70%, rgba(59, 130, 246, 0.04), transparent 70%),
+    radial-gradient(1000px 1000px at 50% 100%, rgba(29, 78, 216, 0.08), transparent 60%),
     #08080D;
   background-size: 200% 200%;
   animation: flowGradients 30s linear infinite alternate;
@@ -261,10 +264,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .text-glow-monarch, .text-glow-violet, .text-glow-ember, .text-glow-soul {
+  .text-glow-mana, .text-glow-mana-bright, .text-glow-penalty, .text-glow-success {
     text-shadow: none !important;
   }
-  .box-glow-monarch, .box-glow-violet, .box-glow-success {
+  .box-glow-mana, .box-glow-mana-bright, .box-glow-success, .box-glow-penalty {
     box-shadow: none !important;
   }
   *, ::before, ::after {

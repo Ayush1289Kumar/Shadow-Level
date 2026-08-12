@@ -6,13 +6,16 @@ export function LevelProgress({ totalExp, rank }: { totalExp: number, rank?: str
   const lp = levelProgress(totalExp);
 
   return (
-    <div className="glass p-6 md:p-8 w-full flex flex-col md:flex-row gap-6 md:gap-8 items-center justify-between">
-      <div className="flex items-center gap-6">
+    <div className="glass-strong p-6 md:p-8 w-full flex flex-col md:flex-row gap-6 md:gap-8 items-center justify-between relative overflow-hidden group">
+      {/* Decorative gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-mana/10 to-transparent opacity-50 pointer-events-none" />
+
+      <div className="flex items-center gap-6 relative z-10">
         <div className="flex flex-col">
-          <span className="text-micro text-ash uppercase tracking-widest">
-            Current Status
+          <span className="text-micro text-mana-dark font-bold uppercase tracking-[0.3em]">
+            SYSTEM
           </span>
-          <div className="text-hero text-moonlight transition-all duration-300">
+          <div className="text-hero text-moonlight transition-all duration-300 text-glow-mana">
             LEVEL {lp.level}
           </div>
         </div>

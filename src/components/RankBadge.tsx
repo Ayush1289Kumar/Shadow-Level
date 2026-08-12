@@ -5,9 +5,9 @@ export function RankBadge({ rank }: { rank: string }) {
     E: "text-ash bg-surface",
     D: "text-silver bg-surface",
     C: "text-amber glass",
-    B: "text-monarch glass text-glow-monarch",
-    A: "text-violet glass-strong text-glow-violet",
-    S: "text-soul glass-strong text-glow-soul",
+    B: "text-mana glass text-glow-mana",
+    A: "text-mana-bright glass-strong text-glow-mana-bright",
+    S: "text-penalty glass-strong text-glow-penalty box-glow-penalty",
   };
 
   const styleClass = rankStyles[rank] || rankStyles["E"];

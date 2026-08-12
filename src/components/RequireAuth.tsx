@@ -51,16 +51,16 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 
   if (!sessionLoaded || !userId || !profile) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-monarch-radial">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex min-h-screen items-center justify-center bg-mana-radial">
+        <Loader2 className="h-8 w-8 animate-spin text-mana" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-monarch-radial">
+    <div className="min-h-screen bg-mana-radial">
       <AppNav />
-      <main className="pt-24 pb-24 md:pb-12 px-4 md:px-8 max-w-7xl mx-auto w-full">{children}</main>
+      <main className="pt-8 pb-32 md:pt-12 md:pb-12 md:pl-32 px-4 md:pr-12 max-w-7xl mx-auto w-full">{children}</main>
     </div>
   );
 }

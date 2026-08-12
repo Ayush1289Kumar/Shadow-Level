@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
 import { Flame, Plus, Sparkles, TrendingUp, Trophy } from "lucide-react";
@@ -85,8 +86,11 @@ function Dashboard() {
     if (profile.level > prevLevel) {
       setLeveledUpTo(profile.level);
       setShowLevelUp(true);
-      toast.success(STRINGS.dashboard.level_up_toast(profile.level));
-      setTimeout(() => setShowLevelUp(false), 4000);
+      toast.dismiss(); // Hide any habit completion toasts during the animation
+      setTimeout(() => {
+        setShowLevelUp(false);
+        toast.success(STRINGS.dashboard.level_up_toast(profile.level));
+      }, 4000);
     }
     setPrevLevel(profile.level);
   }, [profile.level, prevLevel]);
@@ -115,8 +119,17 @@ function Dashboard() {
           { habitId: habit.id, userId: profile.id, date: todayStr, expDelta: gained },
           {
             onSuccess: () => {
-              if (isPositive) toast.success(`+${exp} EXP · ${habit.name}`);
-              else toast.error(`-${exp} EXP · ${habit.name}`);
+              const willLevelUp = isPositive && gained >= (profile.exp_to_next_level || 0);
+              const showToast = () => {
+                if (isPositive) toast.success(`+${exp} EXP · ${habit.name}`);
+                else toast.error(`-${exp} EXP · ${habit.name}`);
+              };
+              
+              if (willLevelUp) {
+                setTimeout(showToast, 4100);
+              } else {
+                showToast();
+              }
             },
             onError: (e: any) => toast.error(e.message ?? "Failed"),
             onSettled: () => setBusy(null),
@@ -130,8 +143,9 @@ function Dashboard() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      <AnimatePresence>
-        {showLevelUp && (
+      {createPortal(
+        <AnimatePresence>
+          {showLevelUp && (
           <motion.div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md"
             initial={{ opacity: 0 }}
@@ -201,7 +215,9 @@ function Dashboard() {
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body
+      )}
 
       {/* Dashboard Top Section: Level > XP > Streaks */}
       <div className="flex flex-col lg:flex-row gap-6">
@@ -247,7 +263,7 @@ function Dashboard() {
           label="Active Habits"
           value={(habits as Habit[]).length}
           icon={<TrendingUp className="h-4 w-4" />}
-          tone="purple"
+          tone="cyan"
         />
         <StatCard
           label={STRINGS.dashboard.streak_label}
@@ -259,7 +275,7 @@ function Dashboard() {
           label="Level"
           value={profile.level}
           icon={<Trophy className="h-4 w-4" />}
-          tone="emerald"
+          tone="cyan"
         />
       </div>
 
@@ -278,13 +294,13 @@ function Dashboard() {
           <div className="py-12 text-center">
             <p className="text-muted-foreground">{STRINGS.dashboard.empty_desc}</p>
             <Link to="/habits">
-              <Button className="mt-4 bg-primary text-primary-foreground">
+              <Button className="mt-4 bg-mana text-abyss hover:bg-mana-bright">
                 {STRINGS.dashboard.go_to_forge}
               </Button>
             </Link>
           </div>
         ) : (
-          <ul className="space-y-2">
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <AnimatePresence>
               {(habits as Habit[]).map((h) => (
                 <HabitCard 
@@ -453,10 +469,10 @@ function StatCard({
   tone: "cyan" | "purple" | "emerald" | "rose";
 }) {
   const colors: Record<string, string> = {
-    cyan: "text-primary",
-    purple: "text-accent",
-    emerald: "text-emerald-400",
-    rose: "text-rose-500",
+    cyan: "text-mana",
+    purple: "text-mana-bright",
+    emerald: "text-success",
+    rose: "text-penalty",
   };
   return (
     <motion.div whileHover={{ y: -2 }} className="glass p-4">
