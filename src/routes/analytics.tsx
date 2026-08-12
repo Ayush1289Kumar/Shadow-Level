@@ -11,8 +11,9 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import { getHabitLogsSince } from "@/lib/local-db";
 import { useAppStore } from "@/lib/store";
+import { useHabitLogsSince } from "@/hooks/queries";
+import { STRINGS } from "@/lib/strings";
 import { RequireAuth } from "@/components/RequireAuth";
 
 export const Route = createFileRoute("/analytics")({
@@ -28,7 +29,9 @@ function Analytics() {
 
   const from = new Date();
   from.setDate(from.getDate() - 90);
-  const logs = getHabitLogsSince(profile.id, from.toISOString().slice(0, 10));
+  const sinceDate = from.toISOString().slice(0, 10);
+
+  const { data: logs = [] } = useHabitLogsSince(profile.id, sinceDate);
 
   // 7-day bar
   const week: { day: string; exp: number }[] = [];
@@ -36,7 +39,9 @@ function Analytics() {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const key = d.toISOString().slice(0, 10);
-    const exp = logs.filter((l) => l.completed_at === key).reduce((a, b) => a + b.exp_earned, 0);
+    const exp = logs
+      .filter((l) => l.completed_at === key)
+      .reduce((a, b) => a + b.exp_earned, 0);
     week.push({ day: d.toLocaleDateString(undefined, { weekday: "short" }), exp });
   }
 
@@ -62,13 +67,15 @@ function Analytics() {
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
-        <h1 className="font-display text-3xl text-glow-accent text-accent">Analytics</h1>
-        <p className="text-sm text-muted-foreground">Your hunter stats over time.</p>
+        <h1 className="font-display text-3xl text-glow-accent text-accent">
+          {STRINGS.analytics.page_title}
+        </h1>
+        <p className="text-sm text-muted-foreground">{STRINGS.analytics.page_subtitle}</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="glass p-6">
-          <h2 className="mb-4 font-display text-lg">7-Day EXP</h2>
+          <h2 className="mb-4 font-display text-lg">{STRINGS.analytics.weekly_chart_title}</h2>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={week}>
               <XAxis dataKey="day" stroke="rgba(255,255,255,0.4)" fontSize={12} />
@@ -86,7 +93,7 @@ function Analytics() {
         </div>
 
         <div className="glass p-6">
-          <h2 className="mb-4 font-display text-lg">Positive vs Negative</h2>
+          <h2 className="mb-4 font-display text-lg">{STRINGS.analytics.pie_chart_title}</h2>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie data={pie} dataKey="value" nameKey="name" innerRadius={50} outerRadius={80}>
@@ -108,7 +115,7 @@ function Analytics() {
       </div>
 
       <div className="glass p-6">
-        <h2 className="mb-4 font-display text-lg">90-Day Activity</h2>
+        <h2 className="mb-4 font-display text-lg">{STRINGS.analytics.heatmap_title}</h2>
         <div
           className="grid gap-1"
           style={{ gridTemplateColumns: "repeat(15, minmax(0, 1fr))" }}

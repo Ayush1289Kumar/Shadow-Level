@@ -1,7 +1,7 @@
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 // local-db.ts — localStorage-backed CRUD engine for Shadow Level
 // Replaces all Supabase database calls with client-side persistence.
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 
 function generateId(): string {
   return crypto.randomUUID();
@@ -20,7 +20,20 @@ function write<T>(key: string, data: T[]): void {
   localStorage.setItem(key, JSON.stringify(data));
 }
 
-// ── Profiles ──────────────────────────────────────────────────
+// ── Password Hashing ──────────────────────────────────────────────────────────
+// Uses the Web Crypto API (SubtleCrypto) — zero new dependencies.
+// Strategy A: new accounts always store a hash; legacy plaintext accounts are
+// auto-upgraded on their next successful login (seamless migration).
+
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// ── Profiles ──────────────────────────────────────────────────────────────────
 
 export interface ProfileRow {
   id: string;
@@ -67,7 +80,7 @@ export function getProfileByUsername(username: string): ProfileRow | null {
 }
 
 export function getProfileByEmail(email: string): { profile: ProfileRow; email: string } | null {
-  const accounts = read<{ email: string; password: string; profileId: string }>("shadow_accounts");
+  const accounts = read<AccountRow>("shadow_accounts");
   const account = accounts.find((a) => a.email === email);
   if (!account) return null;
   const profile = getProfile(account.profileId);
@@ -75,8 +88,20 @@ export function getProfileByEmail(email: string): { profile: ProfileRow; email: 
   return { profile, email: account.email };
 }
 
-export function createAccount(email: string, password: string): ProfileRow {
-  const accounts = read<{ email: string; password: string; profileId: string }>("shadow_accounts");
+// ── Accounts ──────────────────────────────────────────────────────────────────
+
+interface AccountRow {
+  email: string;
+  password: string;
+  profileId: string;
+  /** true = password is a SHA-256 hex hash; false/undefined = legacy plaintext */
+  hashed?: boolean;
+}
+
+const ACCOUNTS_KEY = "shadow_accounts";
+
+export async function createAccount(email: string, password: string): Promise<ProfileRow> {
+  const accounts = read<AccountRow>(ACCOUNTS_KEY);
   if (accounts.find((a) => a.email === email)) {
     throw new Error("An account with this email already exists.");
   }
@@ -99,17 +124,34 @@ export function createAccount(email: string, password: string): ProfileRow {
   profiles.push(profile);
   write(PROFILES_KEY, profiles);
 
-  accounts.push({ email, password, profileId: id });
-  write("shadow_accounts", accounts);
+  // Always store a hashed password for new accounts
+  const hashed = await hashPassword(password);
+  accounts.push({ email, password: hashed, profileId: id, hashed: true });
+  write(ACCOUNTS_KEY, accounts);
 
   return profile;
 }
 
-export function loginAccount(email: string, password: string): ProfileRow {
-  const accounts = read<{ email: string; password: string; profileId: string }>("shadow_accounts");
-  const account = accounts.find((a) => a.email === email);
-  if (!account) throw new Error("No account found with this email.");
-  if (account.password !== password) throw new Error("Invalid password.");
+export async function loginAccount(email: string, password: string): Promise<ProfileRow> {
+  const accounts = read<AccountRow>(ACCOUNTS_KEY);
+  const accountIdx = accounts.findIndex((a) => a.email === email);
+  if (accountIdx === -1) throw new Error("No account found with this email.");
+
+  const account = accounts[accountIdx];
+
+  if (account.hashed) {
+    // Modern path: compare hashes
+    const inputHash = await hashPassword(password);
+    if (account.password !== inputHash) throw new Error("Invalid password.");
+  } else {
+    // Legacy path (Strategy A): compare plaintext, then auto-upgrade to hash
+    if (account.password !== password) throw new Error("Invalid password.");
+    // Silently upgrade to hashed storage
+    const hashed = await hashPassword(password);
+    accounts[accountIdx] = { ...account, password: hashed, hashed: true };
+    write(ACCOUNTS_KEY, accounts);
+  }
+
   const profile = getProfile(account.profileId);
   if (!profile) throw new Error("Profile not found.");
   return profile;
@@ -124,7 +166,7 @@ export function updateProfile(id: string, updates: Partial<ProfileRow>): Profile
   return profiles[idx];
 }
 
-// ── Habits ────────────────────────────────────────────────────
+// ── Habits ────────────────────────────────────────────────────────────────────
 
 export interface HabitRow {
   id: string;
@@ -172,7 +214,7 @@ export function deleteHabit(id: string): void {
   write(HABITS_KEY, habits);
 }
 
-// ── Habit Logs ────────────────────────────────────────────────
+// ── Habit Logs ────────────────────────────────────────────────────────────────
 
 export interface HabitLogRow {
   id: string;
@@ -213,7 +255,7 @@ export function deleteHabitLog(id: string): void {
   write(LOGS_KEY, logs);
 }
 
-// ── Rewards ───────────────────────────────────────────────────
+// ── Rewards ───────────────────────────────────────────────────────────────────
 
 export interface RewardRow {
   id: string;

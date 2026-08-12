@@ -30,8 +30,8 @@ export function AppNav() {
       {/* Desktop sidebar */}
       <aside className="hidden md:flex fixed left-0 top-0 h-screen w-60 flex-col gap-2 border-r border-white/5 bg-black/30 p-4 backdrop-blur-xl z-30">
         <Link to="/dashboard" className="mb-4 flex items-center gap-2 px-2">
-          <img src="/logo.png" alt="Shadow Monarch Logo" className="h-9 w-9 object-contain" />
-          <span className="font-display text-sm font-bold text-glow-primary whitespace-nowrap overflow-hidden text-ellipsis">SHADOW MONARCH</span>
+          <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Shadow Level Logo" className="h-9 w-9 object-contain" />
+          <span className="font-display text-sm font-bold text-glow-primary whitespace-nowrap overflow-hidden text-ellipsis">SHADOW LEVEL</span>
         </Link>
         {items.map((it) => {
           const Icon = it.icon;

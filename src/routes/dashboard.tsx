@@ -3,9 +3,16 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
 import { Flame, Plus, Sparkles, TrendingUp, Trophy } from "lucide-react";
-import { getHabits, getHabitLogsByDate, createHabitLog, deleteHabitLog } from "@/lib/local-db";
 import { useAppStore } from "@/lib/store";
-import { applyExpDelta, updateStreak } from "@/lib/profile";
+import {
+  useHabits,
+  useHabitLogsByDate,
+  useCompleteHabit,
+  useUncompleteHabit,
+  qk,
+} from "@/hooks/queries";
+import { getHabitLogsByDate } from "@/lib/local-db";
+import { STRINGS } from "@/lib/strings";
 import { RequireAuth } from "@/components/RequireAuth";
 import { ExpBar } from "@/components/ExpBar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -37,46 +44,46 @@ function today() {
 
 function Dashboard() {
   const profile = useAppStore((s) => s.profile)!;
-  const setProfile = useAppStore((s) => s.setProfile);
   const [busy, setBusy] = useState<string | null>(null);
   const [prevLevel, setPrevLevel] = useState(profile.level);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [leveledUpTo, setLeveledUpTo] = useState(profile.level);
-  const [tick, setTick] = useState(0); // force re-read from localStorage
+  const [showPenaltyZone, setShowPenaltyZone] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
-  const habits = getHabits(profile.id, true) as Habit[];
-  const todayLogs = getHabitLogsByDate(profile.id, today());
-
-  // Yesterday logs for penalty zone
+  const todayStr = today();
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayStr = yesterday.toISOString().slice(0, 10);
-  const yesterdayLogs = getHabitLogsByDate(profile.id, yesterdayStr);
+
+  const { data: habits = [] } = useHabits(profile.id, true);
+  const { data: todayLogs = [] } = useHabitLogsByDate(profile.id, todayStr);
+  const { data: yesterdayLogs = [] } = useHabitLogsByDate(profile.id, yesterdayStr);
+
+  const completeHabit = useCompleteHabit();
+  const uncompleteHabit = useUncompleteHabit();
 
   const doneMap = new Map(todayLogs.map((l) => [l.habit_id, l]));
-
-  const positiveHabitsCount = habits.filter(h => h.habit_type === "positive").length;
-  const yesterdayPositiveCount = yesterdayLogs.filter(l => l.exp_earned > 0).length;
-
-  const [showPenaltyZone, setShowPenaltyZone] = useState(false);
+  const positiveHabitsCount = (habits as Habit[]).filter((h) => h.habit_type === "positive").length;
+  const yesterdayPositiveCount = yesterdayLogs.filter((l) => l.exp_earned > 0).length;
+  const positiveDoneToday = todayLogs.filter((l) => l.exp_earned > 0).length;
 
   useEffect(() => {
     if (positiveHabitsCount > 0) {
-      const penaltyKey = `penalty_checked_${today()}`;
+      const penaltyKey = `penalty_checked_${todayStr}`;
       const requiredCompletions = Math.ceil(positiveHabitsCount * 0.75);
       if (yesterdayPositiveCount < requiredCompletions && !localStorage.getItem(penaltyKey)) {
         setShowPenaltyZone(true);
         localStorage.setItem(penaltyKey, "true");
       }
     }
-  }, [positiveHabitsCount, yesterdayPositiveCount]);
+  }, [positiveHabitsCount, yesterdayPositiveCount, todayStr]);
 
   useEffect(() => {
     if (profile.level > prevLevel) {
       setLeveledUpTo(profile.level);
       setShowLevelUp(true);
-      toast.success(`[NOTICE] LEVEL UP: LV. ${profile.level}`);
+      toast.success(STRINGS.dashboard.level_up_toast(profile.level));
       setTimeout(() => setShowLevelUp(false), 4000);
     }
     setPrevLevel(profile.level);
@@ -89,35 +96,35 @@ function Dashboard() {
       const existing = doneMap.get(habit.id);
       const exp = habit.exp_value ?? 10;
       const isPositive = habit.habit_type === "positive";
+
       if (existing) {
-        deleteHabitLog(existing.id);
-        const delta = isPositive ? -exp : exp;
-        const updated = applyExpDelta(profile, delta);
-        const withStreak = updateStreak(updated);
-        setProfile(withStreak);
+        uncompleteHabit.mutate(
+          { logId: existing.id, userId: profile.id, date: todayStr, expDelta: exp },
+          {
+            onSuccess: () => {
+              if (isPositive) toast.info(`-${exp} EXP · ${habit.name}`);
+            },
+            onSettled: () => setBusy(null),
+          },
+        );
       } else {
         const gained = isPositive ? exp : -exp;
-        createHabitLog({
-          habit_id: habit.id,
-          user_id: profile.id,
-          completed_at: today(),
-          exp_earned: gained,
-        });
-        const updated = applyExpDelta(profile, gained);
-        const withStreak = updateStreak(updated);
-        setProfile(withStreak);
-        if (isPositive) toast.success(`+${exp} EXP · ${habit.name}`);
-        else toast.error(`-${exp} EXP · ${habit.name}`);
+        completeHabit.mutate(
+          { habitId: habit.id, userId: profile.id, date: todayStr, expDelta: gained },
+          {
+            onSuccess: () => {
+              if (isPositive) toast.success(`+${exp} EXP · ${habit.name}`);
+              else toast.error(`-${exp} EXP · ${habit.name}`);
+            },
+            onError: (e: any) => toast.error(e.message ?? "Failed"),
+            onSettled: () => setBusy(null),
+          },
+        );
       }
-      setTick((t) => t + 1);
-    } catch (e: any) {
-      toast.error(e.message ?? "Failed");
-    } finally {
+    } catch {
       setBusy(null);
     }
   }
-
-  const positiveDoneToday = todayLogs.filter((l) => l.exp_earned > 0).length;
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -133,12 +140,22 @@ function Dashboard() {
               initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.8, filter: "blur(10px)" }}
               animate={shouldReduceMotion ? { opacity: 1 } : { scale: 1, filter: "blur(0px)" }}
               exit={shouldReduceMotion ? { opacity: 0 } : { scale: 1.1, filter: "blur(10px)" }}
-              transition={shouldReduceMotion ? { duration: 0.3 } : { duration: 0.5, type: "spring", bounce: 0.4 }}
+              transition={
+                shouldReduceMotion
+                  ? { duration: 0.3 }
+                  : { duration: 0.5, type: "spring", bounce: 0.4 }
+              }
               className="text-center relative"
             >
-              <div className="text-sm md:text-xl uppercase tracking-[0.5em] text-primary mb-4 font-mono animate-pulse">System Alert</div>
-              <h1 className="font-display text-6xl md:text-8xl font-bold text-glow-primary text-primary mb-4 uppercase">Arise</h1>
-              <div className="text-2xl md:text-4xl text-white font-display">Level {leveledUpTo} Reached</div>
+              <div className="text-sm md:text-xl uppercase tracking-[0.5em] text-primary mb-4 font-mono animate-pulse">
+                System Alert
+              </div>
+              <h1 className="font-display text-6xl md:text-8xl font-bold text-glow-primary text-primary mb-4 uppercase">
+                Arise
+              </h1>
+              <div className="text-2xl md:text-4xl text-white font-display">
+                Level {leveledUpTo} Reached
+              </div>
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] -z-10 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.3)_0%,transparent_70%)] rounded-full blur-2xl" />
             </motion.div>
           </motion.div>
@@ -156,23 +173,27 @@ function Dashboard() {
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
-
             <motion.div
               initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.9, y: 20 }}
               animate={shouldReduceMotion ? { opacity: 1 } : { scale: 1, y: 0 }}
               className="glass border-destructive/50 shadow-[0_0_50px_rgba(220,38,38,0.3)] max-w-lg p-8 relative overflow-hidden"
             >
-              <div className="text-destructive font-mono text-xl tracking-[0.3em] mb-2 uppercase animate-pulse">[Warning]</div>
-              <h2 className="font-display text-4xl text-white mb-6 uppercase tracking-wider">The Penalty Zone</h2>
+              <div className="text-destructive font-mono text-xl tracking-[0.3em] mb-2 uppercase animate-pulse">
+                [Warning]
+              </div>
+              <h2 className="font-display text-4xl text-white mb-6 uppercase tracking-wider">
+                The Penalty Zone
+              </h2>
               <p className="text-muted-foreground mb-8 text-lg">
-                You failed to complete at least 75% of your Daily Quests yesterday. The System has determined your lack of discipline requires a penalty.
+                {STRINGS.dashboard.penalty_desc}
               </p>
-
               <div className="bg-destructive/10 border border-destructive/30 p-4 rounded-md mb-8 text-left">
                 <p className="text-destructive font-mono text-sm uppercase">Penalty Requirement:</p>
-                <p className="text-white mt-1">{localStorage.getItem("shadow_penalty") || "Complete 100 Pushups immediately to escape."}</p>
+                <p className="text-white mt-1">
+                  {localStorage.getItem("shadow_penalty") ||
+                    "Complete 100 Pushups immediately to escape."}
+                </p>
               </div>
-
               <Button
                 onClick={() => setShowPenaltyZone(false)}
                 className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/80 font-display text-xl h-14"
@@ -199,7 +220,9 @@ function Dashboard() {
               </AvatarFallback>
             </Avatar>
             <div>
-              <div className="text-xs uppercase tracking-widest text-muted-foreground">Shadow Hunter</div>
+              <div className="text-xs uppercase tracking-widest text-muted-foreground">
+                Shadow Hunter
+              </div>
               <h1 className="font-display text-2xl font-bold text-glow-primary text-primary">
                 {profile.username}
               </h1>
@@ -210,14 +233,18 @@ function Dashboard() {
           </div>
           <div className="flex items-center gap-4">
             <div className="glass px-4 py-2 text-center">
-              <Flame className="mx-auto h-5 w-5 text-rose-glow" />
+              <Flame className="mx-auto h-5 w-5 text-rose-500" />
               <div className="font-display text-lg">{profile.current_streak}</div>
-              <div className="text-[10px] uppercase text-muted-foreground">Streak</div>
+              <div className="text-[10px] uppercase text-muted-foreground">
+                {STRINGS.dashboard.streak_label}
+              </div>
             </div>
             <div className="glass px-4 py-2 text-center">
-              <Trophy className="mx-auto h-5 w-5 text-emerald-glow" />
+              <Trophy className="mx-auto h-5 w-5 text-yellow-500" />
               <div className="font-display text-lg">{profile.longest_streak}</div>
-              <div className="text-[10px] uppercase text-muted-foreground">Best</div>
+              <div className="text-[10px] uppercase text-muted-foreground">
+                {STRINGS.dashboard.longest_streak_label}
+              </div>
             </div>
           </div>
         </div>
@@ -228,16 +255,36 @@ function Dashboard() {
 
       {/* Quick stats */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatCard label="Today Done" value={positiveDoneToday} icon={<Sparkles className="h-4 w-4" />} tone="cyan" />
-        <StatCard label="Active Habits" value={habits.length} icon={<TrendingUp className="h-4 w-4" />} tone="purple" />
-        <StatCard label="Current Streak" value={`${profile.current_streak}d`} icon={<Flame className="h-4 w-4" />} tone="rose" />
-        <StatCard label="Level" value={profile.level} icon={<Trophy className="h-4 w-4" />} tone="emerald" />
+        <StatCard
+          label="Today Done"
+          value={positiveDoneToday}
+          icon={<Sparkles className="h-4 w-4" />}
+          tone="cyan"
+        />
+        <StatCard
+          label="Active Habits"
+          value={(habits as Habit[]).length}
+          icon={<TrendingUp className="h-4 w-4" />}
+          tone="purple"
+        />
+        <StatCard
+          label={STRINGS.dashboard.streak_label}
+          value={`${profile.current_streak}d`}
+          icon={<Flame className="h-4 w-4" />}
+          tone="rose"
+        />
+        <StatCard
+          label="Level"
+          value={profile.level}
+          icon={<Trophy className="h-4 w-4" />}
+          tone="emerald"
+        />
       </div>
 
       {/* Habits list */}
       <div className="glass p-6">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-display text-xl">Today's Quests</h2>
+          <h2 className="font-display text-xl">{STRINGS.dashboard.title}</h2>
           <Link to="/habits">
             <Button size="sm" variant="outline" className="border-white/10">
               <Plus className="mr-1 h-4 w-4" /> Manage
@@ -245,17 +292,19 @@ function Dashboard() {
           </Link>
         </div>
 
-        {habits.length === 0 ? (
+        {(habits as Habit[]).length === 0 ? (
           <div className="py-12 text-center">
-            <p className="text-muted-foreground">No quests yet. Forge your first habit.</p>
+            <p className="text-muted-foreground">{STRINGS.dashboard.empty_desc}</p>
             <Link to="/habits">
-              <Button className="mt-4 bg-primary text-primary-foreground">Create Habit</Button>
+              <Button className="mt-4 bg-primary text-primary-foreground">
+                {STRINGS.dashboard.go_to_forge}
+              </Button>
             </Link>
           </div>
         ) : (
           <ul className="space-y-2">
             <AnimatePresence>
-              {habits.map((h) => {
+              {(habits as Habit[]).map((h) => {
                 const done = doneMap.has(h.id);
                 const positive = h.habit_type === "positive";
                 return (
@@ -323,7 +372,6 @@ function Dashboard() {
 function StatAllocation({ profile }: { profile: any }) {
   const totalAvailable = (profile.level - 1) * 5;
   const storageKey = `stats_${profile.id}`;
-
   const [stats, setStats] = useState({ strength: 10, agility: 10, intelligence: 10 });
 
   useEffect(() => {
@@ -331,7 +379,8 @@ function StatAllocation({ profile }: { profile: any }) {
     if (saved) setStats(JSON.parse(saved));
   }, [storageKey]);
 
-  const allocated = (stats.strength - 10) + (stats.agility - 10) + (stats.intelligence - 10);
+  const allocated =
+    stats.strength - 10 + (stats.agility - 10) + (stats.intelligence - 10);
   const unallocated = totalAvailable - allocated;
 
   const allocate = (stat: keyof typeof stats) => {
@@ -345,14 +394,19 @@ function StatAllocation({ profile }: { profile: any }) {
   return (
     <div className="glass p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="font-display text-xl text-primary text-glow-primary uppercase tracking-widest">Status</h2>
-        <div className="text-sm font-mono text-muted-foreground">Points: <span className="text-primary">{unallocated}</span></div>
+        <h2 className="font-display text-xl text-primary text-glow-primary uppercase tracking-widest">
+          Status
+        </h2>
+        <div className="text-sm font-mono text-muted-foreground">
+          {STRINGS.dashboard.stat_points_label}:{" "}
+          <span className="text-primary">{unallocated}</span>
+        </div>
       </div>
       <div className="space-y-4">
         {[
-          { key: "strength", label: "Strength" },
-          { key: "agility", label: "Agility" },
-          { key: "intelligence", label: "Intelligence" }
+          { key: "strength", label: STRINGS.profile.stat_strength },
+          { key: "agility", label: STRINGS.profile.stat_agility },
+          { key: "intelligence", label: STRINGS.profile.stat_intelligence },
         ].map((s) => (
           <div key={s.key} className="flex items-center justify-between">
             <div className="font-mono text-sm uppercase text-muted-foreground">{s.label}</div>
@@ -377,27 +431,40 @@ function StatAllocation({ profile }: { profile: any }) {
 
 function ShadowArmy({ profile }: { profile: any }) {
   const shadows = [
-    { name: "Igris", unlockAt: 5, buff: "+5% EXP", color: "text-rose-glow" },
-    { name: "Tank", unlockAt: 15, buff: "Dungeon Pass", color: "text-emerald-glow" },
-    { name: "Beru", unlockAt: 30, buff: "+20% EXP", color: "text-purple-glow" },
+    { name: STRINGS.shadows.igris.name, unlockAt: 5, buff: STRINGS.shadows.igris.buff, color: "text-rose-500" },
+    { name: STRINGS.shadows.tank.name, unlockAt: 15, buff: STRINGS.shadows.tank.buff, color: "text-emerald-400" },
+    { name: STRINGS.shadows.beru.name, unlockAt: 30, buff: STRINGS.shadows.beru.buff, color: "text-purple-400" },
   ];
 
   return (
     <div className="glass p-6">
-      <h2 className="font-display text-xl text-accent text-glow-accent uppercase tracking-widest mb-6">Shadow Army</h2>
+      <h2 className="font-display text-xl text-accent text-glow-accent uppercase tracking-widest mb-6">
+        {STRINGS.dashboard.shadow_army_title}
+      </h2>
       <div className="space-y-4">
-        {shadows.map(s => {
+        {shadows.map((s) => {
           const unlocked = profile.level >= s.unlockAt;
           return (
-            <div key={s.name} className={`flex items-center justify-between border-b border-white/5 pb-2 ${unlocked ? "opacity-100" : "opacity-30 grayscale"}`}>
+            <div
+              key={s.name}
+              className={`flex items-center justify-between border-b border-white/5 pb-2 ${
+                unlocked ? "opacity-100" : "opacity-30 grayscale"
+              }`}
+            >
               <div>
-                <div className={`font-display text-lg ${unlocked ? s.color : "text-muted-foreground"}`}>{unlocked ? s.name : "???"}</div>
+                <div className={`font-display text-lg ${unlocked ? s.color : "text-muted-foreground"}`}>
+                  {unlocked ? s.name : "???"}
+                </div>
                 <div className="text-xs text-muted-foreground font-mono">{s.buff}</div>
               </div>
               {!unlocked && <div className="text-xs font-mono">Unlocks Lv.{s.unlockAt}</div>}
-              {unlocked && <div className="text-xs font-mono text-primary uppercase animate-pulse">Extracted</div>}
+              {unlocked && (
+                <div className="text-xs font-mono text-primary uppercase animate-pulse">
+                  Extracted
+                </div>
+              )}
             </div>
-          )
+          );
         })}
       </div>
     </div>
@@ -405,20 +472,27 @@ function ShadowArmy({ profile }: { profile: any }) {
 }
 
 function DungeonRaid({ profile }: { profile: any }) {
-  let rank = "E-Rank";
+  const streak = profile.current_streak;
+  let rank = STRINGS.ranks["E"];
   let color = "text-muted-foreground";
 
-  if (profile.current_streak >= 3) { rank = "D-Rank"; color = "text-blue-400"; }
-  if (profile.current_streak >= 7) { rank = "C-Rank"; color = "text-emerald-400"; }
-  if (profile.current_streak >= 14) { rank = "B-Rank"; color = "text-purple-400"; }
-  if (profile.current_streak >= 30) { rank = "A-Rank"; color = "text-rose-500"; }
-  if (profile.current_streak >= 90) { rank = "S-Rank"; color = "text-yellow-500 text-glow-amber"; }
+  if (streak >= 3) { rank = STRINGS.ranks["D"]; color = "text-blue-400"; }
+  if (streak >= 7) { rank = STRINGS.ranks["C"]; color = "text-emerald-400"; }
+  if (streak >= 14) { rank = STRINGS.ranks["B"]; color = "text-purple-400"; }
+  if (streak >= 30) { rank = STRINGS.ranks["A"]; color = "text-rose-500"; }
+  if (streak >= 90) { rank = STRINGS.ranks["S"]; color = "text-yellow-500 text-glow-amber"; }
 
   return (
     <div className="glass-strong p-6 text-center border-t-2 border-t-primary/20">
-      <div className="uppercase tracking-[0.3em] text-xs text-muted-foreground font-mono mb-2">Current Dungeon Raid</div>
-      <div className={`font-display text-5xl font-bold uppercase ${color} mb-2`}>{rank} Gate</div>
-      <p className="text-sm text-muted-foreground">Maintain your streak to clear higher ranked dungeons.</p>
+      <div className="uppercase tracking-[0.3em] text-xs text-muted-foreground font-mono mb-2">
+        {STRINGS.dashboard.dungeon_rank_title}
+      </div>
+      <div className={`font-display text-5xl font-bold uppercase ${color} mb-2`}>
+        {rank} Gate
+      </div>
+      <p className="text-sm text-muted-foreground">
+        Maintain your streak to clear higher ranked dungeons.
+      </p>
     </div>
   );
 }
@@ -437,8 +511,8 @@ function StatCard({
   const colors: Record<string, string> = {
     cyan: "text-primary",
     purple: "text-accent",
-    emerald: "text-emerald-glow",
-    rose: "text-rose-glow",
+    emerald: "text-emerald-400",
+    rose: "text-rose-500",
   };
   return (
     <motion.div whileHover={{ y: -2 }} className="glass p-4">
