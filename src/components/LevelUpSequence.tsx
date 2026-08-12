@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { CyberGlitchText } from "./ui/cyber-glitch-text";
-import { MorphText } from "./ui/morph-text";
 
 export function LevelUpSequence({
   leveledUpTo,
@@ -9,13 +8,13 @@ export function LevelUpSequence({
   leveledUpTo: number;
 }) {
   const shouldReduceMotion = useReducedMotion();
-  const [stage, setStage] = useState<"alert" | "beam" | "arise">("alert");
+  const [stage, setStage] = useState<"alert" | "pause" | "arise">("alert");
 
   useEffect(() => {
-    // Stage 1: Alert (0 - 2.5s)
-    const t1 = setTimeout(() => setStage("beam"), 2500);
-    // Stage 2: Beam & Arise (2.5s - 8s)
-    const t2 = setTimeout(() => setStage("arise"), 2800);
+    // Stage 1: Alert shows
+    const t1 = setTimeout(() => setStage("pause"), 1500);
+    // Stage 2: Short suspense gap, then Arise strikes
+    const t2 = setTimeout(() => setStage("arise"), 1800);
     
     return () => {
       clearTimeout(t1);
@@ -41,7 +40,7 @@ export function LevelUpSequence({
                   ? { opacity: 1 }
                   : { opacity: 1, scale: 1, animation: "systemGlitch 1s infinite" }
               }
-              exit={{ opacity: 0, filter: "blur(10px)", scale: 1.1 }}
+              exit={{ opacity: 0, scale: 1.1, filter: "blur(5px)" }}
               transition={{ duration: 0.2 }}
               className="text-center"
               style={{
@@ -59,35 +58,45 @@ export function LevelUpSequence({
           )}
         </AnimatePresence>
 
-        {/* Stage 2: Light Beam Reveal */}
-        {stage === "beam" && !shouldReduceMotion && (
-          <div
-            className="absolute top-1/2 left-1/2 w-1 h-[200vh] bg-mana -translate-x-1/2 -translate-y-1/2 blur-[2px]"
-            style={{ animation: "lightBeam 0.6s ease-out forwards" }}
-          />
-        )}
-
         {/* Stage 3: Arise */}
         <AnimatePresence>
-          {(stage === "beam" || stage === "arise") && (
+          {stage === "arise" && (
             <motion.div
-              initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.9, opacity: 0 }}
-              animate={shouldReduceMotion ? { opacity: 1 } : { scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
               className="text-center relative z-10"
             >
-              <MorphText 
-                words={["ARISE"]} 
-                interval={2500} 
-                subtext={`Level ${leveledUpTo} Reached`}
-                className="text-mana"
+              {/* Shockwave */}
+              <motion.div
+                initial={{ scale: 0.5, opacity: 1, borderWidth: "8px" }}
+                animate={{ scale: 3, opacity: 0, borderWidth: "0px" }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-mana w-32 h-32 md:w-64 md:h-64 -z-10 shadow-[0_0_50px_var(--mana)] pointer-events-none"
               />
+              
+              {/* Main Arise Text */}
+              <motion.div
+                initial={{ scale: 2.5, opacity: 0, filter: "brightness(2) blur(10px)" }}
+                animate={{ scale: 1, opacity: 1, filter: "brightness(1) blur(0px)" }}
+                transition={{ duration: 0.7, type: "spring", bounce: 0.4 }}
+                className="text-7xl md:text-[10rem] font-black text-mana font-display tracking-[0.1em] uppercase leading-none drop-shadow-[0_0_30px_rgba(0,255,255,0.8)]"
+              >
+                Arise
+              </motion.div>
+
+              {/* Subtext */}
+              <motion.div
+                initial={{ opacity: 0, y: 20, letterSpacing: "0em" }}
+                animate={{ opacity: 1, y: 0, letterSpacing: "0.5em" }}
+                transition={{ duration: 1, delay: 0.4, ease: "circOut" }}
+                className="text-lg md:text-3xl text-white font-mono uppercase mt-6 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+              >
+                Level {leveledUpTo} Reached
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Stage 3: Particles & Aura */}
-        {(stage === "beam" || stage === "arise") && (
+        {stage === "arise" && (
           <>
             <motion.div
               initial={{ opacity: 0, scale: 0 }}

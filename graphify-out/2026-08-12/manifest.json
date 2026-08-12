@@ -15,19 +15,19 @@
     "semantic_hash": "345bdd57e188e0e4525edcd00e5003f5"
   },
   "package.json": {
-    "mtime": 1786546959.5204802,
-    "ast_hash": "7a8c32b7fa15a339c3b92c833c05a6c3",
+    "mtime": 1786548030.2182388,
+    "ast_hash": "1853003b0c4e2de06feb7d7f29b994f2",
     "semantic_hash": ""
   },
   "src/components/AppNav.tsx": {
-    "mtime": 1786211380.2610252,
-    "ast_hash": "6c37ab2ec1f3d196cd112f455f1f66f3",
-    "semantic_hash": "6c37ab2ec1f3d196cd112f455f1f66f3"
+    "mtime": 1786548330.6956725,
+    "ast_hash": "8fde467e2215f9b4e921bc370ce644b7",
+    "semantic_hash": ""
   },
   "src/components/ExpBar.tsx": {
-    "mtime": 1783779532.0479915,
-    "ast_hash": "6d56c3235c0361db90c10bb458a51bc1",
-    "semantic_hash": "6d56c3235c0361db90c10bb458a51bc1"
+    "mtime": 1786549835.3732073,
+    "ast_hash": "5b339e6459218192d1d69c3d2844a173",
+    "semantic_hash": ""
   },
   "src/components/RequireAuth.tsx": {
     "mtime": 1786211378.2323284,
@@ -310,9 +310,9 @@
     "semantic_hash": "05e32ad3b12e72060dd2d7c87644e951"
   },
   "src/router.tsx": {
-    "mtime": 1786211276.7911835,
-    "ast_hash": "bdb4e7fa227567c6cf0f084b9dfe0b76",
-    "semantic_hash": "bdb4e7fa227567c6cf0f084b9dfe0b76"
+    "mtime": 1786548205.3002417,
+    "ast_hash": "65cd323c42dc30444825003df8b50892",
+    "semantic_hash": ""
   },
   "src/routes/__root.tsx": {
     "mtime": 1786547064.6769893,
@@ -330,8 +330,8 @@
     "semantic_hash": ""
   },
   "src/routes/dashboard.tsx": {
-    "mtime": 1786547261.1363509,
-    "ast_hash": "3671ecbeb83a65342f68ba522252913d",
+    "mtime": 1786549876.4459093,
+    "ast_hash": "e85e7633c2df2cb8c976f205d7f35c49",
     "semantic_hash": ""
   },
   "src/routes/habits.tsx": {
@@ -340,9 +340,9 @@
     "semantic_hash": ""
   },
   "src/routes/index.tsx": {
-    "mtime": 1786211801.494759,
-    "ast_hash": "f9226017a4d8c5e18a9775cdc87901c6",
-    "semantic_hash": "f9226017a4d8c5e18a9775cdc87901c6"
+    "mtime": 1786548334.8400545,
+    "ast_hash": "836c73db3d7d60a7affeb7ff760c179b",
+    "semantic_hash": ""
   },
   "src/routes/me.tsx": {
     "mtime": 1786547259.1079905,
@@ -405,8 +405,8 @@
     "semantic_hash": ""
   },
   "src/lib/strings.ts": {
-    "mtime": 1786546955.7259433,
-    "ast_hash": "6842d53ffbab7e668751f95958d55292",
+    "mtime": 1786548332.7261395,
+    "ast_hash": "563f7d0f81e07a389e6da3aec0ba0d62",
     "semantic_hash": ""
   },
   ".agents/rules/graphify.md": {
@@ -465,13 +465,48 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1786211254.6967216,
-    "ast_hash": "5dc1ff8d6944b0083093ef367ec28ac7",
+    "mtime": 1786549097.5827537,
+    "ast_hash": "8c086d865dfecc823429ad6af337c380",
     "semantic_hash": ""
   },
   "public/logo.png": {
-    "mtime": 1783781039.579334,
-    "ast_hash": "30e4cfa32655a5a094e91926cfe87c92",
+    "mtime": 1786548967.091672,
+    "ast_hash": "cb4ab4cbd826d8fb931afabcf12bc289",
+    "semantic_hash": ""
+  },
+  "src/components/HabitCard.tsx": {
+    "mtime": 1786549846.92589,
+    "ast_hash": "8cb963709fc324a7888d0897b9c3fab3",
+    "semantic_hash": ""
+  },
+  "src/components/LevelProgress.tsx": {
+    "mtime": 1786549823.1726058,
+    "ast_hash": "1c45345586f79f5451d15c7027ca006f",
+    "semantic_hash": ""
+  },
+  "src/components/RankBadge.tsx": {
+    "mtime": 1786549813.9882288,
+    "ast_hash": "c2add4b4ea44d4d3c87a64452bfc769d",
+    "semantic_hash": ""
+  },
+  "vercel.json": {
+    "mtime": 1786549883.9219391,
+    "ast_hash": "61bd31a2b0ac08f10f13c932b32d6ca1",
+    "semantic_hash": ""
+  },
+  "design.md": {
+    "mtime": 1786549248.9144568,
+    "ast_hash": "2448388494a8f5a98df80e42ca12c294",
+    "semantic_hash": ""
+  },
+  "public/favicon.png": {
+    "mtime": 1786549106.684,
+    "ast_hash": "1dee14878cb74327efe9ed5f048a0b65",
+    "semantic_hash": ""
+  },
+  "public/shadow_level.png": {
+    "mtime": 1786548967.091672,
+    "ast_hash": "cb4ab4cbd826d8fb931afabcf12bc289",
     "semantic_hash": ""
   }
 }

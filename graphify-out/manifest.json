@@ -20,19 +20,19 @@
     "semantic_hash": ""
   },
   "src/components/AppNav.tsx": {
-    "mtime": 1786548330.6956725,
-    "ast_hash": "8fde467e2215f9b4e921bc370ce644b7",
+    "mtime": 1786555735.1337214,
+    "ast_hash": "84a83992db9de19cba6840764903e3cb",
     "semantic_hash": ""
   },
   "src/components/ExpBar.tsx": {
-    "mtime": 1786549835.3732073,
-    "ast_hash": "5b339e6459218192d1d69c3d2844a173",
+    "mtime": 1786555675.1529903,
+    "ast_hash": "df70a2cd3ac4667a69ac0400c5ad4763",
     "semantic_hash": ""
   },
   "src/components/RequireAuth.tsx": {
-    "mtime": 1786211378.2323284,
-    "ast_hash": "4084911f5c2dbc6b98017787b25dbc0a",
-    "semantic_hash": "4084911f5c2dbc6b98017787b25dbc0a"
+    "mtime": 1786555770.0336483,
+    "ast_hash": "e2a9d42eb98b02f0a5fdd854b581cbfc",
+    "semantic_hash": ""
   },
   "src/components/SmoothScrollProvider.tsx": {
     "mtime": 1786212216.2748976,
@@ -75,7 +75,7 @@
     "semantic_hash": "53f1ec4c38907530050142e3afa85cc7"
   },
   "src/components/ui/button.tsx": {
-    "mtime": 1783778849.9008489,
+    "mtime": 1786555392.013512,
     "ast_hash": "b45e483db7e5f192b347a86e486e5335",
     "semantic_hash": "b45e483db7e5f192b347a86e486e5335"
   },
@@ -230,9 +230,9 @@
     "semantic_hash": "f51437b9ee04349e8af16e6366c28fee"
   },
   "src/components/ui/sonner.tsx": {
-    "mtime": 1783780413.4122105,
-    "ast_hash": "a4179ee53fbe77bc7daf8b49836b7f0a",
-    "semantic_hash": "a4179ee53fbe77bc7daf8b49836b7f0a"
+    "mtime": 1786556230.6644678,
+    "ast_hash": "62709adbbc68a370b75228399010456f",
+    "semantic_hash": ""
   },
   "src/components/ui/switch.tsx": {
     "mtime": 1783778851.4775052,
@@ -320,8 +320,8 @@
     "semantic_hash": ""
   },
   "src/routes/analytics.tsx": {
-    "mtime": 1786547187.8345282,
-    "ast_hash": "294fe204a155b11ab595e67a4940e090",
+    "mtime": 1786555807.2597435,
+    "ast_hash": "bc792066a6f64974acb94e469675485c",
     "semantic_hash": ""
   },
   "src/routes/auth.tsx": {
@@ -330,8 +330,8 @@
     "semantic_hash": ""
   },
   "src/routes/dashboard.tsx": {
-    "mtime": 1786549876.4459093,
-    "ast_hash": "e85e7633c2df2cb8c976f205d7f35c49",
+    "mtime": 1786557591.1312835,
+    "ast_hash": "f48a6faff06959f0c7dca76b8cab80a9",
     "semantic_hash": ""
   },
   "src/routes/habits.tsx": {
@@ -355,8 +355,8 @@
     "semantic_hash": "1ef7a1282be4495af8593d2b5b374c73"
   },
   "src/routes/rewards.tsx": {
-    "mtime": 1786547131.6337986,
-    "ast_hash": "e94f0c49a5858eb4477334b47388fa77",
+    "mtime": 1786555831.0823226,
+    "ast_hash": "fdff6a43fc6b2d376ead48ac81097e47",
     "semantic_hash": ""
   },
   "tsconfig.json": {
@@ -445,8 +445,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1786217276.7001746,
-    "ast_hash": "78a3f86657251f1ddee59901b85dbbd2",
+    "mtime": 1786550225.0419147,
+    "ast_hash": "67855bba3a3826a95e49f486dbcb74ab",
     "semantic_hash": ""
   },
   "docs/01_prd.md": {
@@ -475,18 +475,18 @@
     "semantic_hash": ""
   },
   "src/components/HabitCard.tsx": {
-    "mtime": 1786549846.92589,
-    "ast_hash": "8cb963709fc324a7888d0897b9c3fab3",
+    "mtime": 1786555653.0654328,
+    "ast_hash": "7fc0ea6118371eecc1202e51cf73c783",
     "semantic_hash": ""
   },
   "src/components/LevelProgress.tsx": {
-    "mtime": 1786549823.1726058,
-    "ast_hash": "1c45345586f79f5451d15c7027ca006f",
+    "mtime": 1786555684.975479,
+    "ast_hash": "a4d6eb03a04e65d8241a514d49b70269",
     "semantic_hash": ""
   },
   "src/components/RankBadge.tsx": {
-    "mtime": 1786549813.9882288,
-    "ast_hash": "c2add4b4ea44d4d3c87a64452bfc769d",
+    "mtime": 1786555702.1446304,
+    "ast_hash": "f734330756156723d3fd542f7f54ab22",
     "semantic_hash": ""
   },
   "vercel.json": {
@@ -495,8 +495,8 @@
     "semantic_hash": ""
   },
   "design.md": {
-    "mtime": 1786549248.9144568,
-    "ast_hash": "2448388494a8f5a98df80e42ca12c294",
+    "mtime": 1786550205.6181233,
+    "ast_hash": "c765b732e8f813107f30fb3469eb8cb1",
     "semantic_hash": ""
   },
   "public/favicon.png": {
@@ -507,6 +507,31 @@
   "public/shadow_level.png": {
     "mtime": 1786548967.091672,
     "ast_hash": "cb4ab4cbd826d8fb931afabcf12bc289",
+    "semantic_hash": ""
+  },
+  "src/components/LevelUpSequence.tsx": {
+    "mtime": 1786557532.6014855,
+    "ast_hash": "be049da93223f8a49e371b60ccdfad5e",
+    "semantic_hash": ""
+  },
+  "src/components/ui/cyber-glitch-text.tsx": {
+    "mtime": 1786556972.4068017,
+    "ast_hash": "f6e64cddf3f13ccb01e824729603a833",
+    "semantic_hash": ""
+  },
+  "src/components/ui/light-lines.tsx": {
+    "mtime": 1786557004.8036563,
+    "ast_hash": "91bd29b99818753a6afe925c64c09ece",
+    "semantic_hash": ""
+  },
+  "src/components/ui/morph-text.tsx": {
+    "mtime": 1786557335.6346645,
+    "ast_hash": "b10fd9522ade167aab388c90dc75fbb1",
+    "semantic_hash": ""
+  },
+  "kimi_design.md": {
+    "mtime": 1786553315.3729784,
+    "ast_hash": "24fccd27d2f1578637109e3293448d20",
     "semantic_hash": ""
   }
 }
