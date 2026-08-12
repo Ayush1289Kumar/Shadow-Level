@@ -60,7 +60,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-monarch-radial">
       <AppNav />
-      <main className="md:ml-60 pb-24 md:pb-6 px-4 md:px-8 py-6">{children}</main>
+      <main className="pt-24 pb-24 md:pb-12 px-4 md:px-8 max-w-7xl mx-auto w-full">{children}</main>
     </div>
   );
 }

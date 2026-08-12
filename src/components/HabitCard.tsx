@@ -28,39 +28,45 @@ export function HabitCard({ habit, done, busy, shouldReduceMotion, onToggle }: H
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       whileHover={shouldReduceMotion ? {} : { y: -2 }}
-      className={`group flex items-center gap-4 rounded-xl border p-4 transition-all duration-200 ${
+      className={`group flex items-center gap-4 rounded-xl border p-5 transition-all duration-200 cursor-pointer ${
         done
-          ? positive
-            ? "border-success/40 bg-success/5 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
-            : "border-danger/40 bg-danger/5 shadow-[0_0_15px_rgba(220,38,38,0.1)]"
-          : "border-border bg-surface hover:bg-surface-hover hover:border-border-strong hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)]"
+          ? "border-mist bg-depth shadow-[0_0_24px_var(--glow-soul)]"
+          : "border-mist bg-depth hover:border-[rgba(255,255,255,0.1)] hover:bg-shade hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
       }`}
+      onClick={() => {
+        if (!busy) onToggle(habit);
+      }}
+      whileTap={{ scale: 0.98 }}
     >
-      <Checkbox
-        checked={done}
-        disabled={busy}
-        onCheckedChange={() => onToggle(habit)}
-        className={
-          positive
-            ? "data-[state=checked]:bg-success data-[state=checked]:border-success"
-            : "data-[state=checked]:bg-danger data-[state=checked]:border-danger"
-        }
-      />
       <div className="flex-1">
-        <div className={`font-medium transition-colors ${done ? "line-through text-muted-foreground" : "text-foreground"}`}>
+        <div className="text-micro uppercase tracking-[0.15em] text-silver mb-1">
+          {habit.habit_type}
+        </div>
+        <div className={`text-headline transition-colors ${done ? "line-through text-ash" : "text-moonlight"}`}>
           {habit.name}
         </div>
         {habit.description && (
-          <div className="text-xs text-muted-foreground mt-1 line-clamp-1">{habit.description}</div>
+          <div className="text-body text-silver mt-1 line-clamp-2">{habit.description}</div>
         )}
       </div>
-      <div
-        className={`font-display text-sm tracking-widest ${
-          positive ? "text-primary group-hover:text-glow-primary" : "text-danger"
-        }`}
-      >
-        {positive ? "+" : "−"}
-        {habit.exp_value ?? 10} XP
+      
+      <div className="flex items-center gap-4">
+        <div className="flex items-center justify-center px-2 py-1 rounded glass text-micro text-monarch font-semibold">
+          {positive ? "+" : "−"}
+          {habit.exp_value ?? 10} XP
+        </div>
+
+        <Checkbox
+          checked={done}
+          disabled={busy}
+          onCheckedChange={() => onToggle(habit)}
+          onClick={(e) => e.stopPropagation()}
+          className={`h-6 w-6 rounded-[4px] transition-all duration-300 ${
+            done
+              ? "bg-monarch border-monarch box-glow-monarch text-moonlight"
+              : "border-mist bg-transparent data-[state=checked]:bg-monarch data-[state=checked]:border-monarch"
+          }`}
+        />
       </div>
     </motion.li>
   );

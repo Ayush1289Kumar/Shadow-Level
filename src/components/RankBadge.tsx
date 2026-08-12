@@ -1,23 +1,23 @@
 import { motion } from "framer-motion";
 
 export function RankBadge({ rank }: { rank: string }) {
-  const rankColors: Record<string, string> = {
-    E: "text-muted-foreground border-white/10",
-    D: "text-info border-info/30 bg-info/5",
-    C: "text-success border-success/30 bg-success/5",
-    B: "text-accent border-accent/30 bg-accent/5",
-    A: "text-danger border-danger/30 bg-danger/5",
-    S: "text-warning border-warning/50 bg-warning/10 text-glow-accent",
+  const rankStyles: Record<string, string> = {
+    E: "text-ash bg-surface",
+    D: "text-silver bg-surface",
+    C: "text-amber glass",
+    B: "text-monarch glass text-glow-monarch",
+    A: "text-violet glass-strong text-glow-violet",
+    S: "text-soul glass-strong text-glow-soul",
   };
 
-  const colorClass = rankColors[rank] || rankColors["E"];
+  const styleClass = rankStyles[rank] || rankStyles["E"];
 
   return (
     <motion.div 
-      className={`inline-flex items-center justify-center w-12 h-12 rounded-lg border ${colorClass}`}
+      className={`inline-flex items-center justify-center px-4 py-2 rounded-lg ${styleClass}`}
       whileHover={{ scale: 1.05 }}
     >
-      <span className="font-display text-2xl font-bold">{rank}</span>
+      <span className="text-display leading-none pb-1">{rank}</span>
     </motion.div>
   );
 }
