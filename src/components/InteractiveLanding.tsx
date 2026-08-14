@@ -5,8 +5,8 @@ import { useAppStore } from "@/lib/store";
 import { playSound } from "@/lib/audio";
 import { Button } from "@/components/ui/button";
 import * as THREE from "three";
-import { 
-  Sword, Shield, Activity, Star, Zap, Volume2, VolumeX, ArrowDown, ChevronRight, 
+import {
+  Sword, Shield, Activity, Star, Zap, Volume2, VolumeX, ArrowDown, ChevronRight,
   Menu, X, Sparkles, Trophy, Check, ArrowRight
 } from "lucide-react";
 
@@ -38,7 +38,7 @@ function CinematicLoader({ onComplete }: { onComplete: () => void }) {
       setTimeout(() => {
         playSound("systemAlert");
       }, 200);
-      
+
       setTimeout(() => {
         onComplete();
       }, 700);
@@ -153,7 +153,7 @@ function ThreeDungeonGate({ ariseBurstTrigger }: { ariseBurstTrigger: number }) 
 
       // Spin rings at different velocities
       const speedMult = zoomActive.current ? 12 : 1;
-      
+
       ringOuter.rotation.y += 0.4 * delta * speedMult;
       ringOuter.rotation.z += 0.2 * delta * speedMult;
 
@@ -289,7 +289,9 @@ function CustomCursor() {
   );
 }
 
-// --- TEXT SCRAMBLE COMPONENT ---
+// --- TEXT SCRAMBLE COMPONENT (Slow) ---
+// Hacker-decrypt effect: characters resolve one-by-one from random glyphs.
+// Tick: 50ms, step: 1/6 per tick → each char locks in over ~300ms.
 function ScrambleText({ text, delay = 0 }: { text: string; delay?: number }) {
   const [displayText, setDisplayText] = useState(text);
   const chars = "█▓▒░#@%&<>[]{}*+=_";
@@ -297,11 +299,10 @@ function ScrambleText({ text, delay = 0 }: { text: string; delay?: number }) {
   useEffect(() => {
     let timeoutId: number;
     let intervalId: number;
-    
+
     timeoutId = window.setTimeout(() => {
-      playSound("systemAlert");
       let iteration = 0;
-      
+
       intervalId = window.setInterval(() => {
         setDisplayText(
           text
@@ -313,14 +314,14 @@ function ScrambleText({ text, delay = 0 }: { text: string; delay?: number }) {
             })
             .join("")
         );
-        
+
         if (iteration >= text.length) {
           clearInterval(intervalId);
           setDisplayText(text);
         }
-        
-        iteration += 1 / 3;
-      }, 30);
+
+        iteration += 1 / 4; // 2× slower than original
+      }, 40); // 40ms tick (was 30ms)
     }, delay * 1000);
 
     return () => {
@@ -344,11 +345,11 @@ function Magnetic({ children }: { children: React.ReactElement }) {
     const { left, top, width, height } = el.getBoundingClientRect();
     const centerX = left + width / 2;
     const centerY = top + height / 2;
-    
+
     const dx = clientX - centerX;
     const dy = clientY - centerY;
     const dist = Math.sqrt(dx * dx + dy * dy);
-    
+
     if (dist < 80) {
       const pullX = (dx / 80) * 12;
       const pullY = (dy / 80) * 12;
@@ -423,7 +424,7 @@ export function InteractiveLanding() {
   const handleAriseClick = () => {
     playSound("arise");
     setAriseBurstTrigger((prev) => prev + 1);
-    
+
     setTimeout(() => {
       if (userId) {
         navigate({ to: "/dashboard" });
@@ -606,8 +607,8 @@ export function InteractiveLanding() {
           </motion.div>
 
           {/* Scramble Text Heading */}
-          <h1 className="mt-6 text-hero text-glow-mana-bright uppercase tracking-wider font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-400">
-            {loadingComplete ? <ScrambleText text="Arise, Hunter" delay={0.2} /> : "Arise, Hunter"}
+          <h1 className="mt-6 text-hero text-glow-mana-bright uppercase tracking-wider font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-white via-moonlight to-silver">
+            {loadingComplete ? <ScrambleText text="Arise, Hunter" delay={0.3} /> : <span className="opacity-0">Arise, Hunter</span>}
           </h1>
 
           <p className="mt-6 max-w-xl text-body text-silver">
@@ -660,7 +661,7 @@ export function InteractiveLanding() {
             className="text-center"
           >
             <h2 className="text-display text-glow-mana uppercase">
-              <ScrambleText text="System Features" delay={0.1} />
+              System Features
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-silver">
               Unlock unique skills and power levels. The shadow army executes tasks according to your status parameters.
@@ -912,7 +913,7 @@ export function InteractiveLanding() {
                 </div>
               ))}
             </div>
-            
+
             <div className="flex gap-6 aria-hidden:true animate-marquee shrink-0 hover:[animation-play-state:paused] whitespace-nowrap">
               {[
                 { name: "Jin-Woo", role: "Monarch", quote: "The status indicators and XP bars are completely flawless." },
