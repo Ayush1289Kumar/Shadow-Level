@@ -93,7 +93,7 @@
   "91": "prettier",
   "92": "@types/canvas-confetti",
   "93": "@types/node",
-  "94": "class-variance-authority",
+  "94": "canvas-confetti",
   "95": "@types/react-dom",
   "96": "eslint-plugin-prettier",
   "97": "vite",

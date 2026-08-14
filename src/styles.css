@@ -345,6 +345,15 @@
   100% { background-position: 100% 100%; }
 }
 
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-100% - 1.5rem)); }
+}
+
+@utility animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
 @keyframes systemGlitch {
   0% { transform: translate(0); text-shadow: none; opacity: 1; }
   2% { transform: translate(-2px, 2px); text-shadow: 2px 0 var(--mana-bright), -2px 0 var(--penalty); opacity: 0.8; }

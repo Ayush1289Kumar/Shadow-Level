@@ -10,8 +10,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1786732668.4290392,
-    "ast_hash": "32c562a5b15d2dfb9ce036b6ff3b3051",
+    "mtime": 1786548030.2182388,
+    "ast_hash": "1853003b0c4e2de06feb7d7f29b994f2",
     "semantic_hash": ""
   },
   "src/__tests__/leveling.test.ts": {
@@ -345,8 +345,8 @@
     "semantic_hash": ""
   },
   "src/lib/audio.ts": {
-    "mtime": 1786732029.895178,
-    "ast_hash": "8d255f30d3e570373dc4d3291000069f",
+    "mtime": 1786730433.5628526,
+    "ast_hash": "dabd0a1a50ba3afcc9cd828fd1ddd169",
     "semantic_hash": ""
   },
   "src/lib/image.ts": {
@@ -420,8 +420,8 @@
     "semantic_hash": ""
   },
   "src/routes/index.tsx": {
-    "mtime": 1786732064.0500786,
-    "ast_hash": "a54726a15d170c91828c53aa09a873ed",
+    "mtime": 1786548334.8400545,
+    "ast_hash": "836c73db3d7d60a7affeb7ff760c179b",
     "semantic_hash": ""
   },
   "src/routes/me.tsx": {
@@ -622,11 +622,6 @@
   "public/audio/voice/jinwoo-arise.mp3": {
     "mtime": 1786730422.706732,
     "ast_hash": "c0c84d006580156ab079be661da63cd2",
-    "semantic_hash": ""
-  },
-  "src/components/InteractiveLanding.tsx": {
-    "mtime": 1786733184.809875,
-    "ast_hash": "2a58f8f8ceea846bd6dc0b51a7fe67e0",
     "semantic_hash": ""
   }
 }

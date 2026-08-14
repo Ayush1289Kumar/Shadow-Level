@@ -27,7 +27,16 @@ export type SoundKey =
   | "navSwitch"
   | "modalOpen"
   | "modalClose"
-  | "jinwooArise";
+  | "jinwooArise"
+  // Spec Triggers:
+  | "systemAlert"
+  | "gateOpen"
+  | "skillUse"
+  | "shadowArmy"
+  | "dungeonClear"
+  | "manaFill"
+  | "uiHover"
+  | "notification";
 
 interface SoundSpec {
   path: string;
@@ -55,6 +64,16 @@ const SOUND_SPECS: Record<SoundKey, SoundSpec> = {
   modalOpen: { path: "/audio/sfx/ui/modal-open.mp3", category: "ui", volume: 0.4, cooldown: 500 },
   modalClose: { path: "/audio/sfx/ui/modal-close.mp3", category: "ui", volume: 0.35, cooldown: 500 },
   jinwooArise: { path: "/audio/voice/jinwoo-arise.mp3", category: "voice", volume: 0.95, cooldown: 5000 },
+  
+  // Mappings to existing audio resources:
+  systemAlert: { path: "/audio/sfx/dungeon-enter.mp3", category: "sfx", volume: 0.8, cooldown: 3000 },
+  gateOpen: { path: "/audio/sfx/ui/modal-open.mp3", category: "ui", volume: 0.4, cooldown: 500 },
+  skillUse: { path: "/audio/sfx/button-click.mp3", category: "ui", volume: 0.4, cooldown: 250 },
+  shadowArmy: { path: "/audio/sfx/shadow-extract.mp3", category: "sfx", volume: 0.9, cooldown: 3000 },
+  dungeonClear: { path: "/audio/sfx/success.mp3", category: "sfx", volume: 0.8, cooldown: 3000 },
+  manaFill: { path: "/audio/sfx/streak.mp3", category: "ui", volume: 0.6, cooldown: 500 },
+  uiHover: { path: "/audio/sfx/hover.mp3", category: "ui", volume: 0.15, cooldown: 50 }, // 50ms hover cooldown per spec!
+  notification: { path: "/audio/sfx/quest-accept.mp3", category: "ui", volume: 0.4, cooldown: 500 },
 };
 
 const BASE_URL = import.meta.env.BASE_URL || "/";
@@ -63,25 +82,34 @@ function assetUrl(path: string): string {
   return path.startsWith("/") ? `${BASE_URL.replace(/\/$/, "")}${path}` : path;
 }
 
+// ---------------------------------------------------------------------------
+// Shared AudioContext singleton — created once, reused forever.
+// Creating a new AudioContext per sound is the #1 cause of silent audio on
+// Chrome / Edge because each new context starts in "suspended" state and
+// the browser throttles rapid-context creation.
+// ---------------------------------------------------------------------------
+let _sharedCtx: AudioContext | null = null;
+
+function getSharedAudioContext(): AudioContext | null {
+  if (typeof window === "undefined") return null;
+  if (_sharedCtx) {
+    if (_sharedCtx.state === "suspended") void _sharedCtx.resume();
+    return _sharedCtx;
+  }
+  const Ctx =
+    window.AudioContext ||
+    (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!Ctx) return null;
+  _sharedCtx = new Ctx();
+  return _sharedCtx;
+}
+
 /**
  * Synthesizes brand-appropriate placeholder sounds via the Web Audio API
  * whenever a real audio file is missing. Real files in /public/audio
  * automatically take precedence (see SoundManager).
  */
 class WebAudioPlaceholder {
-  private static getContext(): AudioContext | null {
-    if (typeof window === "undefined") return null;
-    let ctx: AudioContext | null = null;
-    const Ctx =
-      window.AudioContext ||
-      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (Ctx) {
-      ctx = new Ctx();
-      if (ctx.state === "suspended") void ctx.resume();
-    }
-    return ctx;
-  }
-
   private static tone(
     freq: number,
     type: OscillatorType,
@@ -90,14 +118,14 @@ class WebAudioPlaceholder {
     delay = 0,
     endFreq?: number,
   ) {
-    const ctx = WebAudioPlaceholder.getContext();
+    const ctx = getSharedAudioContext();
     if (!ctx) return;
     const t0 = ctx.currentTime + delay;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = type;
     osc.frequency.setValueAtTime(freq, t0);
-    if (endFreq) {
+    if (endFreq !== undefined) {
       osc.frequency.exponentialRampToValueAtTime(endFreq, t0 + duration);
     }
     gain.gain.setValueAtTime(0.0001, t0);
@@ -116,7 +144,7 @@ class WebAudioPlaceholder {
     lowpassTo: number,
     delay = 0,
   ) {
-    const ctx = WebAudioPlaceholder.getContext();
+    const ctx = getSharedAudioContext();
     if (!ctx) return;
     const t0 = ctx.currentTime + delay;
     const bufferSize = Math.floor(ctx.sampleRate * duration);
@@ -222,6 +250,45 @@ class WebAudioPlaceholder {
         this.tone(700, "sine", 0.2, 0.15, 0, 450);
         break;
       }
+      
+      // Synthesizers matching aliases
+      case "systemAlert": {
+        this.noise(0.9, 0.2, 1200, 100);
+        break;
+      }
+      case "gateOpen": {
+        this.tone(500, "sine", 0.2, 0.15, 0, 800);
+        break;
+      }
+      case "skillUse": {
+        this.tone(700, "sine", 0.1, 0.15, 0, 900);
+        break;
+      }
+      case "shadowArmy": {
+        this.tone(110, "sine", 0.8, 0.25, 0, 220);
+        this.noise(0.6, 0.15, 600, 100);
+        break;
+      }
+      case "dungeonClear": {
+        this.tone(700, "sine", 0.1, 0.15, 0, 900);
+        break;
+      }
+      case "manaFill": {
+        [523.25, 659.25, 783.99].forEach((f, i) =>
+          this.tone(f, "sine", 0.35, 0.22, i * 0.09),
+        );
+        break;
+      }
+      case "uiHover": {
+        this.noise(0.25, 0.1, 800, 400);
+        break;
+      }
+      case "notification": {
+        [659.25, 880, 1046.5].forEach((f, i) =>
+          this.tone(f, "sine", 0.25, 0.2, i * 0.06),
+        );
+        break;
+      }
       default:
         break;
     }
@@ -246,64 +313,58 @@ class SoundManager {
     voice: 1,
   };
   private lastPlayed: Record<string, number> = {};
-  private cache: Map<string, HTMLAudioElement> = new Map();
+  // Decoded AudioBuffers — Web Audio path avoids HTMLAudioElement autoplay
+  // restrictions in Chrome/Edge and enables true concurrent playback.
+  private bufferCache: Map<string, AudioBuffer> = new Map();
   private available: Set<string> = new Set();
   private initialised = false;
-  private unlockListenerAttached = false;
+  private userUnlocked = false;
 
   init() {
     if (this.initialised) return;
     this.initialised = true;
+    this.setupUnlockListeners();
+
     // Pre-resolve which files actually exist so we know when to synthesize.
     (Object.keys(SOUND_SPECS) as SoundKey[]).forEach((k) => {
       const url = assetUrl(SOUND_SPECS[k].path);
       void fetch(url, { method: "HEAD" })
-        .then((r) => {
-          if (r.ok) this.available.add(k);
-        })
-        .catch(() => {
-          /* placeholder fallback */
-        });
+        .then((r) => { if (r.ok) this.available.add(k); })
+        .catch(() => { /* file missing — synthesizer fallback */ });
     });
-
-    this.setupUnlockListeners();
   }
 
   private setupUnlockListeners() {
-    if (typeof window === "undefined" || this.unlockListenerAttached) return;
-    this.unlockListenerAttached = true;
+    if (typeof window === "undefined") return;
 
-    const unlock = () => {
-      // 1. Unlock Web Audio API context
-      const Ctx = window.AudioContext || (window as any).webkitAudioContext;
-      if (Ctx) {
-        try {
-          const dummyCtx = new Ctx();
-          if (dummyCtx.state === "suspended") {
-            void dummyCtx.resume();
-          }
-        } catch (e) {
-          console.warn("Failed to unlock AudioContext:", e);
-        }
+    const unlock = async () => {
+      if (this.userUnlocked) return;
+      this.userUnlocked = true;
+
+      // Resume the shared AudioContext (required by Chrome/Edge autoplay policy).
+      const ctx = getSharedAudioContext();
+      if (ctx && ctx.state === "suspended") {
+        try { await ctx.resume(); } catch { /* ignore */ }
       }
 
-      // 2. Play a brief silent sound to unlock HTML5 Audio
+      // Also unlock HTMLAudioElement path with a silent data-URI buffer.
       try {
-        const silent = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAAA");
-        void silent.play().catch(() => {});
-      } catch (e) {
-        console.warn("Failed to unlock HTML5 Audio:", e);
-      }
+        const silent = new Audio(
+          "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAAA",
+        );
+        silent.volume = 0.001;
+        await silent.play().catch(() => {});
+      } catch { /* ignore */ }
 
-      // Clean up event listeners
-      window.removeEventListener("click", unlock);
-      window.removeEventListener("keydown", unlock);
-      window.removeEventListener("touchstart", unlock);
+      // Preload frequent UI sounds now that context is unlocked.
+      this.preload(["buttonClick", "hover", "navSwitch", "modalOpen", "modalClose"]);
     };
 
-    window.addEventListener("click", unlock, { passive: true });
-    window.addEventListener("keydown", unlock, { passive: true });
-    window.addEventListener("touchstart", unlock, { passive: true });
+    const opts: AddEventListenerOptions = { passive: true, once: true };
+    window.addEventListener("click", unlock, opts);
+    window.addEventListener("keydown", unlock, opts);
+    window.addEventListener("touchstart", unlock, opts);
+    window.addEventListener("pointerdown", unlock, opts);
   }
 
   setMuted(muted: boolean) {
@@ -349,36 +410,83 @@ class SoundManager {
     if (this.available.has(key)) {
       this.playFile(key, volume);
     } else {
+      // File not confirmed yet (HEAD still in-flight) or missing → synthesize.
       WebAudioPlaceholder.synthesize(key);
     }
   }
 
+  /**
+   * Plays a file-backed sound using the Web Audio API (AudioBuffer path).
+   * This avoids the HTMLAudioElement.play() autoplay-policy block in Chrome/Edge
+   * and allows true concurrent playback without needing Audio.cloneNode().
+   */
   private playFile(key: SoundKey, volume: number) {
     const url = assetUrl(SOUND_SPECS[key].path);
-    let el = this.cache.get(url);
-    if (!el) {
-      el = new Audio(url);
-      el.preload = "auto";
-      this.cache.set(url, el);
+    const ctx = getSharedAudioContext();
+
+    if (!ctx) {
+      // Absolute fallback for very old browsers.
+      try {
+        const el = new Audio(url);
+        el.volume = Math.min(1, volume);
+        void el.play().catch(() => {});
+      } catch { /* ignore */ }
+      return;
     }
-    el.volume = Math.min(1, volume);
-    el.currentTime = 0;
-    void el.play().catch(() => {});
+
+    const cached = this.bufferCache.get(url);
+    if (cached) {
+      this.dispatchBuffer(ctx, cached, volume);
+      return;
+    }
+
+    // Fetch + decode on first use, then cache the decoded buffer.
+    void fetch(url)
+      .then((r) => r.arrayBuffer())
+      .then((ab) => ctx.decodeAudioData(ab))
+      .then((buf) => {
+        this.bufferCache.set(url, buf);
+        this.dispatchBuffer(ctx, buf, volume);
+      })
+      .catch(() => {
+        // Corrupted file — fall back to synthesizer.
+        WebAudioPlaceholder.synthesize(key);
+      });
   }
 
-  /** Preload critical files into memory cache (only ones that exist). */
+  private dispatchBuffer(ctx: AudioContext, buffer: AudioBuffer, volume: number) {
+    const play = () => {
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(Math.min(1, volume), ctx.currentTime);
+      source.connect(gain);
+      gain.connect(ctx.destination);
+      source.start(ctx.currentTime);
+    };
+
+    if (ctx.state === "suspended") {
+      void ctx.resume().then(play);
+    } else {
+      play();
+    }
+  }
+
+  /** Preload critical files into the AudioBuffer cache. */
   preload(keys: SoundKey[]) {
+    const ctx = getSharedAudioContext();
+    if (!ctx) return;
+
     keys.forEach((k) => {
       if (!this.available.has(k)) return;
       const url = assetUrl(SOUND_SPECS[k].path);
-      if (this.cache.has(url)) return;
-      const el = new Audio(url);
-      el.preload = "auto";
-      el.addEventListener(
-        "canplaythrough",
-        () => this.cache.set(url, el),
-        { once: true },
-      );
+      if (this.bufferCache.has(url)) return;
+
+      void fetch(url)
+        .then((r) => r.arrayBuffer())
+        .then((ab) => ctx.decodeAudioData(ab))
+        .then((buf) => this.bufferCache.set(url, buf))
+        .catch(() => { /* ignore preload errors */ });
     });
   }
 }
