@@ -25,6 +25,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { playSound } from "@/lib/audio";
 
 export const Route = createFileRoute("/dashboard")({
   component: () => (
@@ -112,6 +113,10 @@ function Dashboard() {
             onSuccess: () => {
               if (isPositive) toast.info(`-${exp} EXP · ${habit.name}`);
             },
+            onError: (e: any) => {
+              toast.error(e.message ?? "Failed");
+              playSound("error");
+            },
             onSettled: () => setBusy(null),
           },
         );
@@ -123,8 +128,18 @@ function Dashboard() {
             onSuccess: () => {
               const willLevelUp = isPositive && gained >= (profile.exp_to_next_level || 0);
               const showToast = () => {
-                if (isPositive) toast.success(`+${exp} EXP · ${habit.name}`);
-                else toast.error(`-${exp} EXP · ${habit.name}`);
+                if (isPositive) {
+                  toast.success(`+${exp} EXP · ${habit.name}`);
+                  // Streak / first-habit-of-day feel
+                  if (doneMap.size === 0) {
+                    playSound("streak");
+                  } else {
+                    playSound("success");
+                  }
+                } else {
+                  toast.error(`-${exp} EXP · ${habit.name}`);
+                  playSound("error");
+                }
               };
               
               if (willLevelUp) {
@@ -133,7 +148,10 @@ function Dashboard() {
                 showToast();
               }
             },
-            onError: (e: any) => toast.error(e.message ?? "Failed"),
+            onError: (e: any) => {
+              toast.error(e.message ?? "Failed");
+              playSound("error");
+            },
             onSettled: () => setBusy(null),
           },
         );

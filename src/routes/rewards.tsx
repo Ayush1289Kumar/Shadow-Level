@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { playSound } from "@/lib/audio";
 
 export const Route = createFileRoute("/rewards")({
   component: () => (
@@ -32,7 +33,11 @@ function Rewards() {
   const deleteReward = useDeleteReward();
 
   function create() {
-    if (!form.name.trim() || form.cost < 1) return toast.error("Invalid reward");
+    if (!form.name.trim() || form.cost < 1) {
+      toast.error("Invalid reward");
+      playSound("error");
+      return;
+    }
     createReward.mutate(
       { ...form, user_id: profile.id, description: form.description || null },
       {
@@ -40,6 +45,11 @@ function Rewards() {
           setForm({ name: "", description: "", cost: 100 });
           setShowForm(false);
           toast.success(STRINGS.rewards.create_toast);
+          playSound("success");
+        },
+        onError: (e: any) => {
+          toast.error(e.message ?? "Failed");
+          playSound("error");
         },
       },
     );
@@ -47,18 +57,38 @@ function Rewards() {
 
   function purchase(r: { id: string; name: string; cost: number; is_purchased: boolean }) {
     if (r.is_purchased) return;
-    if (profile.total_exp < r.cost) return toast.error(STRINGS.rewards.insufficient_exp);
+    if (profile.total_exp < r.cost) {
+      toast.error(STRINGS.rewards.insufficient_exp);
+      playSound("error");
+      return;
+    }
     if (!confirm(`Spend ${r.cost} EXP on "${r.name}"? This cannot be refunded.`)) return;
     purchaseReward.mutate(
       { rewardId: r.id, cost: r.cost },
-      { onSuccess: () => toast.success(STRINGS.rewards.purchase_toast) },
+      {
+        onSuccess: () => {
+          toast.success(STRINGS.rewards.purchase_toast);
+          playSound("rewardClaim");
+        },
+        onError: (e: any) => {
+          toast.error(e.message ?? "Failed");
+          playSound("error");
+        },
+      },
     );
   }
 
   function remove(id: string) {
     if (!confirm("Remove this reward?")) return;
     deleteReward.mutate(id, {
-      onSuccess: () => toast.success(STRINGS.rewards.delete_toast),
+      onSuccess: () => {
+        toast.success(STRINGS.rewards.delete_toast);
+        playSound("modalClose");
+      },
+      onError: (e: any) => {
+        toast.error(e.message ?? "Failed");
+        playSound("error");
+      },
     });
   }
 

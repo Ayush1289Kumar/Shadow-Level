@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
+import { playSound } from "@/lib/audio";
 
 interface Habit {
   id: string;
@@ -40,7 +41,13 @@ export function HabitCard({ habit, done, busy, shouldReduceMotion, onToggle }: H
             }`
       }`}
       onClick={() => {
-        if (!busy) onToggle(habit);
+        if (busy) return;
+        if (!done) playSound(habit.habit_type === "positive" ? "habitComplete" : "error");
+        else playSound("navSwitch");
+        onToggle(habit);
+      }}
+      onHoverStart={() => {
+        if (!shouldReduceMotion) playSound("hover");
       }}
       whileTap={{ scale: 0.98 }}
     >

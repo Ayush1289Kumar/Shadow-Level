@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { playSound } from "@/lib/audio";
 
 export const Route = createFileRoute("/habits")({
   component: () => (
@@ -54,7 +55,11 @@ function HabitsPage() {
   const deleteHabit = useDeleteHabit();
 
   function save() {
-    if (!form.name.trim()) return toast.error("Name required");
+    if (!form.name.trim()) {
+      toast.error("Name required");
+      playSound("error");
+      return;
+    }
     const payload = {
       ...form,
       exp_value: form.exp_value,
@@ -70,8 +75,12 @@ function HabitsPage() {
             setForm(empty);
             setEditing(null);
             setShowForm(false);
+            playSound("success");
           },
-          onError: (e: any) => toast.error(e.message),
+          onError: (e: any) => {
+            toast.error(e.message);
+            playSound("error");
+          },
         },
       );
     } else {
@@ -82,8 +91,12 @@ function HabitsPage() {
             toast.success(STRINGS.habits.create_toast);
             setForm(empty);
             setShowForm(false);
+            playSound("questAccept");
           },
-          onError: (e: any) => toast.error(e.message),
+          onError: (e: any) => {
+            toast.error(e.message);
+            playSound("error");
+          },
         },
       );
     }
@@ -92,7 +105,14 @@ function HabitsPage() {
   function remove(id: string) {
     if (!confirm("Delete this habit? Its logs will remain.")) return;
     deleteHabit.mutate(id, {
-      onSuccess: () => toast.success(STRINGS.habits.delete_toast),
+      onSuccess: () => {
+        toast.success(STRINGS.habits.delete_toast);
+        playSound("modalClose");
+      },
+      onError: (e: any) => {
+        toast.error(e.message ?? "Failed to delete");
+        playSound("error");
+      },
     });
   }
 

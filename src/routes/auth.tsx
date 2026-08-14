@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Loader2, Sword } from "lucide-react";
+import { playSound } from "@/lib/audio";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
@@ -38,15 +39,18 @@ function AuthPage() {
         setUserId(profile.id);
         setProfile(profile);
         toast.success(STRINGS.auth.toast_signup);
+        playSound("dungeonEnter");
       } else {
         const profile = await loginAccount(email, password);
         setSession(profile.id);
         setUserId(profile.id);
         setProfile(profile);
         toast.success(STRINGS.auth.toast_login);
+        playSound("dungeonEnter");
       }
     } catch (err: any) {
       toast.error(err.message ?? STRINGS.auth.toast_error);
+      playSound("error");
     } finally {
       setLoading(false);
     }

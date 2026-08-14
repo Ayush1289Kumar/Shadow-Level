@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ExpBar } from "@/components/ExpBar";
 import { toast } from "sonner";
+import { playSound } from "@/lib/audio";
+import type { AudioCategory } from "@/lib/audio";
 
 export const Route = createFileRoute("/me")({
   component: () => (
@@ -36,6 +38,12 @@ function MePage() {
 
   const updateProfile = useUpdateProfile();
 
+  // Audio settings (persisted via store)
+  const audio = useAppStore((s) => s.audio);
+  const setAudioMuted = useAppStore((s) => s.setAudioMuted);
+  const setAudioMasterVolume = useAppStore((s) => s.setAudioMasterVolume);
+  const setAudioCategoryVolume = useAppStore((s) => s.setAudioCategoryVolume);
+
   const publicUrl =
     typeof window !== "undefined" && profile.username
       ? `${window.location.origin}/profile/${profile.username}`
@@ -46,8 +54,14 @@ function MePage() {
     updateProfile.mutate(
       { id: profile.id, updates: { username: username.trim() } },
       {
-        onSuccess: () => toast.success(STRINGS.profile.save_toast),
-        onError: (e: any) => toast.error(e.message),
+        onSuccess: () => {
+          toast.success(STRINGS.profile.save_toast);
+          playSound("success");
+        },
+        onError: (e: any) => {
+          toast.error(e.message);
+          playSound("error");
+        },
       },
     );
   }
@@ -210,6 +224,78 @@ function MePage() {
         </div>
       </div>
 
+      {/* Audio Settings */}
+      <div className="glass p-6 space-y-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-display text-lg text-mana-bright">Audio</h2>
+            <p className="text-xs text-muted-foreground mt-1">Sound & music settings.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono uppercase">{audio.muted ? "Muted" : "On"}</span>
+            <button
+              onClick={() => {
+                setAudioMuted(!audio.muted);
+                if (audio.muted) playSound("buttonClick");
+              }}
+              className={`h-6 w-11 rounded-full border transition-colors relative ${
+                audio.muted ? "bg-border border-border" : "bg-mana/40 border-mana/60"
+              }`}
+              aria-pressed={!audio.muted}
+              aria-label="Toggle sound"
+            >
+              <span
+                className={`absolute top-0.5 h-5 w-5 rounded-full transition-all ${
+                  audio.muted ? "left-0.5 bg-muted-foreground" : "left-[22px] bg-mana"
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+
+        {/* Master volume */}
+        <VolumeRow
+          label="Master"
+          value={audio.masterVolume}
+          onChange={(v) => setAudioMasterVolume(v)}
+        />
+
+        {/* Category volumes */}
+        {(Object.keys(audio.volumes) as AudioCategory[]).map((cat) => (
+          <VolumeRow
+            key={cat}
+            label={cat.charAt(0).toUpperCase() + cat.slice(1)}
+            value={audio.volumes[cat]}
+            onChange={(v) => setAudioCategoryVolume(cat, v)}
+          />
+        ))}
+
+        <p className="text-[10px] text-muted-foreground/70">
+          Drop custom audio files into <code className="text-mana">public/audio/</code> to override
+          the placeholder tones. See <code className="text-mana">docs/grok.md</code>.
+        </p>
+      </div>
+
+      {/* Danger Zone */}
+      <div className="glass p-6 border border-destructive/20 space-y-4">
+        <div>
+          <h2 className="font-display text-lg text-destructive">Danger Zone</h2>
+          <p className="text-xs text-muted-foreground mt-1">Wipe all hunter logs, profiles, habits, rewards, and settings from this browser.</p>
+        </div>
+        <Button
+          variant="destructive"
+          onClick={() => {
+            if (confirm("Are you sure you want to reset ALL data? This cannot be undone.")) {
+              localStorage.clear();
+              window.location.href = "/auth";
+            }
+          }}
+          className="w-full md:w-auto uppercase font-bold tracking-wider text-xs cursor-pointer"
+        >
+          Reset All Data
+        </Button>
+      </div>
+
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <Stat label="Level" value={profile.level} />
         <Stat label="Total EXP" value={profile.total_exp.toLocaleString()} />
@@ -217,6 +303,35 @@ function MePage() {
         <Stat label="Best" value={`${profile.longest_streak}d`} />
       </div>
     </main>
+  );
+}
+
+function VolumeRow({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="w-20 text-xs font-mono uppercase text-muted-foreground">{label}</span>
+      <input
+        type="range"
+        min={0}
+        max={1}
+        step={0.05}
+        value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        className="flex-1 accent-mana"
+        aria-label={`${label} volume`}
+      />
+      <span className="w-10 text-right text-xs font-mono text-muted-foreground">
+        {Math.round(value * 100)}%
+      </span>
+    </div>
   );
 }
 
