@@ -260,7 +260,7 @@ function CustomCursor() {
         animate={{
           width: hoverState === "hover" ? 48 : hoverState === "view" ? 64 : 32,
           height: hoverState === "hover" ? 48 : hoverState === "view" ? 64 : 32,
-          borderColor: hoverState === "view" ? "#06B6D4" : "#FBBF24"
+          borderColor: hoverState === "view" ? "#06B6D4" : "#3B82F6"
         }}
         className="pointer-events-none fixed left-0 top-0 z-[10000] rounded-full border-[1.5px] bg-transparent opacity-60 mix-blend-difference"
       >
@@ -273,7 +273,7 @@ function CustomCursor() {
 
       <div
         style={{ left: position.x - 3, top: position.y - 3 }}
-        className="pointer-events-none fixed z-[10000] h-1.5 w-1.5 rounded-full bg-[#FBBF24] mix-blend-difference"
+        className="pointer-events-none fixed z-[10000] h-1.5 w-1.5 rounded-full bg-mana-bright mix-blend-difference"
       />
 
       {ripples.map((ripple) => (
@@ -282,7 +282,7 @@ function CustomCursor() {
           initial={{ x: ripple.x - 16, y: ripple.y - 16, scale: 0.5, opacity: 1 }}
           animate={{ scale: 3, opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="pointer-events-none fixed z-[10000] h-8 w-8 rounded-full border border-[#FBBF24] opacity-0"
+          className="pointer-events-none fixed z-[10000] h-8 w-8 rounded-full border border-mana-bright opacity-0"
         />
       ))}
     </>
@@ -624,7 +624,7 @@ export function InteractiveLanding() {
             <Magnetic>
               <Button
                 onClick={handleAriseClick}
-                className="group relative h-14 px-8 bg-gradient-to-r from-[#FBBF24] to-[#F59E0B] text-black font-bold uppercase rounded-xl text-glow-mana shadow-[0_0_20px_rgba(251,191,36,0.3)] border border-amber-400/20"
+                className="group relative h-14 px-8 bg-gradient-to-r from-mana to-mana-bright text-moonlight font-bold uppercase rounded-xl shadow-[0_0_24px_var(--glow-mana)] border border-mana/20 hover:shadow-[0_0_36px_var(--glow-mana)] transition-all duration-300"
               >
                 Get Started
                 <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -675,12 +675,12 @@ export function InteractiveLanding() {
                 desc: "Receive daily habits and quests. Claim experience points and upgrade your level."
               },
               {
-                icon: <Shield className="h-6 w-6 text-amber-400" />,
+                icon: <Shield className="h-6 w-6 text-mana-light" />,
                 title: "Shadow Extraction",
                 desc: "Extract souls from completed tasks to form your shadow army. Stagger list cards to fight dungeon blocks."
               },
               {
-                icon: <Activity className="h-6 w-6 text-emerald-400" />,
+                icon: <Activity className="h-6 w-6 text-mana-bright" />,
                 title: "Status Monitor",
                 desc: "Detailed monitors for Strength, Agility, and Intelligence parameters. Fulfill conditions to unlock level achievements."
               }
@@ -718,9 +718,9 @@ export function InteractiveLanding() {
           >
             <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,24,0)_95%,rgba(6,182,212,0.08)_95%)] bg-[size:100%_24px] pointer-events-none opacity-40 rounded-3xl" />
 
-            <div className="flex justify-between items-center border-b border-cyan-500/30 pb-6 font-mono">
+            <div className="flex justify-between items-center border-b border-mana/30 pb-6 font-mono">
               <span className="text-mana text-glow-mana text-xl tracking-widest uppercase font-bold">[ STATUS WINDOW ]</span>
-              <span className="text-amber font-bold border border-amber/30 bg-amber-dark/10 px-3 py-1 text-xs rounded uppercase font-sans">S-Rank Hunter</span>
+              <span className="text-mana-bright font-bold border border-mana-bright/30 bg-mana/10 px-3 py-1 text-xs rounded uppercase font-sans">S-Rank Hunter</span>
             </div>
 
             <div className="mt-8 grid gap-8 md:grid-cols-2">
@@ -730,13 +730,13 @@ export function InteractiveLanding() {
                     <span className="text-silver uppercase">Strength</span>
                     <span className="text-mana font-bold">120 / 150</span>
                   </div>
-                  <div className="h-2 w-full bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                  <div className="h-2 w-full bg-abyss rounded-full overflow-hidden border border-mist">
                     <motion.div
                       initial={{ width: 0 }}
                       whileInView={{ width: "80%" }}
                       viewport={{ once: true }}
                       transition={{ duration: 1.5, ease: "easeOut" }}
-                      className="h-full bg-gradient-to-r from-cyan-500 to-blue-500"
+                      className="h-full bg-gradient-to-r from-mana to-mana-bright"
                     />
                   </div>
                 </div>
@@ -746,13 +746,13 @@ export function InteractiveLanding() {
                     <span className="text-silver uppercase">Agility</span>
                     <span className="text-mana font-bold">95 / 150</span>
                   </div>
-                  <div className="h-2 w-full bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                  <div className="h-2 w-full bg-abyss rounded-full overflow-hidden border border-mist">
                     <motion.div
                       initial={{ width: 0 }}
                       whileInView={{ width: "63.3%" }}
                       viewport={{ once: true }}
                       transition={{ duration: 1.5, ease: "easeOut" }}
-                      className="h-full bg-gradient-to-r from-cyan-500 to-blue-500"
+                      className="h-full bg-gradient-to-r from-mana to-mana-bright"
                     />
                   </div>
                 </div>
@@ -762,20 +762,20 @@ export function InteractiveLanding() {
                     <span className="text-silver uppercase">Intelligence</span>
                     <span className="text-mana font-bold">142 / 150</span>
                   </div>
-                  <div className="h-2 w-full bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                  <div className="h-2 w-full bg-abyss rounded-full overflow-hidden border border-mist">
                     <motion.div
                       initial={{ width: 0 }}
                       whileInView={{ width: "94.6%" }}
                       viewport={{ once: true }}
                       transition={{ duration: 1.5, ease: "easeOut" }}
-                      className="h-full bg-gradient-to-r from-cyan-500 to-blue-500"
+                      className="h-full bg-gradient-to-r from-mana to-mana-bright"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col justify-center items-center border-t md:border-t-0 md:border-l border-cyan-500/20 pt-8 md:pt-0 md:pl-12">
-                <Trophy className="h-16 w-16 text-amber-400 mb-4 animate-bounce text-glow-mana" />
+              <div className="flex flex-col justify-center items-center border-t md:border-t-0 md:border-l border-mana/20 pt-8 md:pt-0 md:pl-12">
+                <Trophy className="h-16 w-16 text-mana-bright mb-4 animate-bounce text-glow-mana-bright" />
                 <span className="font-mono text-xs uppercase text-ash">Total Level</span>
                 <span className="text-5xl font-extrabold text-white tracking-widest mt-1">99</span>
                 <span className="text-xs text-mana mt-2 uppercase font-mono tracking-wider">Shadow Army Command Active</span>
@@ -793,18 +793,18 @@ export function InteractiveLanding() {
             <p className="mt-4 text-silver">Unlock shadow summons and S-Rank parameter tracking capabilities.</p>
 
             <div className="mt-8 flex justify-center items-center gap-4">
-              <span className={`text-sm ${!isAnnual ? "text-cyan-400 font-bold" : "text-slate-500"}`}>Monthly</span>
+              <span className={`text-sm ${!isAnnual ? "text-mana font-bold" : "text-ash"}`}>Monthly</span>
               <button
                 onClick={handleToggleBilling}
                 className="relative h-6 w-12 rounded-full bg-shade border border-mist transition-colors"
               >
                 <motion.div
                   animate={{ x: isAnnual ? 24 : 2 }}
-                  className="h-4.5 w-4.5 rounded-full bg-cyan-400 shadow shadow-cyan-500/50"
+                  className="h-4.5 w-4.5 rounded-full bg-mana shadow shadow-mana/50"
                 />
               </button>
-              <span className={`text-sm ${isAnnual ? "text-cyan-400 font-bold" : "text-slate-500"}`}>
-                Annual <span className="text-xs text-emerald-400 font-mono font-bold bg-emerald-950/20 border border-emerald-500/30 px-1.5 py-0.5 rounded ml-1">Save 20%</span>
+              <span className={`text-sm ${isAnnual ? "text-mana font-bold" : "text-ash"}`}>
+                Annual <span className="text-xs text-success font-mono font-bold bg-success-dark/20 border border-success/30 px-1.5 py-0.5 rounded ml-1">Save 20%</span>
               </span>
             </div>
           </div>
