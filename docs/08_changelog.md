@@ -1,5 +1,14 @@
 # Shadow Level — Changelog
 
+## 2026-08-14 — Audio Upgrade & Rank Up System
+
+### Added
+- **Rank Up Sound Effect** — Connected the newly added `rankUp.mp3` file to trigger a satisfying notification and sound effect whenever a player ranks up based on daily quest streaks.
+- **Documentation Updates** — Updated the PRD and Architecture documents to reflect the local audio management system and custom sfx integrations.
+
+### Changed
+- **Audio Routing** — Updated path mappings inside the global Audio Manager to point to the root `/audio/` directory for custom `rankUp.mp3` overrides.
+
 ## 2026-08-13 — Theme Engine & UI Polish
 
 ### Added

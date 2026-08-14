@@ -334,7 +334,7 @@ class SoundManager {
   }
 
   play(key: SoundKey) {
-    if (this.muted || this.reducedMotion) return;
+    if (this.muted) return;
 
     const spec = SOUND_SPECS[key];
     const volume = spec.volume * this.volumes[spec.category] * this.masterVolume;

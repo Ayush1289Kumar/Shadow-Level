@@ -85,6 +85,18 @@ function Dashboard() {
     }
   }, [positiveHabitsCount, yesterdayPositiveCount, todayStr]);
 
+  const getRank = (streak: number) => {
+    if (streak >= 90) return "S";
+    if (streak >= 30) return "A";
+    if (streak >= 14) return "B";
+    if (streak >= 7) return "C";
+    if (streak >= 3) return "D";
+    return "E";
+  };
+
+  const currentRank = getRank(profile.current_streak);
+  const [prevRank, setPrevRank] = useState(currentRank);
+
   useEffect(() => {
     if (profile.level > prevLevel) {
       setLeveledUpTo(profile.level);
@@ -97,6 +109,15 @@ function Dashboard() {
     }
     setPrevLevel(profile.level);
   }, [profile.level, prevLevel]);
+
+  useEffect(() => {
+    const rankOrder: Record<string, number> = { E: 0, D: 1, C: 2, B: 3, A: 4, S: 5 };
+    if (rankOrder[currentRank] > rankOrder[prevRank]) {
+      playSound("rankUp");
+      toast.success(`[NOTICE] RANK UP: You are now a ${STRINGS.ranks[currentRank] || `${currentRank}-Rank`} Hunter!`);
+    }
+    setPrevRank(currentRank);
+  }, [currentRank, prevRank]);
 
   function toggle(habit: Habit) {
     if (busy) return;
