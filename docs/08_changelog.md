@@ -1,5 +1,36 @@
 # Shadow Level — Changelog
 
+## 2026-08-15 — Interactive Landing Page & Audio Engine Overhaul
+
+### Added
+- **Interactive Landing Page** (`src/components/InteractiveLanding.tsx`) — Full cinematic landing experience:
+  - `ThreeDungeonGate` — Three.js WebGL torus-knot portal gate with rotation, pulse, and arise zoom burst
+  - `CinematicLoader` — Animated system-init loading bar that blocks content until complete
+  - `CustomCursor` — SVG ring cursor with hover/view state changes and click ripple effect
+  - `ScrambleText` — Hacker-decrypt heading animation (configurable speed; currently 2× slower than original)
+  - `Magnetic` — Framer Motion spring wrapper for magnetic CTA button
+  - Scroll-driven `gateOpacity` — 3D gate fades out over first 400px of scroll, keeping lower sections legible
+  - Section-locked audio events: `gateOpen` on scroll chapter change, `rankUp` on Stats window enter
+  - Cinematic section transitions with `AnimatePresence` screen wipes
+  - Floating mute toggle button with `penalty`/`mana` icon coloring
+
+### Changed
+- **Audio Engine Rewrite** (`src/lib/audio.ts`):
+  - Replaced per-sound `AudioContext` creation with a **shared singleton** (`getSharedAudioContext`) — fixes Chrome/Edge `suspended` state bugs
+  - Switched `playFile()` from `HTMLAudioElement` to `fetch → decodeAudioData → BufferSourceNode` — bypasses autoplay policy
+  - Added `AudioBuffer` cache (`Map<string, AudioBuffer>`) — files decoded once and reused
+  - Added gesture-unlock flow (`pointerdown` / `touchstart` / `click`) to call `ctx.resume()` and trigger preloads
+  - Fixed async race condition: sounds triggered before `HEAD` check completes now fall through to synthesizer immediately
+- **Landing Page Color Theme** — Replaced all hardcoded Tailwind `slate-*`/`cyan-*`/`amber-*` classes with project CSS-variable-based Tailwind classes (`bg-void`, `text-mana`, `border-mist`, etc.), ensuring full theme-switching compatibility
+- **Yellow Color Removed** — All amber/yellow elements (CTA button, cursor, feature icons, trophy, S-Rank badge) replaced with the mana (cyan-blue) palette
+- **Section Backgrounds Made Solid** — Features, Stats, Pricing, and Testimonials sections now use fully opaque `bg-void`/`bg-abyss` backgrounds, preventing 3D gate rings from bleeding through
+
+### Removed
+- `onViewportEnter` `shadowArmy` sound from the System Features section heading — was triggering unexpectedly on scroll
+
+---
+
+
 ## 2026-08-14 — Audio Upgrade & Rank Up System
 
 ### Added

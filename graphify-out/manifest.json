@@ -345,8 +345,8 @@
     "semantic_hash": ""
   },
   "src/lib/audio.ts": {
-    "mtime": 1786732029.895178,
-    "ast_hash": "8d255f30d3e570373dc4d3291000069f",
+    "mtime": 1786734692.9388154,
+    "ast_hash": "48b3ac45299a0607dfd392abb3e3b5cf",
     "semantic_hash": ""
   },
   "src/lib/image.ts": {
@@ -480,23 +480,23 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1786563338.181822,
-    "ast_hash": "e03016ba0b49fca4986f5d1e0b99e3bd",
+    "mtime": 1786735760.5359116,
+    "ast_hash": "a665f6abc4febac2bc1a1352682949b3",
     "semantic_hash": ""
   },
   "docs/01_prd.md": {
-    "mtime": 1786730433.537842,
-    "ast_hash": "30c5a615bf935d7d6b77384e5c5cbd51",
+    "mtime": 1786735784.0077882,
+    "ast_hash": "5b567061b72489e500abc2e94a0a6ab4",
     "semantic_hash": ""
   },
   "docs/02_architecture.md": {
-    "mtime": 1786730433.537842,
-    "ast_hash": "05d7fd9f61e6b5aa29c3b68e458b3bb3",
+    "mtime": 1786735820.606284,
+    "ast_hash": "1c0af3dc888cb65bf38a597e8bd0a807",
     "semantic_hash": ""
   },
   "docs/08_changelog.md": {
-    "mtime": 1786730433.537842,
-    "ast_hash": "ebf7445ce2b1a2207f58ab14c6efc01b",
+    "mtime": 1786735843.7646115,
+    "ast_hash": "dc8814daba87b243f3ead7cfc023c385",
     "semantic_hash": ""
   },
   "docs/aren_interactive.md": {
@@ -625,8 +625,28 @@
     "semantic_hash": ""
   },
   "src/components/InteractiveLanding.tsx": {
-    "mtime": 1786733184.809875,
-    "ast_hash": "2a58f8f8ceea846bd6dc0b51a7fe67e0",
+    "mtime": 1786735559.3024774,
+    "ast_hash": "fa033b5c244c419602d4b3bf5e950f8b",
+    "semantic_hash": ""
+  },
+  "implementation_plan.md": {
+    "mtime": 1786734281.7260196,
+    "ast_hash": "ccf04367c15000e6a7bd8a40644fb1eb",
+    "semantic_hash": ""
+  },
+  "public/frames/frame_001.jpg": {
+    "mtime": 1786734177.9398494,
+    "ast_hash": "5efc2cf3b7a9bf0edfaca48176d5941a",
+    "semantic_hash": ""
+  },
+  "public/frames/frame_050.jpg": {
+    "mtime": 1786734201.693382,
+    "ast_hash": "adcd051251816abcbdc96a5b84323e33",
+    "semantic_hash": ""
+  },
+  "public/frames/frame_100.jpg": {
+    "mtime": 1786734216.0918899,
+    "ast_hash": "3f55c1eff345545509affba5adba93ee",
     "semantic_hash": ""
   }
 }
