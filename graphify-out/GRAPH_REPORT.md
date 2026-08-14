@@ -1,7 +1,7 @@
 # Graph Report - Shadow-Level  (2026-08-14)
 
 ## Corpus Check
-- 103 files · ~179,800 words
+- 103 files · ~179,729 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,43 +10,56 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9b05fcf2`
+- Built from commit: `ecf08c06`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - queries.ts
-- dashboard.tsx
-- sidebar.tsx
 - cn
-- routeTree.gen.ts
-- button.tsx
+- sidebar.tsx
+- dashboard.tsx
 - audio.ts
-- compilerOptions
-- utils.ts
+- 🚀 AI Project Operating System (AI-POS) — Local Development
+- UI/UX, Animation & Design — Agent Skill Reference
+- Part 3 — Section-by-Section Spec
 - dropdown-menu.tsx
+- compilerOptions
+- button.tsx
+- utils.ts
+- routeTree.gen.ts
 - components.json
+- Shadow Level — Audio, SFX & Interactive Animation Specification
 - command.tsx
 - menubar.tsx
-- form.tsx
+- Shadow Level — Changelog
+- SECURITY.md — Local Development
+- carousel.tsx
 - dependencies
+- form.tsx
 - devDependencies
 - chart.tsx
 - scripts
 - table.tsx
+- ⚔️ Shadow Level — RPG Habit Tracker
 - navigation-menu.tsx
+- Shadow Level — Product Requirements Document
 - card.tsx
 - toggle-group.tsx
+- Shadow Level — Architecture
 - package.json
 - alert.tsx
+- Audio Assets — Drop Real Files Here
 - badge.tsx
 - setup.ts
-- @radix-ui/react-aspect-ratio
-- date-fns
+- rules/graphify.md
+- workflows/graphify.md
+- class-variance-authority
 - clsx
 - cmdk
+- date-fns
 - embla-carousel-react
-- 🚀 AI Project Operating System (AI-POS) — Local Development
+- eslint-config-prettier
 - @eslint/js
 - eslint-plugin-prettier
 - eslint-plugin-react-refresh
@@ -56,7 +69,7 @@
 - lenis
 - lucide-react
 - @radix-ui/react-alert-dialog
-- UI/UX, Animation & Design — Agent Skill Reference
+- @radix-ui/react-aspect-ratio
 - @radix-ui/react-avatar
 - @radix-ui/react-checkbox
 - @radix-ui/react-collapsible
@@ -103,19 +116,6 @@
 - @vitejs/plugin-react
 - @vitest/ui
 - vercel.json
-- Part 3 — Section-by-Section Spec
-- Shadow Level — Audio, SFX & Interactive Animation Specification
-- SECURITY.md — Local Development
-- carousel.tsx
-- Shadow Level — Changelog
-- ⚔️ Shadow Level — RPG Habit Tracker
-- Shadow Level — Product Requirements Document
-- Shadow Level — Architecture
-- Audio Assets — Drop Real Files Here
-- rules/graphify.md
-- workflows/graphify.md
-- class-variance-authority
-- eslint-config-prettier
 
 ## God Nodes (most connected - your core abstractions)
 1. `cn()` - 226 edges
@@ -150,145 +150,145 @@
 Cohesion: 0.07
 Nodes (75): AppNav(), items, Props, State, RequireAuth(), Input, Label, labelVariants (+67 more)
 
-### Community 1 - "dashboard.tsx"
-Cohesion: 0.09
-Nodes (25): ExpBar(), Habit, HabitCard(), HabitCardProps, LevelProgress(), LevelUpSequence(), RankBadge(), Avatar (+17 more)
+### Community 1 - "cn"
+Cohesion: 0.08
+Nodes (38): AccordionContent, AccordionItem, AccordionTrigger, Breadcrumb, BreadcrumbEllipsis(), BreadcrumbItem, BreadcrumbLink, BreadcrumbList (+30 more)
 
 ### Community 2 - "sidebar.tsx"
 Cohesion: 0.06
 Nodes (39): Separator, SheetContent, SheetContentProps, SheetDescription, SheetFooter(), SheetHeader(), SheetOverlay, SheetTitle (+31 more)
 
-### Community 3 - "cn"
-Cohesion: 0.08
-Nodes (38): AccordionContent, AccordionItem, AccordionTrigger, Breadcrumb, BreadcrumbEllipsis(), BreadcrumbItem, BreadcrumbLink, BreadcrumbList (+30 more)
+### Community 3 - "dashboard.tsx"
+Cohesion: 0.09
+Nodes (25): ExpBar(), Habit, HabitCard(), HabitCardProps, LevelProgress(), LevelUpSequence(), RankBadge(), Avatar (+17 more)
 
-### Community 4 - "routeTree.gen.ts"
-Cohesion: 0.13
-Nodes (21): Route, Route, Route, Route, Route, Route, Route, AuthRoute (+13 more)
-
-### Community 5 - "button.tsx"
-Cohesion: 0.12
-Nodes (21): AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter(), AlertDialogHeader(), AlertDialogOverlay, AlertDialogTitle (+13 more)
-
-### Community 6 - "audio.ts"
+### Community 4 - "audio.ts"
 Cohesion: 0.07
 Nodes (16): ErrorBoundary, assetUrl(), AudioBridge(), AudioSettingsState, sound, SOUND_SPECS, SoundKey, SoundManager (+8 more)
 
-### Community 7 - "compilerOptions"
-Cohesion: 0.07
-Nodes (26): DOM, DOM.Iterable, ES2022, eslint.config.js, src/**/*.ts, src/**/*.tsx, vite/client, vite.config.ts (+18 more)
-
-### Community 8 - "utils.ts"
-Cohesion: 0.08
-Nodes (15): HoverCardContent, InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot, MorphText(), MorphTextProps, PopoverContent (+7 more)
-
-### Community 9 - "dropdown-menu.tsx"
-Cohesion: 0.09
-Nodes (21): SmoothScrollProvider(), initialState, Theme, ThemeProvider(), ThemeProviderContext, ThemeProviderProps, ThemeProviderState, useTheme() (+13 more)
-
-### Community 10 - "components.json"
-Cohesion: 0.11
-Nodes (18): aliases, components, hooks, lib, ui, utils, iconLibrary, registries (+10 more)
-
-### Community 11 - "command.tsx"
-Cohesion: 0.12
-Nodes (14): Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut() (+6 more)
-
-### Community 12 - "menubar.tsx"
-Cohesion: 0.12
-Nodes (11): Menubar, MenubarCheckboxItem, MenubarContent, MenubarItem, MenubarLabel, MenubarRadioItem, MenubarSeparator, MenubarShortcut() (+3 more)
-
-### Community 13 - "form.tsx"
-Cohesion: 0.23
-Nodes (10): FormControl, FormDescription, FormFieldContext, FormFieldContextValue, FormItem, FormItemContext, FormItemContextValue, FormLabel (+2 more)
-
-### Community 14 - "dependencies"
-Cohesion: 0.15
-Nodes (13): canvas-confetti, @hookform/resolvers, dependencies, canvas-confetti, @hookform/resolvers, @radix-ui/react-accordion, @radix-ui/react-navigation-menu, @radix-ui/react-slider (+5 more)
-
-### Community 15 - "devDependencies"
-Cohesion: 0.18
-Nodes (11): eslint, eslint-plugin-react-hooks, globals, devDependencies, eslint, eslint-plugin-react-hooks, globals, typescript-eslint (+3 more)
-
-### Community 16 - "chart.tsx"
-Cohesion: 0.25
-Nodes (9): ChartConfig, ChartContainer, ChartContext, ChartContextProps, ChartLegendContent, ChartTooltipContent, getPayloadConfigFromPayload(), THEMES (+1 more)
-
-### Community 17 - "scripts"
-Cohesion: 0.22
-Nodes (9): scripts, build, deploy, dev, predeploy, preview, test, test:ui (+1 more)
-
-### Community 18 - "table.tsx"
-Cohesion: 0.22
-Nodes (8): Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow
-
-### Community 19 - "navigation-menu.tsx"
-Cohesion: 0.29
-Nodes (7): NavigationMenu, NavigationMenuContent, NavigationMenuIndicator, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle, NavigationMenuViewport
-
-### Community 20 - "card.tsx"
-Cohesion: 0.29
-Nodes (6): Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
-
-### Community 21 - "toggle-group.tsx"
-Cohesion: 0.43
-Nodes (5): ToggleGroup, ToggleGroupContext, ToggleGroupItem, Toggle, toggleVariants
-
-### Community 22 - "package.json"
-Cohesion: 0.40
-Nodes (4): description, name, private, version
-
-### Community 23 - "alert.tsx"
-Cohesion: 0.50
-Nodes (4): Alert, AlertDescription, AlertTitle, alertVariants
-
-### Community 24 - "badge.tsx"
-Cohesion: 0.67
-Nodes (3): Badge(), BadgeProps, badgeVariants
-
-### Community 31 - "🚀 AI Project Operating System (AI-POS) — Local Development"
+### Community 5 - "🚀 AI Project Operating System (AI-POS) — Local Development"
 Cohesion: 0.06
 Nodes (33): `01_prd.md`, `02_architecture.md`, `03_implementation_plan.md`, `04_task_today.md`, `05_rules.md`, `06_audit.md`, `07_decisions.md`, `08_changelog.md` (+25 more)
 
-### Community 41 - "UI/UX, Animation & Design — Agent Skill Reference"
+### Community 6 - "UI/UX, Animation & Design — Agent Skill Reference"
 Cohesion: 0.07
 Nodes (29): 1. Component Libraries, 2. Smooth Scroll, 3. Design Taste & Quality Enforcement, 4. Browser Automation & Visual Testing, 5. 3D & Three.js Portfolio References, 6. Reference & Checklists, Agent Instructions (Universal), agentation — `benjitaylor/agentation` (+21 more)
 
-### Community 92 - "Part 3 — Section-by-Section Spec"
+### Community 7 - "Part 3 — Section-by-Section Spec"
 Cohesion: 0.07
 Nodes (27): 1.1 — SFX Inventory Map, 1.2 — Audio Engine Rules, 1.3 — Ambient Soundscape (Optional Layer), 2.1 — Page Load Sequence, 2.2 — Hero Section Choreography, 2.3 — Scroll-Triggered Reveals, 2.4 — Cursor Effects, 2.5 — Particle System (+19 more)
 
-### Community 93 - "Shadow Level — Audio, SFX & Interactive Animation Specification"
+### Community 8 - "dropdown-menu.tsx"
+Cohesion: 0.09
+Nodes (21): SmoothScrollProvider(), initialState, Theme, ThemeProvider(), ThemeProviderContext, ThemeProviderProps, ThemeProviderState, useTheme() (+13 more)
+
+### Community 9 - "compilerOptions"
+Cohesion: 0.07
+Nodes (26): DOM, DOM.Iterable, ES2022, eslint.config.js, src/**/*.ts, src/**/*.tsx, vite/client, vite.config.ts (+18 more)
+
+### Community 10 - "button.tsx"
+Cohesion: 0.12
+Nodes (21): AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter(), AlertDialogHeader(), AlertDialogOverlay, AlertDialogTitle (+13 more)
+
+### Community 11 - "utils.ts"
+Cohesion: 0.08
+Nodes (15): HoverCardContent, InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot, MorphText(), MorphTextProps, PopoverContent (+7 more)
+
+### Community 12 - "routeTree.gen.ts"
+Cohesion: 0.13
+Nodes (21): Route, Route, Route, Route, Route, Route, Route, AuthRoute (+13 more)
+
+### Community 13 - "components.json"
+Cohesion: 0.11
+Nodes (18): aliases, components, hooks, lib, ui, utils, iconLibrary, registries (+10 more)
+
+### Community 14 - "Shadow Level — Audio, SFX & Interactive Animation Specification"
 Cohesion: 0.11
 Nodes (18): 1. Audio Architecture & Implementation Rules, 2. Sound Mapping — Where & When to Play, 3. Interactive Animations & Micro-Interactions, 4. Implementation Checklist for the Coding Agent, 5. Recommended Sound Character (Solo Leveling DNA), 6. Final Notes for the Coding Agent, Ambient (Optional but Atmospheric), Critical Moments (Highest Priority) (+10 more)
 
-### Community 94 - "SECURITY.md — Local Development"
-Cohesion: 0.14
-Nodes (13): Check 0 — Local Environment Security, Check 1 — Secret Leak Prevention, Check 2 — Personal Data Flow Audit, Check 3 — Pre-Deploy Production Audit, Check 4 — Deep Security Audit for Complex Logic, Check 5 — Attacker's Perspective Review, Environment Setup, How to Use (+5 more)
+### Community 15 - "command.tsx"
+Cohesion: 0.12
+Nodes (14): Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut() (+6 more)
 
-### Community 95 - "carousel.tsx"
-Cohesion: 0.19
-Nodes (13): Carousel, CarouselApi, CarouselContent, CarouselContext, CarouselContextProps, CarouselItem, CarouselNext, CarouselOptions (+5 more)
+### Community 16 - "menubar.tsx"
+Cohesion: 0.12
+Nodes (11): Menubar, MenubarCheckboxItem, MenubarContent, MenubarItem, MenubarLabel, MenubarRadioItem, MenubarSeparator, MenubarShortcut() (+3 more)
 
-### Community 96 - "Shadow Level — Changelog"
+### Community 17 - "Shadow Level — Changelog"
 Cohesion: 0.12
 Nodes (15): 2026-08-09 — Major Migration, 2026-08-12 — UI/UX Overhaul & Graphify Integration, 2026-08-13 — Theme Engine & UI Polish, 2026-08-14 — Audio Upgrade & Rank Up System, Added, Added, Added, Added (+7 more)
 
-### Community 99 - "⚔️ Shadow Level — RPG Habit Tracker"
+### Community 18 - "SECURITY.md — Local Development"
+Cohesion: 0.14
+Nodes (13): Check 0 — Local Environment Security, Check 1 — Secret Leak Prevention, Check 2 — Personal Data Flow Audit, Check 3 — Pre-Deploy Production Audit, Check 4 — Deep Security Audit for Complex Logic, Check 5 — Attacker's Perspective Review, Environment Setup, How to Use (+5 more)
+
+### Community 19 - "carousel.tsx"
+Cohesion: 0.19
+Nodes (13): Carousel, CarouselApi, CarouselContent, CarouselContext, CarouselContextProps, CarouselItem, CarouselNext, CarouselOptions (+5 more)
+
+### Community 20 - "dependencies"
+Cohesion: 0.15
+Nodes (13): canvas-confetti, @hookform/resolvers, dependencies, canvas-confetti, @hookform/resolvers, @radix-ui/react-accordion, @radix-ui/react-navigation-menu, @radix-ui/react-slider (+5 more)
+
+### Community 21 - "form.tsx"
+Cohesion: 0.23
+Nodes (10): FormControl, FormDescription, FormFieldContext, FormFieldContextValue, FormItem, FormItemContext, FormItemContextValue, FormLabel (+2 more)
+
+### Community 22 - "devDependencies"
+Cohesion: 0.18
+Nodes (11): eslint, eslint-plugin-react-hooks, globals, devDependencies, eslint, eslint-plugin-react-hooks, globals, typescript-eslint (+3 more)
+
+### Community 23 - "chart.tsx"
+Cohesion: 0.25
+Nodes (9): ChartConfig, ChartContainer, ChartContext, ChartContextProps, ChartLegendContent, ChartTooltipContent, getPayloadConfigFromPayload(), THEMES (+1 more)
+
+### Community 24 - "scripts"
+Cohesion: 0.22
+Nodes (9): scripts, build, deploy, dev, predeploy, preview, test, test:ui (+1 more)
+
+### Community 25 - "table.tsx"
+Cohesion: 0.22
+Nodes (8): Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow
+
+### Community 26 - "⚔️ Shadow Level — RPG Habit Tracker"
 Cohesion: 0.25
 Nodes (7): 1. Clone the Repository, ✨ Features, 🚀 Getting Started, Prerequisites, 📁 Project Structure, ⚔️ Shadow Level — RPG Habit Tracker, 🛠️ Tech Stack
 
-### Community 102 - "Shadow Level — Product Requirements Document"
+### Community 27 - "navigation-menu.tsx"
+Cohesion: 0.29
+Nodes (7): NavigationMenu, NavigationMenuContent, NavigationMenuIndicator, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle, NavigationMenuViewport
+
+### Community 28 - "Shadow Level — Product Requirements Document"
 Cohesion: 0.29
 Nodes (6): Core Features (MVP — Complete), Data Storage, Deployment, Purpose, Shadow Level — Product Requirements Document, Target Users
 
-### Community 103 - "Shadow Level — Architecture"
+### Community 29 - "card.tsx"
+Cohesion: 0.29
+Nodes (6): Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
+
+### Community 30 - "toggle-group.tsx"
+Cohesion: 0.43
+Nodes (5): ToggleGroup, ToggleGroupContext, ToggleGroupItem, Toggle, toggleVariants
+
+### Community 31 - "Shadow Level — Architecture"
 Cohesion: 0.33
 Nodes (5): Authentication, Data Flow, Key Modules, Shadow Level — Architecture, Tech Stack
 
-### Community 104 - "Audio Assets — Drop Real Files Here"
+### Community 32 - "package.json"
+Cohesion: 0.40
+Nodes (4): description, name, private, version
+
+### Community 33 - "alert.tsx"
+Cohesion: 0.50
+Nodes (4): Alert, AlertDescription, AlertTitle, alertVariants
+
+### Community 34 - "Audio Assets — Drop Real Files Here"
 Cohesion: 0.50
 Nodes (3): Audio Assets — Drop Real Files Here, Folder layout, Rules / tips
+
+### Community 35 - "badge.tsx"
+Cohesion: 0.67
+Nodes (3): Badge(), BadgeProps, badgeVariants
 
 ## Knowledge Gaps
 - **315 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `css` (+310 more)
@@ -298,17 +298,17 @@ Nodes (3): Audio Assets — Drop Real Files Here, Folder layout, Rules / tips
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `cn` to `queries.ts`, `dashboard.tsx`, `sidebar.tsx`, `button.tsx`, `utils.ts`, `dropdown-menu.tsx`, `command.tsx`, `menubar.tsx`, `form.tsx`, `chart.tsx`, `table.tsx`, `navigation-menu.tsx`, `card.tsx`, `toggle-group.tsx`, `alert.tsx`, `badge.tsx`, `carousel.tsx`?**
+- **Why does `cn()` connect `cn` to `queries.ts`, `alert.tsx`, `sidebar.tsx`, `dashboard.tsx`, `badge.tsx`, `dropdown-menu.tsx`, `button.tsx`, `utils.ts`, `command.tsx`, `menubar.tsx`, `carousel.tsx`, `form.tsx`, `chart.tsx`, `table.tsx`, `navigation-menu.tsx`, `card.tsx`, `toggle-group.tsx`?**
   _High betweenness centrality (0.198) - this node is a cross-community bridge._
-- **Why does `dependencies` connect `dependencies` to `package.json`, `@radix-ui/react-aspect-ratio`, `date-fns`, `clsx`, `cmdk`, `embla-carousel-react`, `framer-motion`, `input-otp`, `lenis`, `lucide-react`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-menubar`, `@radix-ui/react-popover`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `@radix-ui/react-scroll-area`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-slot`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toggle`, `@radix-ui/react-toggle-group`, `@radix-ui/react-tooltip`, `react-dom`, `react-hook-form`, `react-resizable-panels`, `recharts`, `sonner`, `tailwind-merge`, `@tailwindcss/vite`, `@tanstack/react-query`, `@tanstack/react-router`, `@tanstack/router-plugin`, `tw-animate-css`, `vaul`, `vite-tsconfig-paths`, `zod`, `zustand`, `class-variance-authority`?**
+- **Why does `dependencies` connect `dependencies` to `package.json`, `class-variance-authority`, `clsx`, `cmdk`, `date-fns`, `embla-carousel-react`, `framer-motion`, `input-otp`, `lenis`, `lucide-react`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-menubar`, `@radix-ui/react-popover`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `@radix-ui/react-scroll-area`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-slot`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toggle`, `@radix-ui/react-toggle-group`, `@radix-ui/react-tooltip`, `react-dom`, `react-hook-form`, `react-resizable-panels`, `recharts`, `sonner`, `tailwind-merge`, `@tailwindcss/vite`, `@tanstack/react-query`, `@tanstack/react-router`, `@tanstack/router-plugin`, `tw-animate-css`, `vaul`, `vite-tsconfig-paths`, `zod`, `zustand`?**
   _High betweenness centrality (0.030) - this node is a cross-community bridge._
-- **Why does `Button` connect `button.tsx` to `queries.ts`, `dashboard.tsx`, `sidebar.tsx`, `cn`, `carousel.tsx`?**
+- **Why does `Button` connect `button.tsx` to `queries.ts`, `cn`, `sidebar.tsx`, `dashboard.tsx`, `carousel.tsx`?**
   _High betweenness centrality (0.015) - this node is a cross-community bridge._
 - **What connects `$schema`, `style`, `rsc` to the rest of the system?**
   _315 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `queries.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.0700171821305842 - nodes in this community are weakly interconnected._
-- **Should `dashboard.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.0859465737514518 - nodes in this community are weakly interconnected._
+- **Should `cn` be split into smaller, more focused modules?**
+  _Cohesion score 0.0782608695652174 - nodes in this community are weakly interconnected._
 - **Should `sidebar.tsx` be split into smaller, more focused modules?**
   _Cohesion score 0.0595959595959596 - nodes in this community are weakly interconnected._
