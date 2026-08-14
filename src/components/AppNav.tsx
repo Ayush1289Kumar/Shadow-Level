@@ -3,9 +3,10 @@ import { LayoutDashboard, ListChecks, BarChart3, Gift, User, LogOut, PanelTop, P
 import { clearSession } from "@/lib/local-db";
 import { useAppStore } from "@/lib/store";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { ThemeSwitcher } from "./ThemeSwitcher";
+import { playSound } from "@/lib/audio";
 
 const items = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -19,6 +20,7 @@ export function AppNav() {
   const navigate = useNavigate();
   const profile = useAppStore((s) => s.profile);
   const signOut = useAppStore((s) => s.signOut);
+  const shouldReduceMotion = useReducedMotion();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [navPos, setNavPos] = useState<"left" | "top">("left");
 
@@ -26,7 +28,17 @@ export function AppNav() {
     setNavPos((localStorage.getItem("nav-position") as "left" | "top") || "left");
   }, []);
 
+  // Play a short swipe when switching between nav tabs.
+  const prevPath = useRef(pathname);
+  useEffect(() => {
+    if (prevPath.current !== pathname) {
+      playSound("navSwitch");
+    }
+    prevPath.current = pathname;
+  }, [pathname]);
+
   function handleSignOut() {
+    playSound("buttonClick");
     clearSession();
     signOut();
     toast.success("Signed out");
@@ -34,6 +46,7 @@ export function AppNav() {
   }
 
   function toggleNavPos() {
+    playSound("navSwitch");
     const newPos = navPos === "left" ? "top" : "left";
     setNavPos(newPos);
     localStorage.setItem("nav-position", newPos);
@@ -59,11 +72,11 @@ export function AppNav() {
     <>
       <nav className={navClasses}>
         <div className={innerClasses}>
-          
+
           <Link to="/dashboard" className={`hidden md:flex items-center justify-center w-12 h-12 md:w-10 md:h-10 ${navPos === "left" ? "mb-1" : "mr-1"} rounded-2xl hover:bg-white/5 transition-colors group`}>
             <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Logo" className="h-6 w-6 object-contain group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_8px_var(--glow-mana-bright)]" />
           </Link>
-          
+
           {items.map((it) => {
             const active = pathname === it.to || pathname.startsWith(it.to + "/");
             return (
@@ -71,11 +84,13 @@ export function AppNav() {
                 key={it.to}
                 to={it.to}
                 title={it.label}
-                className={`flex items-center justify-center w-12 h-12 md:w-10 md:h-10 rounded-full transition-all duration-300 relative group ${
-                  active
-                    ? "text-mana-bright bg-mana-bright/10 box-glow-mana"
-                    : "text-silver hover:text-moonlight hover:bg-white/10"
-                }`}
+                onMouseEnter={() => {
+                  if (!shouldReduceMotion && !active) playSound("hover");
+                }}
+                className={`flex items-center justify-center w-12 h-12 md:w-10 md:h-10 rounded-full transition-all duration-300 relative group ${active
+                  ? "text-mana-bright bg-mana-bright/10 box-glow-mana"
+                  : "text-silver hover:text-moonlight hover:bg-white/10"
+                  }`}
               >
                 <it.icon className="w-5 h-5 md:w-4 md:h-4" />
                 {active && (

@@ -1,26 +1,42 @@
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { CyberGlitchText } from "./ui/cyber-glitch-text";
+import { playSound } from "@/lib/audio";
 
 export function LevelUpSequence({
   leveledUpTo,
+  onComplete,
 }: {
   leveledUpTo: number;
+  onComplete?: () => void;
 }) {
   const shouldReduceMotion = useReducedMotion();
   const [stage, setStage] = useState<"alert" | "pause" | "arise">("alert");
 
   useEffect(() => {
+    // Ambient swell kicks in immediately.
+    playSound("levelUpCinematic");
+
     // Stage 1: Alert shows
     const t1 = setTimeout(() => setStage("pause"), 1500);
     // Stage 2: Short suspense gap, then Arise strikes
-    const t2 = setTimeout(() => setStage("arise"), 1800);
-    
+    const t2 = setTimeout(() => {
+      setStage("arise");
+      // The moment Arise lands: voice + fanfare.
+      playSound("arise");
+      playSound("jinwooArise");
+      setTimeout(() => playSound("levelUp"), 300);
+    }, 1800);
+
+    // Auto-complete after the full cinematic (~4s).
+    const done = setTimeout(() => onComplete?.(), 4000);
+
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
+      clearTimeout(done);
     };
-  }, []);
+  }, [onComplete]);
 
   return (
     <motion.div
