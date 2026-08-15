@@ -61,33 +61,56 @@ export function HeroSection() {
     mass: 0.5,
   });
 
-  // Opacity / translate transforms per stats block
-  const fadeLevelX = useTransform(progress, [0, 0.1, 0.2, 0.24], [0, 1, 1, 0]);
-  const fadeLevelY = useTransform(progress, [0, 0.1, 0.2, 0.24], [40, 0, 0, -40]);
-  const fadeStreakX = useTransform(progress, [0.2, 0.3, 0.42, 0.46], [0, 1, 1, 0]);
-  const fadeStreakY = useTransform(progress, [0.2, 0.3, 0.42, 0.46], [40, 0, 0, -40]);
-  const fadeHabitsX = useTransform(progress, [0.4, 0.5, 0.62, 0.66], [0, 1, 1, 0]);
-  const fadeHabitsY = useTransform(progress, [0.4, 0.5, 0.62, 0.66], [40, 0, 0, -40]);
-  const fadeRewardsX = useTransform(progress, [0.6, 0.7, 0.82, 0.86], [0, 1, 1, 0]);
-  const fadeRewardsY = useTransform(progress, [0.6, 0.7, 0.82, 0.86], [40, 0, 0, -40]);
-  const fadeSummaryX = useTransform(progress, [0.82, 0.9], [0, 1]);
-
-  // Dramatic entrance: scale + blur while appearing/leaving
-  const scaleLevel = useTransform(progress, [0, 0.1, 0.2, 0.24], [0.8, 1, 1.05, 1.1]);
-  const blurLevel = useTransform(progress, [0, 0.1, 0.2, 0.24], [8, 0, 0, 6]);
+  // ── Dynamic multi-axis entrances per stats block ──
+  // Each block flies in from a distinct direction with its own rotation
+  // path, then hands off on a different axis — kinetic, layered motion.
+  // Level + XP: rises up from the bottom (awakening) with a sway + blur-focus
+  const fadeLevel = useTransform(progress, [0, 0.1, 0.2, 0.24], [0, 1, 1, 0]);
+  const levelY = useTransform(progress, [0, 0.12, 0.2, 0.24], [160, 0, 0, -120]);
+  const levelX = useTransform(progress, [0, 0.1], [30, 0]);
+  const levelRotate = useTransform(progress, [0, 0.14], [-12, 0]);
+  const scaleLevel = useTransform(progress, [0, 0.1, 0.2, 0.24], [0.7, 1, 1.05, 1.1]);
+  const blurLevel = useTransform(progress, [0, 0.1, 0.2, 0.24], [10, 0, 0, 6]);
+  // Streak + Rank: slides in hard from the left, tilted
+  const fadeStreak = useTransform(progress, [0.2, 0.3, 0.42, 0.46], [0, 1, 1, 0]);
+  const streakX = useTransform(progress, [0.2, 0.32, 0.42, 0.46], [-360, 0, 0, 320]);
+  const streakY = useTransform(progress, [0.2, 0.32], [40, 0]);
+  const streakRotate = useTransform(progress, [0.2, 0.34], [-14, 0]);
   const scaleStreak = useTransform(progress, [0.2, 0.3, 0.42, 0.46], [0.8, 1, 1.05, 1.1]);
-  const blurStreak = useTransform(progress, [0.2, 0.3, 0.42, 0.46], [8, 0, 0, 6]);
+  const blurStreak = useTransform(progress, [0.2, 0.3, 0.42, 0.46], [10, 0, 0, 6]);
+  // Habits: slides in from the left, tilted, and exits to the right
+  const fadeHabits = useTransform(progress, [0.4, 0.5, 0.62, 0.66], [0, 1, 1, 0]);
+  const habitsX = useTransform(progress, [0.4, 0.52, 0.62, 0.66], [-380, 0, 0, 340]);
+  const habitsY = useTransform(progress, [0.4, 0.52], [-40, 0]);
+  const habitsRotate = useTransform(progress, [0.4, 0.54], [-14, 0]);
   const scaleHabits = useTransform(progress, [0.4, 0.5, 0.62, 0.66], [0.8, 1, 1.05, 1.1]);
-  const blurHabits = useTransform(progress, [0.4, 0.5, 0.62, 0.66], [8, 0, 0, 6]);
+  const blurHabits = useTransform(progress, [0.4, 0.5, 0.62, 0.66], [10, 0, 0, 6]);
+  // Rewards: shoots up from the bottom with an overshoot
+  const fadeRewards = useTransform(progress, [0.6, 0.7, 0.82, 0.86], [0, 1, 1, 0]);
+  const rewardsY = useTransform(progress, [0.6, 0.72, 0.82, 0.86], [180, 0, 0, -140]);
+  const rewardsRotate = useTransform(progress, [0.6, 0.74], [-12, 0]);
   const scaleRewards = useTransform(progress, [0.6, 0.7, 0.82, 0.86], [0.8, 1, 1.05, 1.1]);
-  const blurRewards = useTransform(progress, [0.6, 0.7, 0.82, 0.86], [8, 0, 0, 6]);
-  const scaleSummary = useTransform(progress, [0.82, 0.9], [0.85, 1]);
-  const blurSummary = useTransform(progress, [0.82, 0.88], [8, 0]);
+  const blurRewards = useTransform(progress, [0.6, 0.7, 0.82, 0.86], [10, 0, 0, 6]);
+  // Summary: sweeps in diagonally (bottom-right → center)
+  const fadeSummary = useTransform(progress, [0.82, 0.9], [0, 1]);
+  const summaryX = useTransform(progress, [0.82, 0.92], [240, 0]);
+  const summaryY = useTransform(progress, [0.82, 0.92], [90, 0]);
+  const summaryRotate = useTransform(progress, [0.82, 0.92], [9, 0]);
+  const scaleSummary = useTransform(progress, [0.82, 0.9], [0.7, 1]);
+  const blurSummary = useTransform(progress, [0.82, 0.88], [10, 0]);
   const filterLevel = useTransform(blurLevel, (v) => `blur(${v}px)`);
   const filterStreak = useTransform(blurStreak, (v) => `blur(${v}px)`);
   const filterHabits = useTransform(blurHabits, (v) => `blur(${v}px)`);
   const filterRewards = useTransform(blurRewards, (v) => `blur(${v}px)`);
   const filterSummary = useTransform(blurSummary, (v) => `blur(${v}px)`);
+  // Dynamic filter values mapped to scroll progress to sync with character action phases
+  const canvasBrightness = useTransform(progress, [0, 0.35, 0.4, 0.45, 0.6, 0.8, 1], [0.82, 0.82, 0.95, 0.82, 0.82, 1.1, 0.85]);
+  const canvasContrast = useTransform(progress, [0, 0.35, 0.4, 0.45, 0.6, 0.8, 1], [1.12, 1.12, 1.25, 1.12, 1.12, 1.35, 1.15]);
+  const canvasSaturate = useTransform(progress, [0, 0.35, 0.4, 0.45, 0.6, 0.8, 1], [1.25, 1.25, 1.45, 1.25, 1.25, 1.65, 1.3]);
+  const canvasFilter = useTransform(
+    [canvasBrightness, canvasContrast, canvasSaturate],
+    ([b, c, s]) => `brightness(${b}) contrast(${c}) saturate(${s})`
+  );
   // Sweeping light glare that travels across the frame with scroll
   const glareX = useTransform(progress, [0, 1], ["-120%", "220%"]);
   const glareOpacity = useTransform(progress, [0, 0.05, 0.95, 1], [0, 0.35, 0.35, 0]);
@@ -219,7 +242,7 @@ export function HeroSection() {
   return (
     <section ref={scrollRef} className="relative h-[400vh] bg-void">
       <div className="sticky top-0 h-screen w-full overflow-hidden">
-        <canvas ref={canvasRef} className="absolute inset-0 w-full h-full will-change-transform" style={{ filter: "brightness(0.82) contrast(1.12) saturate(1.25)" }} />
+        <motion.canvas ref={canvasRef} className="absolute inset-0 w-full h-full will-change-transform" style={{ filter: canvasFilter }} />
         <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-void/70 pointer-events-none" />
         <div className="absolute inset-0 bg-gradient-to-r from-void/45 via-transparent to-void/45 pointer-events-none" />
 
@@ -238,8 +261,8 @@ export function HeroSection() {
         </motion.div>
 
         {/* 1) LEVEL + XP */}
-        <motion.div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ opacity: fadeLevelX }}>
-          <motion.div style={{ y: fadeLevelY, scale: scaleLevel, filter: filterLevel }} className="text-center">
+        <motion.div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ opacity: fadeLevel }}>
+          <motion.div style={{ x: levelX, y: levelY, rotate: levelRotate, scale: scaleLevel, filter: filterLevel }} className="text-center">
             <div className="font-mono text-xs uppercase tracking-[0.4em] text-muted-foreground">System Status</div>
             <div className="font-display text-6xl md:text-7xl font-bold text-moonlight text-glow-mana mt-3">LEVEL {level}</div>
             <div className="mt-6 flex items-center gap-3 font-mono text-sm text-ash">
@@ -254,8 +277,8 @@ export function HeroSection() {
         </motion.div>
 
         {/* 2) STREAK + RANK */}
-        <motion.div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ opacity: fadeStreakX }}>
-          <motion.div style={{ y: fadeStreakY, scale: scaleStreak, filter: filterStreak }} className="flex items-center gap-10 md:gap-16">
+        <motion.div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ opacity: fadeStreak }}>
+          <motion.div style={{ x: streakX, y: streakY, rotate: streakRotate, scale: scaleStreak, filter: filterStreak }} className="flex items-center gap-10 md:gap-16">
             <div className="text-center">
               <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full border border-penalty/40 bg-abyss/60">
                 <Flame className="h-8 w-8 text-danger" />
@@ -276,8 +299,8 @@ export function HeroSection() {
         </motion.div>
 
         {/* 3) HABITS DONE TODAY + ACTIVE */}
-        <motion.div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ opacity: fadeHabitsX }}>
-          <motion.div style={{ y: fadeHabitsY, scale: scaleHabits, filter: filterHabits }} className="flex items-center gap-10 md:gap-16">
+        <motion.div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ opacity: fadeHabits }}>
+          <motion.div style={{ x: habitsX, y: habitsY, rotate: habitsRotate, scale: scaleHabits, filter: filterHabits }} className="flex items-center gap-10 md:gap-16">
             <div className="glass px-10 py-8 text-center border border-mana/20">
               <Sparkles className="mx-auto mb-3 h-8 w-8 text-mana" />
               <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Quests Completed Today</div>
@@ -292,8 +315,8 @@ export function HeroSection() {
         </motion.div>
 
         {/* 4) REWARD POINTS */}
-        <motion.div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ opacity: fadeRewardsX }}>
-          <motion.div style={{ y: fadeRewardsY, scale: scaleRewards, filter: filterRewards }} className="text-center">
+        <motion.div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ opacity: fadeRewards }}>
+          <motion.div style={{ y: rewardsY, rotate: rewardsRotate, scale: scaleRewards, filter: filterRewards }} className="text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-warning/40 bg-abyss/60">
               <Coins className="h-8 w-8 text-warning" />
             </div>
@@ -304,8 +327,8 @@ export function HeroSection() {
         </motion.div>
 
         {/* 5) FINAL SUMMARY CARD */}
-        <motion.div className="absolute inset-0 flex flex-col items-center justify-center px-6 pointer-events-none" style={{ opacity: fadeSummaryX }}>
-          <motion.div initial={{ y: 40 }} style={{ y: useTransform(progress, [0.82, 0.95], [40, 0]), scale: scaleSummary, filter: filterSummary }} className="glass-strong max-w-lg w-full p-10 text-center border-t-2 border-t-mana/30">
+        <motion.div className="absolute inset-0 flex flex-col items-center justify-center px-6 pointer-events-none" style={{ opacity: fadeSummary }}>
+          <motion.div style={{ x: summaryX, y: summaryY, rotate: summaryRotate, scale: scaleSummary, filter: filterSummary }} className="glass-strong max-w-lg w-full p-10 text-center border-t-2 border-t-mana/30">
             <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-mana mb-2">[ System Notification ]</div>
             <h3 className="font-display text-3xl md:text-4xl font-bold text-moonlight uppercase tracking-wider text-glow-mana">Shadow Level Awakened</h3>
             <p className="mt-4 text-muted-foreground text-sm">

@@ -410,8 +410,8 @@
     "semantic_hash": ""
   },
   "src/routes/dashboard.tsx": {
-    "mtime": 1786809116.2895403,
-    "ast_hash": "53880cc9cae75b00231ac23273dc6003",
+    "mtime": 1786809314.616812,
+    "ast_hash": "5d4455dad13bdc149ea66166e9b2bd6f",
     "semantic_hash": ""
   },
   "src/routes/habits.tsx": {
