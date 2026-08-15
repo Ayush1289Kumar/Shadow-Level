@@ -72,6 +72,26 @@ export function HeroSection() {
   const fadeRewardsY = useTransform(progress, [0.6, 0.7, 0.82, 0.86], [40, 0, 0, -40]);
   const fadeSummaryX = useTransform(progress, [0.82, 0.9], [0, 1]);
 
+  // Dramatic entrance: scale + blur while appearing/leaving
+  const scaleLevel = useTransform(progress, [0, 0.1, 0.2, 0.24], [0.8, 1, 1.05, 1.1]);
+  const blurLevel = useTransform(progress, [0, 0.1, 0.2, 0.24], [8, 0, 0, 6]);
+  const scaleStreak = useTransform(progress, [0.2, 0.3, 0.42, 0.46], [0.8, 1, 1.05, 1.1]);
+  const blurStreak = useTransform(progress, [0.2, 0.3, 0.42, 0.46], [8, 0, 0, 6]);
+  const scaleHabits = useTransform(progress, [0.4, 0.5, 0.62, 0.66], [0.8, 1, 1.05, 1.1]);
+  const blurHabits = useTransform(progress, [0.4, 0.5, 0.62, 0.66], [8, 0, 0, 6]);
+  const scaleRewards = useTransform(progress, [0.6, 0.7, 0.82, 0.86], [0.8, 1, 1.05, 1.1]);
+  const blurRewards = useTransform(progress, [0.6, 0.7, 0.82, 0.86], [8, 0, 0, 6]);
+  const scaleSummary = useTransform(progress, [0.82, 0.9], [0.85, 1]);
+  const blurSummary = useTransform(progress, [0.82, 0.88], [8, 0]);
+  const filterLevel = useTransform(blurLevel, (v) => `blur(${v}px)`);
+  const filterStreak = useTransform(blurStreak, (v) => `blur(${v}px)`);
+  const filterHabits = useTransform(blurHabits, (v) => `blur(${v}px)`);
+  const filterRewards = useTransform(blurRewards, (v) => `blur(${v}px)`);
+  const filterSummary = useTransform(blurSummary, (v) => `blur(${v}px)`);
+  // Sweeping light glare that travels across the frame with scroll
+  const glareX = useTransform(progress, [0, 1], ["-120%", "220%"]);
+  const glareOpacity = useTransform(progress, [0, 0.05, 0.95, 1], [0, 0.35, 0.35, 0]);
+
   // ── Canvas + frame preloading ──────────────────────
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const imagesRef = useRef<HTMLImageElement[]>([]);
@@ -141,7 +161,7 @@ export function HeroSection() {
     resize();
     window.addEventListener("resize", resize);
 
-    const drawCover = (img: HTMLImageElement) => {
+    const drawCover = (img: HTMLImageElement, zoom = 1) => {
       const iw = img.naturalWidth || 1920;
       const ih = img.naturalHeight || 1080;
       const iA = iw / ih;
@@ -157,7 +177,12 @@ export function HeroSection() {
         w = canvas.height * iA;
         x = (canvas.width - w) / 2;
       }
-      ctx.drawImage(img, x, y, w, h);
+      // Apply cinematic zoom around center so the frame always fully bleeds
+      w *= zoom;
+      h *= zoom;
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
     };
 
     const loop = () => {
@@ -174,11 +199,12 @@ export function HeroSection() {
           0,
           Math.min(TOTAL_FRAMES - 1, Math.floor(p * (TOTAL_FRAMES - 1))),
         );
-        if (idx !== currentFrame.current) {
-          currentFrame.current = idx;
-          const img = frames[idx];
-          if (img && img.complete) drawCover(img);
-        }
+        // Continuous cinematic zoom that breathes across the scroll range so the
+        // cover-fit frame always bleeds to every edge (no letterboxing).
+        const zoom = 1.08 + (idx / (TOTAL_FRAMES - 1)) * 0.1;
+        currentFrame.current = idx;
+        const img = frames[idx];
+        if (img && img.complete) drawCover(img, zoom);
       }
       raf = requestAnimationFrame(loop);
     };
@@ -197,6 +223,12 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-void/70 pointer-events-none" />
         <div className="absolute inset-0 bg-gradient-to-r from-void/45 via-transparent to-void/45 pointer-events-none" />
 
+        {/* Sweeping light glare that travels across the frame with scroll */}
+        <motion.div
+          className="absolute top-0 bottom-0 w-1/4 pointer-events-none bg-gradient-to-r from-transparent via-white/10 to-transparent blur-2xl"
+          style={{ left: glareX, opacity: glareOpacity }}
+        />
+
         {/* Scroll indicator */}
         <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground pointer-events-none" style={{ opacity: useTransform(progress, [0, 0.12], [1, 0]) }}>
           <span className="font-mono text-[10px] uppercase tracking-[0.35em]">Scroll to Awaken</span>
@@ -207,7 +239,7 @@ export function HeroSection() {
 
         {/* 1) LEVEL + XP */}
         <motion.div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ opacity: fadeLevelX }}>
-          <motion.div style={{ y: fadeLevelY }} className="text-center">
+          <motion.div style={{ y: fadeLevelY, scale: scaleLevel, filter: filterLevel }} className="text-center">
             <div className="font-mono text-xs uppercase tracking-[0.4em] text-muted-foreground">System Status</div>
             <div className="font-display text-6xl md:text-7xl font-bold text-moonlight text-glow-mana mt-3">LEVEL {level}</div>
             <div className="mt-6 flex items-center gap-3 font-mono text-sm text-ash">
@@ -223,7 +255,7 @@ export function HeroSection() {
 
         {/* 2) STREAK + RANK */}
         <motion.div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ opacity: fadeStreakX }}>
-          <motion.div style={{ y: fadeStreakY }} className="flex items-center gap-10 md:gap-16">
+          <motion.div style={{ y: fadeStreakY, scale: scaleStreak, filter: filterStreak }} className="flex items-center gap-10 md:gap-16">
             <div className="text-center">
               <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full border border-penalty/40 bg-abyss/60">
                 <Flame className="h-8 w-8 text-danger" />
@@ -245,7 +277,7 @@ export function HeroSection() {
 
         {/* 3) HABITS DONE TODAY + ACTIVE */}
         <motion.div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ opacity: fadeHabitsX }}>
-          <motion.div style={{ y: fadeHabitsY }} className="flex items-center gap-10 md:gap-16">
+          <motion.div style={{ y: fadeHabitsY, scale: scaleHabits, filter: filterHabits }} className="flex items-center gap-10 md:gap-16">
             <div className="glass px-10 py-8 text-center border border-mana/20">
               <Sparkles className="mx-auto mb-3 h-8 w-8 text-mana" />
               <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Quests Completed Today</div>
@@ -261,7 +293,7 @@ export function HeroSection() {
 
         {/* 4) REWARD POINTS */}
         <motion.div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ opacity: fadeRewardsX }}>
-          <motion.div style={{ y: fadeRewardsY }} className="text-center">
+          <motion.div style={{ y: fadeRewardsY, scale: scaleRewards, filter: filterRewards }} className="text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-warning/40 bg-abyss/60">
               <Coins className="h-8 w-8 text-warning" />
             </div>
@@ -273,7 +305,7 @@ export function HeroSection() {
 
         {/* 5) FINAL SUMMARY CARD */}
         <motion.div className="absolute inset-0 flex flex-col items-center justify-center px-6 pointer-events-none" style={{ opacity: fadeSummaryX }}>
-          <motion.div initial={{ y: 40 }} style={{ y: useTransform(progress, [0.82, 0.95], [40, 0]) }} className="glass-strong max-w-lg w-full p-10 text-center border-t-2 border-t-mana/30">
+          <motion.div initial={{ y: 40 }} style={{ y: useTransform(progress, [0.82, 0.95], [40, 0]), scale: scaleSummary, filter: filterSummary }} className="glass-strong max-w-lg w-full p-10 text-center border-t-2 border-t-mana/30">
             <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-mana mb-2">[ System Notification ]</div>
             <h3 className="font-display text-3xl md:text-4xl font-bold text-moonlight uppercase tracking-wider text-glow-mana">Shadow Level Awakened</h3>
             <p className="mt-4 text-muted-foreground text-sm">
