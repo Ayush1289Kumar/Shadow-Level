@@ -13,6 +13,7 @@ import { useAppStore } from "@/lib/store";
 import { useHabits, useHabitLogsByDate } from "@/hooks/queries";
 import { levelProgress } from "@/lib/leveling";
 import { STRINGS } from "@/lib/strings";
+import { sound } from "@/lib/audio";
 
 // Scroll-scrubbed cinematic hero using frames from public/Hero/vid.mp4
 const TOTAL_FRAMES = 120; // must match extracted frame count
@@ -103,29 +104,23 @@ export function HeroSection() {
   const filterHabits = useTransform(blurHabits, (v) => `blur(${v}px)`);
   const filterRewards = useTransform(blurRewards, (v) => `blur(${v}px)`);
   const filterSummary = useTransform(blurSummary, (v) => `blur(${v}px)`);
-  // Dynamic filter values mapped to scroll progress to sync with character action phases
-  const canvasBrightness = useTransform(progress, [0, 0.35, 0.4, 0.45, 0.6, 0.8, 1], [0.82, 0.82, 0.95, 0.82, 0.82, 1.1, 0.85]);
-  const canvasContrast = useTransform(progress, [0, 0.35, 0.4, 0.45, 0.6, 0.8, 1], [1.12, 1.12, 1.25, 1.12, 1.12, 1.35, 1.15]);
-  const canvasSaturate = useTransform(progress, [0, 0.35, 0.4, 0.45, 0.6, 0.8, 1], [1.25, 1.25, 1.45, 1.25, 1.25, 1.65, 1.3]);
-  const canvasFilter = useTransform(
-    [canvasBrightness, canvasContrast, canvasSaturate],
-    ([b, c, s]) => `brightness(${b}) contrast(${c}) saturate(${s})`
-  );
-  // Sweeping light glare that travels across the frame with scroll
-  const glareX = useTransform(progress, [0, 1], ["-120%", "220%"]);
-  const glareOpacity = useTransform(progress, [0, 0.05, 0.95, 1], [0, 0.35, 0.35, 0]);
+  // Clean, consistent cinematic filter across all hero frames (no jarring spikes or discoloration)
+  const canvasFilter = "brightness(0.92) contrast(1.08) saturate(1.15)";
+  // Subtle ambient light shimmer
+  const glareX = useTransform(progress, [0, 1], ["-100%", "200%"]);
+  const glareOpacity = useTransform(progress, [0, 0.08, 0.92, 1], [0, 0.18, 0.18, 0]);
 
   // ── Canvas + frame preloading ──────────────────────
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const imagesRef = useRef<HTMLImageElement[]>([]);
+  const imagesRef = useRef<(HTMLImageElement | null)[]>([]);
   const currentFrame = useRef(0);
   const mouse = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
 
-  // Preload all frames once on mount
+  // Preload and pre-decode all frames once on mount
   useEffect(() => {
     let cancelled = false;
-    const images: HTMLImageElement[] = [];
-    let loaded = 0;
+    const images: (HTMLImageElement | null)[] = new Array(TOTAL_FRAMES).fill(null);
 
     for (let i = 1; i <= TOTAL_FRAMES; i++) {
       const img = new Image();
@@ -134,23 +129,20 @@ export function HeroSection() {
       img.onload = () => {
         img
           .decode()
-          .then(() => {
-            if (!cancelled && ++loaded === TOTAL_FRAMES) {
-              imagesRef.current = images;
-            }
-          })
-          .catch(() => {
-            if (!cancelled && ++loaded === TOTAL_FRAMES) {
+          .catch(() => {})
+          .finally(() => {
+            if (!cancelled) {
+              images[i - 1] = img;
               imagesRef.current = images;
             }
           });
       };
       img.onerror = () => {
-        if (!cancelled && ++loaded === TOTAL_FRAMES) {
+        if (!cancelled) {
+          images[i - 1] = img;
           imagesRef.current = images;
         }
       };
-      images.push(img);
     }
 
     return () => {
@@ -159,11 +151,11 @@ export function HeroSection() {
     };
   }, []);
 
-  // Mouse parallax
+  // Mouse parallax (subtle 2D motion, no 3D perspective distortion)
   useEffect(() => {
     const handle = (e: MouseEvent) => {
-      mouse.current.targetX = (e.clientX / window.innerWidth - 0.5) * 25;
-      mouse.current.targetY = -(e.clientY / window.innerHeight - 0.5) * 25;
+      mouse.current.targetX = (e.clientX / window.innerWidth - 0.5) * 16;
+      mouse.current.targetY = -(e.clientY / window.innerHeight - 0.5) * 16;
     };
     window.addEventListener("mousemove", handle);
     return () => window.removeEventListener("mousemove", handle);
@@ -173,38 +165,50 @@ export function HeroSection() {
   useEffect(() => {
     let raf: number;
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const container = containerRef.current;
+    if (!canvas || !container) return;
+    const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) return;
 
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    resize();
-    window.addEventListener("resize", resize);
+    const updateSize = () => {
+      const rect = container.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const targetW = Math.max(320, Math.floor(rect.width));
+      const targetH = Math.max(180, Math.floor(rect.height));
 
-    const drawCover = (img: HTMLImageElement, zoom = 1) => {
-      const iw = img.naturalWidth || 1920;
-      const ih = img.naturalHeight || 1080;
+      canvas.width = Math.floor(targetW * dpr);
+      canvas.height = Math.floor(targetH * dpr);
+      canvas.style.width = `${targetW}px`;
+      canvas.style.height = `${targetH}px`;
+    };
+
+    updateSize();
+
+    const ro = new ResizeObserver(() => {
+      updateSize();
+    });
+    ro.observe(container);
+    window.addEventListener("resize", updateSize);
+
+    const drawCover = (img: HTMLImageElement) => {
+      const iw = img.naturalWidth || 1280;
+      const ih = img.naturalHeight || 720;
       const iA = iw / ih;
       const cA = canvas.width / canvas.height;
       let w = canvas.width;
       let h = canvas.height;
-      let x = 0;
-      let y = 0;
       if (cA > iA) {
         h = canvas.width / iA;
-        y = (canvas.height - h) / 2;
       } else {
         w = canvas.height * iA;
-        x = (canvas.width - w) / 2;
       }
-      // Apply cinematic zoom around center so the frame always fully bleeds
-      w *= zoom;
-      h *= zoom;
+      // Clean 1.01 bleed factor to prevent sub-pixel seams
+      w *= 1.01;
+      h *= 1.01;
       const cx = canvas.width / 2;
       const cy = canvas.height / 2;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
       ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
     };
 
@@ -212,45 +216,139 @@ export function HeroSection() {
       mouse.current.x += (mouse.current.targetX - mouse.current.x) * 0.08;
       mouse.current.y += (mouse.current.targetY - mouse.current.y) * 0.08;
       if (canvas) {
-        canvas.style.transform = `perspective(1000px) rotateX(${mouse.current.y * 0.25}deg) rotateY(${mouse.current.x * 0.25}deg) scale(1.04)`;
+        canvas.style.transform = `translate3d(${mouse.current.x * 0.35}px, ${-mouse.current.y * 0.35}px, 0) scale(1.02)`;
       }
 
       const frames = imagesRef.current;
-      if (frames.length === TOTAL_FRAMES) {
+      if (frames.length > 0) {
         const p = progress.get();
-        const idx = Math.max(
-          0,
-          Math.min(TOTAL_FRAMES - 1, Math.floor(p * (TOTAL_FRAMES - 1))),
+        const clampedP = Math.max(0, Math.min(1, p));
+        const idx = Math.min(
+          TOTAL_FRAMES - 1,
+          Math.floor(clampedP * (TOTAL_FRAMES - 1)),
         );
-        // Continuous cinematic zoom that breathes across the scroll range so the
-        // cover-fit frame always bleeds to every edge (no letterboxing).
-        const zoom = 1.08 + (idx / (TOTAL_FRAMES - 1)) * 0.1;
         currentFrame.current = idx;
-        const img = frames[idx];
-        if (img && img.complete) drawCover(img, zoom);
+        
+        // Find nearest loaded frame if current frame is still loading
+        let img = frames[idx];
+        if (!img || !img.complete || img.naturalWidth === 0) {
+          for (let d = 1; d < TOTAL_FRAMES; d++) {
+            const before = frames[idx - d];
+            if (before && before.complete && before.naturalWidth > 0) {
+              img = before;
+              break;
+            }
+            const after = frames[idx + d];
+            if (after && after.complete && after.naturalWidth > 0) {
+              img = after;
+              break;
+            }
+          }
+        }
+
+        if (img && img.complete && img.naturalWidth > 0) {
+          drawCover(img);
+        }
       }
       raf = requestAnimationFrame(loop);
     };
     loop();
 
     return () => {
-      window.removeEventListener("resize", resize);
+      ro.disconnect();
+      window.removeEventListener("resize", updateSize);
       cancelAnimationFrame(raf);
     };
   }, [progress]);
 
+  // ── Solo Leveling gamified sound cues when overlays appear ──
+  useEffect(() => {
+    sound.preload(["systemAlert", "streak", "questAccept", "rewardClaim", "arise"]);
+    let lastSection = -1;
+
+    const unsubscribe = progress.on("change", (p) => {
+      // Ignore top resting position
+      if (p < 0.05) {
+        lastSection = -1;
+        return;
+      }
+
+      let activeSection = -1;
+      if (p >= 0.08 && p <= 0.23) {
+        activeSection = 0; // Level & System Status
+      } else if (p >= 0.28 && p <= 0.44) {
+        activeSection = 1; // Streak & Hunter Rank
+      } else if (p >= 0.48 && p <= 0.64) {
+        activeSection = 2; // Quests Completed Today
+      } else if (p >= 0.68 && p <= 0.84) {
+        activeSection = 3; // Shadow Treasury
+      } else if (p >= 0.87) {
+        activeSection = 4; // Final Awakened Summary
+      }
+
+      if (activeSection !== -1 && activeSection !== lastSection) {
+        lastSection = activeSection;
+        switch (activeSection) {
+          case 0:
+            sound.play("systemAlert"); // Solo Leveling System Status window pop
+            break;
+          case 1:
+            sound.play("streak"); // Hunter Rank & streak resonance
+            break;
+          case 2:
+            sound.play("questAccept"); // Solo Leveling Daily Quest announcement
+            break;
+          case 3:
+            sound.play("rewardClaim"); // Shadow Treasury crystal sound
+            break;
+          case 4:
+            sound.play("arise"); // Solo Leveling Arise Awakening chime
+            break;
+          default:
+            sound.play("systemAlert");
+            break;
+        }
+      } else if (activeSection === -1) {
+        // Reset when user travels in between overlay threshold bands
+        const inBetween =
+          (p > 0.23 && p < 0.28) ||
+          (p > 0.44 && p < 0.48) ||
+          (p > 0.64 && p < 0.68) ||
+          (p > 0.84 && p < 0.87);
+        if (inBetween) {
+          lastSection = -1;
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, [progress]);
+
   return (
     <section ref={scrollRef} className="relative h-[400vh] bg-void">
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
-        <motion.canvas ref={canvasRef} className="absolute inset-0 w-full h-full will-change-transform" style={{ filter: canvasFilter }} />
-        <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-void/70 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-void/45 via-transparent to-void/45 pointer-events-none" />
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
+        {/* CSS container constraint and aspect-ratio enforcement */}
+        <div
+          ref={containerRef}
+          className="relative w-full h-full max-w-[1920px] max-h-screen aspect-[16/9] mx-auto flex items-center justify-center overflow-hidden"
+        >
+          <motion.canvas
+            ref={canvasRef}
+            className="absolute inset-0 w-full h-full aspect-[16/9] object-cover will-change-transform"
+            style={{ filter: canvasFilter }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-void/70 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-void/50 via-transparent to-void/50 pointer-events-none" />
 
-        {/* Sweeping light glare that travels across the frame with scroll */}
-        <motion.div
-          className="absolute top-0 bottom-0 w-1/4 pointer-events-none bg-gradient-to-r from-transparent via-white/10 to-transparent blur-2xl"
-          style={{ left: glareX, opacity: glareOpacity }}
-        />
+          {/* Sweeping light glare that travels across the frame with scroll */}
+          <motion.div
+            className="absolute top-0 bottom-0 w-1/4 pointer-events-none bg-gradient-to-r from-transparent via-white/10 to-transparent blur-2xl"
+            style={{ left: glareX, opacity: glareOpacity }}
+          />
+        </div>
+
+        {/* Ambient edge vignette integration */}
+        <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_100px_rgba(8,8,13,0.85)]" />
 
         {/* Scroll indicator */}
         <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground pointer-events-none" style={{ opacity: useTransform(progress, [0, 0.12], [1, 0]) }}>
