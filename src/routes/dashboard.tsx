@@ -19,6 +19,7 @@ import { ExpBar } from "@/components/ExpBar";
 import { LevelProgress } from "@/components/LevelProgress";
 import { HabitCard } from "@/components/HabitCard";
 import { LevelUpSequence } from "@/components/LevelUpSequence";
+import { HeroSection } from "@/components/HeroSection";
 import { LightLines } from "@/components/ui/light-lines";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -276,6 +277,7 @@ function Dashboard() {
 
   return (
     <>
+      <HeroSection />
       <LightLines />
       <div className="mx-auto max-w-5xl space-y-12 relative z-10 pb-24">
         {createPortal(
