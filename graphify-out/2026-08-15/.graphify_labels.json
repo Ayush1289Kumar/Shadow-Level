@@ -40,12 +40,12 @@
   "38": "workflows/graphify.md",
   "39": "sheet.tsx",
   "40": "clsx",
-  "41": "cmdk",
+  "41": "class-variance-authority",
   "42": "date-fns",
   "43": "embla-carousel-react",
-  "44": "eslint-config-prettier",
+  "44": "@types/react",
   "45": "badge.tsx",
-  "46": "canvas-confetti",
+  "46": "cmdk",
   "47": "eslint-plugin-react-refresh",
   "48": "framer-motion",
   "49": "input-otp",
@@ -93,6 +93,7 @@
   "91": "prettier",
   "92": "@types/canvas-confetti",
   "93": "@types/node",
+  "94": "@eslint/js",
   "95": "@types/react-dom",
   "96": "eslint-plugin-prettier",
   "97": "vite",
@@ -105,6 +106,5 @@
   "104": "vite.config.ts",
   "105": "three",
   "106": "@types/three",
-  "107": "vitest",
-  "108": "@eslint/js"
+  "107": "vitest"
 }

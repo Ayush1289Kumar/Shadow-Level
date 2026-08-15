@@ -1077,8 +1077,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "package_dependencies_canvas_confetti",
-      "community": 46,
-      "community_name": "canvas-confetti",
+      "community": 20,
+      "community_name": "dependencies",
       "norm_label": "canvas-confetti"
     },
     {
@@ -1088,8 +1088,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "canvas_confetti",
-      "community": 46,
-      "community_name": "canvas-confetti",
+      "community": 20,
+      "community_name": "dependencies",
       "norm_label": "canvas-confetti"
     },
     {
@@ -1099,8 +1099,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "package_dependencies_class_variance_authority",
-      "community": 20,
-      "community_name": "dependencies",
+      "community": 41,
+      "community_name": "class-variance-authority",
       "norm_label": "class-variance-authority"
     },
     {
@@ -1110,8 +1110,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "class_variance_authority",
-      "community": 20,
-      "community_name": "dependencies",
+      "community": 41,
+      "community_name": "class-variance-authority",
       "norm_label": "class-variance-authority"
     },
     {
@@ -1143,7 +1143,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "package_dependencies_cmdk",
-      "community": 41,
+      "community": 46,
       "community_name": "cmdk",
       "norm_label": "cmdk"
     },
@@ -1154,7 +1154,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "cmdk",
-      "community": 41,
+      "community": 46,
       "community_name": "cmdk",
       "norm_label": "cmdk"
     },
@@ -1572,7 +1572,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "package_devdependencies_eslint_js",
-      "community": 108,
+      "community": 94,
       "community_name": "@eslint/js",
       "norm_label": "@eslint/js"
     },
@@ -1583,7 +1583,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "eslint_js",
-      "community": 108,
+      "community": 94,
       "community_name": "@eslint/js",
       "norm_label": "@eslint/js"
     },
@@ -1638,8 +1638,8 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "package_devdependencies_types_react",
-      "community": 22,
-      "community_name": "devDependencies",
+      "community": 44,
+      "community_name": "@types/react",
       "norm_label": "@types/react"
     },
     {
@@ -1649,8 +1649,8 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "types_react",
-      "community": 22,
-      "community_name": "devDependencies",
+      "community": 44,
+      "community_name": "@types/react",
       "norm_label": "@types/react"
     },
     {
@@ -1770,8 +1770,8 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "package_devdependencies_eslint_config_prettier",
-      "community": 44,
-      "community_name": "eslint-config-prettier",
+      "community": 22,
+      "community_name": "devDependencies",
       "norm_label": "eslint-config-prettier"
     },
     {
@@ -1781,8 +1781,8 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "eslint_config_prettier",
-      "community": 44,
-      "community_name": "eslint-config-prettier",
+      "community": 22,
+      "community_name": "devDependencies",
       "norm_label": "eslint-config-prettier"
     },
     {
@@ -2396,7 +2396,7 @@
       "label": "ScrambleText()",
       "file_type": "code",
       "source_file": "src/components/InteractiveLanding.tsx",
-      "source_location": "L352",
+      "source_location": "L364",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_interactivelanding_scrambletext",
@@ -2408,7 +2408,7 @@
       "label": "Magnetic()",
       "file_type": "code",
       "source_file": "src/components/InteractiveLanding.tsx",
-      "source_location": "L394",
+      "source_location": "L406",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_interactivelanding_magnetic",
@@ -2420,7 +2420,7 @@
       "label": "InteractiveLanding()",
       "file_type": "code",
       "source_file": "src/components/InteractiveLanding.tsx",
-      "source_location": "L437",
+      "source_location": "L449",
       "_callable": true,
       "_origin": "ast",
       "id": "src_components_interactivelanding_interactivelanding",
@@ -13420,7 +13420,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/InteractiveLanding.tsx",
-      "source_location": "L437",
+      "source_location": "L449",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_interactivelanding",
@@ -13431,7 +13431,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/InteractiveLanding.tsx",
-      "source_location": "L394",
+      "source_location": "L406",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_interactivelanding",
@@ -13442,7 +13442,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/InteractiveLanding.tsx",
-      "source_location": "L352",
+      "source_location": "L364",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_interactivelanding",
@@ -13561,7 +13561,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/InteractiveLanding.tsx",
-      "source_location": "L291",
+      "source_location": "L295",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_interactivelanding_customcursor",
@@ -13574,7 +13574,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/InteractiveLanding.tsx",
-      "source_location": "L470",
+      "source_location": "L483",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_interactivelanding_interactivelanding",
@@ -13586,7 +13586,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/InteractiveLanding.tsx",
-      "source_location": "L536",
+      "source_location": "L549",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_interactivelanding_interactivelanding",
@@ -13598,7 +13598,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/InteractiveLanding.tsx",
-      "source_location": "L449",
+      "source_location": "L461",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_interactivelanding_interactivelanding",
@@ -28705,5 +28705,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "294d901f0f87cb911dd2c669ce5359db2656483e"
+  "built_at_commit": "45ec8b5047c25644b946e11ed0bbd60b7662445e"
 }

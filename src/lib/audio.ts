@@ -325,12 +325,9 @@ class SoundManager {
     this.initialised = true;
     this.setupUnlockListeners();
 
-    // Pre-resolve which files actually exist so we know when to synthesize.
+    // Mark all spec files as available by default to play premium MP3 files
     (Object.keys(SOUND_SPECS) as SoundKey[]).forEach((k) => {
-      const url = assetUrl(SOUND_SPECS[k].path);
-      void fetch(url, { method: "HEAD" })
-        .then((r) => { if (r.ok) this.available.add(k); })
-        .catch(() => { /* file missing — synthesizer fallback */ });
+      this.available.add(k);
     });
   }
 

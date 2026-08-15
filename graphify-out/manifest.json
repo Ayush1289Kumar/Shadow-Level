@@ -345,8 +345,8 @@
     "semantic_hash": ""
   },
   "src/lib/audio.ts": {
-    "mtime": 1786734692.9388154,
-    "ast_hash": "48b3ac45299a0607dfd392abb3e3b5cf",
+    "mtime": 1786808805.7904878,
+    "ast_hash": "4e2f076546db2547599881e242279fac",
     "semantic_hash": ""
   },
   "src/lib/image.ts": {
@@ -625,8 +625,8 @@
     "semantic_hash": ""
   },
   "src/components/InteractiveLanding.tsx": {
-    "mtime": 1786807935.949606,
-    "ast_hash": "16194a92c3aa366feff354f512dd8087",
+    "mtime": 1786808795.7751727,
+    "ast_hash": "b9ffa189faa078a9a9a6edc3b383b897",
     "semantic_hash": ""
   },
   "implementation_plan.md": {

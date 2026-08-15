@@ -1,7 +1,7 @@
 # Graph Report - Shadow-Level  (2026-08-15)
 
 ## Corpus Check
-- 105 files · ~957,355 words
+- 105 files · ~956,702 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `294d901f`
+- Built from commit: `45ec8b50`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -56,12 +56,12 @@
 - workflows/graphify.md
 - sheet.tsx
 - clsx
-- cmdk
+- class-variance-authority
 - date-fns
 - embla-carousel-react
-- eslint-config-prettier
+- @types/react
 - badge.tsx
-- canvas-confetti
+- cmdk
 - eslint-plugin-react-refresh
 - framer-motion
 - input-otp
@@ -109,6 +109,7 @@
 - prettier
 - @types/canvas-confetti
 - @types/node
+- @eslint/js
 - @types/react-dom
 - eslint-plugin-prettier
 - vite
@@ -118,7 +119,6 @@
 - three
 - @types/three
 - vitest
-- @eslint/js
 
 ## God Nodes (most connected - your core abstractions)
 1. `cn()` - 226 edges
@@ -231,7 +231,7 @@ Nodes (3): TabsContent, TabsList, TabsTrigger
 
 ### Community 20 - "dependencies"
 Cohesion: 0.15
-Nodes (13): class-variance-authority, @hookform/resolvers, dependencies, class-variance-authority, @hookform/resolvers, @radix-ui/react-accordion, @radix-ui/react-navigation-menu, @radix-ui/react-slider (+5 more)
+Nodes (13): canvas-confetti, @hookform/resolvers, dependencies, canvas-confetti, @hookform/resolvers, @radix-ui/react-accordion, @radix-ui/react-navigation-menu, @radix-ui/react-slider (+5 more)
 
 ### Community 21 - "form.tsx"
 Cohesion: 0.23
@@ -239,7 +239,7 @@ Nodes (10): FormControl, FormDescription, FormFieldContext, FormFieldContextValu
 
 ### Community 22 - "devDependencies"
 Cohesion: 0.15
-Nodes (13): eslint, globals, devDependencies, eslint, globals, @types/react, typescript, typescript-eslint (+5 more)
+Nodes (13): eslint, eslint-config-prettier, globals, devDependencies, eslint, eslint-config-prettier, globals, typescript (+5 more)
 
 ### Community 23 - "chart.tsx"
 Cohesion: 0.25
@@ -311,7 +311,7 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `cn()` connect `cn` to `alert.tsx`, `sidebar.tsx`, `dashboard.tsx`, `table.tsx`, `toggle-group.tsx`, `sheet.tsx`, `dropdown-menu.tsx`, `button.tsx`, `utils.ts`, `badge.tsx`, `command.tsx`, `menubar.tsx`, `tabs.tsx`, `form.tsx`, `chart.tsx`, `navigation-menu.tsx`, `queries.ts`, `carousel.tsx`?**
   _High betweenness centrality (0.178) - this node is a cross-community bridge._
-- **Why does `dependencies` connect `dependencies` to `package.json`, `clsx`, `cmdk`, `date-fns`, `embla-carousel-react`, `canvas-confetti`, `framer-motion`, `input-otp`, `lenis`, `lucide-react`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-menubar`, `@radix-ui/react-popover`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `@radix-ui/react-scroll-area`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-slot`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toggle`, `@radix-ui/react-toggle-group`, `@radix-ui/react-tooltip`, `react-dom`, `react-hook-form`, `react-resizable-panels`, `recharts`, `sonner`, `tailwind-merge`, `@tailwindcss/vite`, `@tanstack/react-query`, `@tanstack/react-router`, `@tanstack/router-plugin`, `tw-animate-css`, `vaul`, `vite-tsconfig-paths`, `zod`, `zustand`?**
+- **Why does `dependencies` connect `dependencies` to `package.json`, `clsx`, `class-variance-authority`, `date-fns`, `embla-carousel-react`, `cmdk`, `framer-motion`, `input-otp`, `lenis`, `lucide-react`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-menubar`, `@radix-ui/react-popover`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `@radix-ui/react-scroll-area`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-slot`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toggle`, `@radix-ui/react-toggle-group`, `@radix-ui/react-tooltip`, `react-dom`, `react-hook-form`, `react-resizable-panels`, `recharts`, `sonner`, `tailwind-merge`, `@tailwindcss/vite`, `@tanstack/react-query`, `@tanstack/react-router`, `@tanstack/router-plugin`, `tw-animate-css`, `vaul`, `vite-tsconfig-paths`, `zod`, `zustand`?**
   _High betweenness centrality (0.027) - this node is a cross-community bridge._
 - **Why does `Button` connect `button.tsx` to `sidebar.tsx`, `dashboard.tsx`, `cn`, `queries.ts`, `carousel.tsx`?**
   _High betweenness centrality (0.016) - this node is a cross-community bridge._
