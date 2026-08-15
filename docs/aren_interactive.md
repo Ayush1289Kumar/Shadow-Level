@@ -600,3 +600,23 @@ IMPLEMENTATION:
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
+---
+
+## Part 6 — Canvas Scroll-Scrubbed Dungeon Gate
+
+The WebGL ThreeJS portal gate has been replaced with a high-performance Canvas Scroll-Scrubbing component (`ScrollScrubGate`). This renders 100 high-quality cinematic keyframes extracted from a user-provided video.
+
+### 6.1 — Video Extraction Pipeline (FFmpeg)
+To generate the frames:
+1. Save the cinematic gate-zoom video as `public/frames/dungeon_gate.mp4`.
+2. Extract exactly 100 frames at a calculated framerate corresponding to the video's duration (e.g. `100 / duration` fps) into `public/frames/frame_XXX.jpg`.
+   ```powershell
+   ffmpeg -i public\frames\dungeon_gate.mp4 -r 6.24142 -vframes 100 -y public\frames\frame_%03d.jpg
+   ```
+
+### 6.2 — Scroll-Scrub Canvas Rendering
+- **Preloading**: All 100 frames are preloaded as HTML `Image` elements on mount. The global cinematic loader holds at 95% until all 100 frames are cached.
+- **Scroll Mapping**: Computes `frameIndex = Math.floor(scrollProgress * 99)` and draws using canvas-cover logic (keeps aspect ratio).
+- **Parallax Tilt**: Mouse coordinates tilt the canvas in 3D perspective space via CSS transforms, enhancing the volumetric illusion.
+
+

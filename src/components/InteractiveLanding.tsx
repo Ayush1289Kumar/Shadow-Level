@@ -11,13 +11,16 @@ import {
 } from "lucide-react";
 
 // --- CINEMATIC LOADER ---
-function CinematicLoader({ onComplete }: { onComplete: () => void }) {
+function CinematicLoader({ onComplete, ready }: { onComplete: () => void; ready: boolean }) {
   const [percent, setPercent] = useState(0);
   const [status, setStatus] = useState("Scanning...");
 
   useEffect(() => {
     const interval = setInterval(() => {
       setPercent((prev) => {
+        if (prev >= 95 && !ready) {
+          return 95; // Hold at 95% until frames are preloaded
+        }
         if (prev >= 100) {
           clearInterval(interval);
           return 100;
@@ -27,12 +30,13 @@ function CinematicLoader({ onComplete }: { onComplete: () => void }) {
     }, 30);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [ready]);
 
   useEffect(() => {
     if (percent === 20) setStatus("Loading Assets...");
     if (percent === 55) setStatus("Establishing Connection...");
     if (percent === 85) setStatus("Syncing Player Data...");
+    if (percent === 95 && !ready) setStatus("Preloading Portal Frames...");
     if (percent === 100) {
       setStatus("Ready");
       setTimeout(() => {
@@ -43,7 +47,7 @@ function CinematicLoader({ onComplete }: { onComplete: () => void }) {
         onComplete();
       }, 700);
     }
-  }, [percent, onComplete]);
+  }, [percent, onComplete, ready]);
 
   return (
     <motion.div
@@ -82,122 +86,175 @@ function CinematicLoader({ onComplete }: { onComplete: () => void }) {
   );
 }
 
-// --- THREE.JS 3D DUNGEON GATE / PORTAL ---
-function ThreeDungeonGate({ ariseBurstTrigger }: { ariseBurstTrigger: number }) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
+// --- SCROLL SCRUBBED CANVAS GATE / PORTAL ---
+function ScrollScrubGate({ ariseBurstTrigger, onPreloadComplete }: { ariseBurstTrigger: number; onPreloadComplete: () => void }) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const imagesRef = useRef<HTMLImageElement[]>([]);
+  const scrollProgress = useRef(0);
+  const currentFrameRef = useRef(0);
+  const ariseActiveRef = useRef(false);
+  const ariseFrameRef = useRef(0);
   const mouse = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
-  const zoomActive = useRef(false);
-  const zoomProgress = useRef(0);
 
+  // Preload and pre-decode all 100 frames
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    let loadedCount = 0;
+    const totalFrames = 100;
+    const images: HTMLImageElement[] = [];
 
-    // WebGL Renderer Setup
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    container.appendChild(renderer.domElement);
+    for (let i = 1; i <= totalFrames; i++) {
+      const img = new Image();
+      const frameNum = String(i).padStart(3, "0");
+      img.src = `/frames/frame_${frameNum}.jpg`;
+      
+      const handleLoad = () => {
+        // Trigger pre-decoding to ensure zero jank during scroll-scrubbing
+        img.decode().then(() => {
+          loadedCount++;
+          if (loadedCount === totalFrames) {
+            imagesRef.current = images;
+            onPreloadComplete();
+          }
+        }).catch(() => {
+          loadedCount++;
+          if (loadedCount === totalFrames) {
+            imagesRef.current = images;
+            onPreloadComplete();
+          }
+        });
+      };
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 45;
+      img.onload = handleLoad;
+      img.onerror = () => {
+        loadedCount++;
+        if (loadedCount === totalFrames) {
+          imagesRef.current = images;
+          onPreloadComplete();
+        }
+      };
+      images.push(img);
+    }
+  }, [onPreloadComplete]);
 
-    // Create 3D gate rings
-    const group = new THREE.Group();
-    scene.add(group);
-
-    const matOuter = new THREE.MeshBasicMaterial({ color: 0x06B6D4, wireframe: true });
-    const matMiddle = new THREE.MeshBasicMaterial({ color: 0x3B82F6, wireframe: true });
-    const matInner = new THREE.MeshBasicMaterial({ color: 0xFBBF24, wireframe: true });
-
-    const ringOuter = new THREE.Mesh(new THREE.TorusGeometry(14, 1.2, 16, 100), matOuter);
-    const ringMiddle = new THREE.Mesh(new THREE.TorusGeometry(10.5, 0.9, 12, 80), matMiddle);
-    const ringInner = new THREE.Mesh(new THREE.TorusGeometry(7, 0.6, 10, 60), matInner);
-
-    group.add(ringOuter);
-    group.add(ringMiddle);
-    group.add(ringInner);
-
-    // Mouse movement listener
+  // Track mouse for 3D parallax tilt
+  useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      mouse.current.targetX = ((e.clientX / window.innerWidth) - 0.5) * 40;
-      mouse.current.targetY = -((e.clientY / window.innerHeight) - 0.5) * 40;
+      mouse.current.targetX = ((e.clientX / window.innerWidth) - 0.5) * 35;
+      mouse.current.targetY = -((e.clientY / window.innerHeight) - 0.5) * 35;
     };
     window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
-    // Scroll parallax depth zoom
+  // Track scroll position
+  useEffect(() => {
     const handleScroll = () => {
-      const scrollRatio = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight || 1);
-      // Zoom camera in slightly as user scrolls
-      camera.position.z = 45 - scrollRatio * 20;
+      if (ariseActiveRef.current) return;
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = scrollHeight > 0 ? window.scrollY / scrollHeight : 0;
+      scrollProgress.current = progress;
     };
     window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-    const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    };
-    window.addEventListener("resize", handleResize);
-
-    const clock = new THREE.Clock();
+  // Render loop
+  useEffect(() => {
     let animationId: number;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    const animate = () => {
-      const delta = clock.getDelta();
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-      // Lerp mouse coordinate coordinates
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    const drawCoverImage = (img: HTMLImageElement) => {
+      if (!ctx || !canvas) return;
+      // Removed clearRect to prevent visual flashing between frames
+
+      const imgWidth = img.naturalWidth || 3840;
+      const imgHeight = img.naturalHeight || 2160;
+      const imgAspect = imgWidth / imgHeight;
+      const canvasAspect = canvas.width / canvas.height;
+
+      let drawWidth = canvas.width;
+      let drawHeight = canvas.height;
+      let offsetX = 0;
+      let offsetY = 0;
+
+      if (canvasAspect > imgAspect) {
+        drawHeight = canvas.width / imgAspect;
+        offsetY = (canvas.height - drawHeight) / 2;
+      } else {
+        drawWidth = canvas.height * imgAspect;
+        offsetX = (canvas.width - drawWidth) / 2;
+      }
+
+      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+    };
+
+    const render = () => {
+      // Lerp mouse coordinates
       mouse.current.x += (mouse.current.targetX - mouse.current.x) * 0.08;
       mouse.current.y += (mouse.current.targetY - mouse.current.y) * 0.08;
 
-      // Spin rings at different velocities
-      const speedMult = zoomActive.current ? 12 : 1;
-
-      ringOuter.rotation.y += 0.4 * delta * speedMult;
-      ringOuter.rotation.z += 0.2 * delta * speedMult;
-
-      ringMiddle.rotation.x += 0.6 * delta * speedMult;
-      ringMiddle.rotation.y += 0.3 * delta * speedMult;
-
-      ringInner.rotation.x += 0.8 * delta * speedMult;
-      ringInner.rotation.z += 0.4 * delta * speedMult;
-
-      // Handle Arise zoom camera warp
-      if (zoomActive.current) {
-        zoomProgress.current += delta * 0.8;
-        camera.position.z = THREE.MathUtils.lerp(camera.position.z, 2, zoomProgress.current);
-        group.scale.setScalar(THREE.MathUtils.lerp(1, 2.5, zoomProgress.current));
+      if (canvas) {
+        canvas.style.transform = `perspective(1000px) rotateX(${mouse.current.y * 0.3}deg) rotateY(${mouse.current.x * 0.3}deg) scale(1.03)`;
       }
 
-      // Dynamic tilt group
-      group.rotation.x = mouse.current.y * 0.015;
-      group.rotation.y = mouse.current.x * 0.015;
+      if (imagesRef.current.length === 100) {
+        let frameIndex = 0;
 
-      renderer.render(scene, camera);
-      animationId = requestAnimationFrame(animate);
+        if (ariseActiveRef.current) {
+          ariseFrameRef.current += 1.5; // Fast forward through portal entry
+          frameIndex = Math.min(99, Math.floor(ariseFrameRef.current));
+        } else {
+          frameIndex = Math.floor(scrollProgress.current * 99);
+          frameIndex = Math.max(0, Math.min(99, frameIndex));
+          ariseFrameRef.current = frameIndex;
+        }
+
+        currentFrameRef.current = frameIndex;
+        const img = imagesRef.current[frameIndex];
+        if (img && img.complete) {
+          drawCoverImage(img);
+        }
+      }
+
+      animationId = requestAnimationFrame(render);
     };
-    animate();
+    render();
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", resizeCanvas);
       cancelAnimationFrame(animationId);
-      if (container.contains(renderer.domElement)) {
-        container.removeChild(renderer.domElement);
-      }
-      renderer.dispose();
     };
   }, []);
 
+  // Handle Arise portal warp activation
   useEffect(() => {
     if (ariseBurstTrigger === 0) return;
-    zoomProgress.current = 0;
-    zoomActive.current = true;
+    ariseActiveRef.current = true;
   }, [ariseBurstTrigger]);
 
-  return <div ref={containerRef} className="pointer-events-none fixed inset-0 z-0 bg-transparent flex items-center justify-center" />;
+  return (
+    <div className="fixed inset-0 z-0 bg-void pointer-events-none flex items-center justify-center overflow-hidden">
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full transition-transform duration-100 ease-out will-change-transform opacity-75"
+        style={{ filter: "brightness(0.85) contrast(1.1) saturate(1.2)" }}
+      />
+      {/* Dark overlay gradients for dramatic effect */}
+      <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-void/70 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-void/50 via-transparent to-void/50 pointer-events-none" />
+    </div>
+  );
 }
 
 // --- CUSTOM CURSOR SYSTEM ---
@@ -379,7 +436,9 @@ function Magnetic({ children }: { children: React.ReactElement }) {
 // --- MAIN LANDING VIEW ---
 export function InteractiveLanding() {
   const [loadingComplete, setLoadingComplete] = useState(false);
+  const [framesLoaded, setFramesLoaded] = useState(false);
   const [ariseBurstTrigger, setAriseBurstTrigger] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [muted, setMuted] = useState(() => {
     return localStorage.getItem("shadow_muted") === "true";
   });
@@ -392,23 +451,10 @@ export function InteractiveLanding() {
   const { scrollY } = useScroll();
   const navBgOpacity = useTransform(scrollY, [0, 80], [0, 0.8]);
   const heroParallaxBg = useTransform(scrollY, [0, 500], [0, 150]);
-  const heroParallaxText = useTransform(scrollY, [0, 500], [0, 400]);
+  const heroParallaxText = useTransform(scrollY, [0, 500], [0, -150]);
+  const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
 
-  useEffect(() => {
-    let lastSection = 0;
-    const handleScroll = () => {
-      const currentSection = Math.floor(window.scrollY / (window.innerHeight * 0.8));
-      if (currentSection !== lastSection) {
-        lastSection = currentSection;
-        playSound("gateOpen");
-        setWipeActive(true);
-        const timer = setTimeout(() => setWipeActive(false), 800);
-        return () => clearTimeout(timer);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+
 
   useEffect(() => {
     localStorage.setItem("shadow_muted", String(muted));
@@ -421,17 +467,18 @@ export function InteractiveLanding() {
     });
   }, [muted]);
 
-  const handleAriseClick = () => {
+  const handleNavigationWithTransition = (to: string) => {
     playSound("arise");
     setAriseBurstTrigger((prev) => prev + 1);
+    setIsTransitioning(true); // Fade out front page elements
 
     setTimeout(() => {
-      if (userId) {
-        navigate({ to: "/dashboard" });
-      } else {
-        navigate({ to: "/auth" });
-      }
+      navigate({ to });
     }, 1200);
+  };
+
+  const handleAriseClick = () => {
+    handleNavigationWithTransition(userId ? "/dashboard" : "/auth");
   };
 
   const handleNavLinkHover = () => {
@@ -448,7 +495,7 @@ export function InteractiveLanding() {
       {/* Cinematic Loading Overlay */}
       <AnimatePresence>
         {!loadingComplete && (
-          <CinematicLoader onComplete={() => setLoadingComplete(true)} />
+          <CinematicLoader onComplete={() => setLoadingComplete(true)} ready={framesLoaded} />
         )}
       </AnimatePresence>
 
@@ -471,11 +518,17 @@ export function InteractiveLanding() {
         )}
       </AnimatePresence>
 
-      {/* 3D Gate Portal Background */}
-      <ThreeDungeonGate ariseBurstTrigger={ariseBurstTrigger} />
+      {/* Scroll Scrub Gate Portal Background */}
+      <ScrollScrubGate ariseBurstTrigger={ariseBurstTrigger} onPreloadComplete={() => setFramesLoaded(true)} />
 
       {/* Custom Cursor System */}
       <CustomCursor />
+
+      <motion.div
+        animate={{ opacity: isTransitioning ? 0 : 1 }}
+        transition={{ duration: 0.9, ease: "easeInOut" }}
+        className={isTransitioning ? "pointer-events-none" : ""}
+      >
 
       {/* Floating Mute Button */}
       <motion.button
@@ -505,7 +558,7 @@ export function InteractiveLanding() {
 
           {/* Desktop Nav */}
           <nav className="hidden items-center gap-8 md:flex">
-            {["features", "stats", "pricing", "testimonials"].map((item) => (
+            {["features", "stats"].map((item) => (
               <a
                 key={item}
                 href={`#${item}`}
@@ -516,17 +569,19 @@ export function InteractiveLanding() {
               </a>
             ))}
             {userId ? (
-              <Link to="/dashboard">
-                <Button className="bg-gradient-to-r from-mana to-mana-bright text-moonlight font-bold uppercase rounded-xl shadow-lg hover:shadow-mana/20 border-0">
-                  Enter System
-                </Button>
-              </Link>
+              <Button
+                onClick={() => handleNavigationWithTransition("/dashboard")}
+                className="bg-gradient-to-r from-mana to-mana-bright text-moonlight font-bold uppercase rounded-xl shadow-lg hover:shadow-mana/20 border-0"
+              >
+                Enter System
+              </Button>
             ) : (
-              <Link to="/auth">
-                <Button className="bg-transparent hover:bg-abyss border border-mist text-silver font-bold uppercase rounded-xl">
-                  Sign In
-                </Button>
-              </Link>
+              <Button
+                onClick={() => handleNavigationWithTransition("/auth")}
+                className="bg-transparent hover:bg-abyss border border-mist text-silver font-bold uppercase rounded-xl"
+              >
+                Sign In
+              </Button>
             )}
           </nav>
 
@@ -552,7 +607,7 @@ export function InteractiveLanding() {
               className="bg-abyss border-b border-mist md:hidden"
             >
               <div className="flex flex-col gap-4 px-6 py-6 font-mono text-sm uppercase">
-                {["features", "stats", "pricing", "testimonials"].map((item) => (
+                {["features", "stats"].map((item) => (
                   <a
                     key={item}
                     href={`#${item}`}
@@ -566,17 +621,25 @@ export function InteractiveLanding() {
                   </a>
                 ))}
                 {userId ? (
-                  <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                    <Button className="w-full bg-gradient-to-r from-mana to-mana-bright text-moonlight font-bold uppercase rounded-xl border-0">
-                      Enter System
-                    </Button>
-                  </Link>
+                  <Button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleNavigationWithTransition("/dashboard");
+                    }}
+                    className="w-full bg-gradient-to-r from-mana to-mana-bright text-moonlight font-bold uppercase rounded-xl border-0"
+                  >
+                    Enter System
+                  </Button>
                 ) : (
-                  <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
-                    <Button className="w-full bg-transparent border border-mist text-silver font-bold uppercase rounded-xl">
-                      Sign In
-                    </Button>
-                  </Link>
+                  <Button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleNavigationWithTransition("/auth");
+                    }}
+                    className="w-full bg-transparent border border-mist text-silver font-bold uppercase rounded-xl"
+                  >
+                    Sign In
+                  </Button>
                 )}
               </div>
             </motion.div>
@@ -585,14 +648,14 @@ export function InteractiveLanding() {
       </motion.header>
 
       {/* --- HERO SECTION --- */}
-      <section className="relative flex min-h-screen items-center justify-center px-6 pt-24 overflow-hidden">
+      <section className="relative z-10 flex min-h-screen items-center justify-center px-6 pt-24 overflow-hidden">
         <motion.div
           style={{ y: heroParallaxBg }}
           className="absolute inset-0 z-0 bg-mana-radial opacity-40 pointer-events-none"
         />
 
         <motion.div
-          style={{ y: heroParallaxText }}
+          style={{ y: heroParallaxText, opacity: heroOpacity }}
           className="relative z-10 max-w-4xl text-center flex flex-col items-center"
         >
           {/* Monospace update badge */}
@@ -603,7 +666,7 @@ export function InteractiveLanding() {
             className="inline-flex items-center gap-1.5 rounded-full border border-mana/30 bg-depth/40 px-3 py-1 font-mono text-xs font-bold text-mana uppercase tracking-widest"
           >
             <Sparkles className="h-3 w-3" />
-            System Version 2.0 Installed
+            System Version 2.0 In Development
           </motion.div>
 
           {/* Scramble Text Heading */}
@@ -612,7 +675,7 @@ export function InteractiveLanding() {
           </h1>
 
           <p className="mt-6 max-w-xl text-body text-silver">
-            The world's first daily quest tracker inspired by Solo Leveling. Complete tasks, build streaks, level up your stats, and build your shadow army.
+            A fan-made daily habit and quest tracker inspired by Solo Leveling. Complete real-life tasks, build streaks, level up your stats, and summon your shadow army. Built for fun and gamified productivity.
           </p>
 
           {/* Magnetic CTA button wrapper */}
@@ -651,7 +714,7 @@ export function InteractiveLanding() {
       </section>
 
       {/* --- FEATURES SECTION --- */}
-      <section id="features" className="relative py-24 border-t border-mist/20 bg-void/60 px-6">
+      <section id="features" className="relative z-10 py-24 border-t border-mist/20 bg-transparent px-6">
         <div className="mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -660,11 +723,11 @@ export function InteractiveLanding() {
             transition={{ duration: 0.6 }}
             className="text-center"
           >
-            <h2 className="text-display text-glow-mana uppercase">
+            <h2 className="text-display text-glow-mana text-moonlight uppercase">
               System Features
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-silver">
-              Unlock unique skills and power levels. The shadow army executes tasks according to your status parameters.
+              Gamify your productivity. This personal side-project lets you extract shadow soldiers from completed habits and view your status parameters.
             </p>
           </motion.div>
 
@@ -693,7 +756,7 @@ export function InteractiveLanding() {
                 viewport={{ once: true, amount: 0.15 }}
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
                 whileHover={{ y: -6 }}
-                className="surface p-8 relative overflow-hidden group border border-mist/40 bg-depth/40 backdrop-blur hover:border-mana/40 hover:shadow-[0_0_30px_rgba(6,182,212,0.1)] transition-all duration-300"
+                className="bg-depth/80 border border-mist/40 backdrop-blur-md p-8 relative overflow-hidden group hover:border-mana/40 hover:shadow-[0_0_30px_rgba(6,182,212,0.1)] transition-all duration-300 rounded-2xl"
               >
                 <div className="rounded-xl bg-depth/40 p-3 w-fit border border-mana/20 group-hover:bg-mana/10 transition-colors duration-300">
                   {feat.icon}
@@ -707,15 +770,15 @@ export function InteractiveLanding() {
       </section>
 
       {/* --- STATS STATUS WINDOW SECTION --- */}
-      <section id="stats" className="relative py-24 px-6 border-t border-mist/20">
+      <section id="stats" className="relative z-10 py-24 px-6 border-t border-mist/20">
         <div className="mx-auto max-w-4xl">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, amount: 0.15 }}
+            viewport={{ once: false, amount: 0.15 }}
             onViewportEnter={() => playSound("rankUp")}
             transition={{ duration: 0.6 }}
-            className="relative border border-mana/30 rounded-3xl p-8 md:p-12 bg-abyss/90 box-glow-mana"
+            className="relative bg-abyss/85 border border-mana/20 backdrop-blur-md rounded-3xl p-8 md:p-12 box-glow-mana"
           >
             <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,24,0)_95%,rgba(6,182,212,0.08)_95%)] bg-[size:100%_24px] pointer-events-none opacity-40 rounded-3xl" />
 
@@ -733,9 +796,9 @@ export function InteractiveLanding() {
                   </div>
                   <div className="h-2 w-full bg-abyss rounded-full overflow-hidden border border-mist">
                     <motion.div
-                      initial={{ width: 0 }}
+                      initial={{ width: "0%" }}
                       whileInView={{ width: "80%" }}
-                      viewport={{ once: true }}
+                      viewport={{ once: false }}
                       transition={{ duration: 1.5, ease: "easeOut" }}
                       className="h-full bg-gradient-to-r from-mana to-mana-bright"
                     />
@@ -749,9 +812,9 @@ export function InteractiveLanding() {
                   </div>
                   <div className="h-2 w-full bg-abyss rounded-full overflow-hidden border border-mist">
                     <motion.div
-                      initial={{ width: 0 }}
+                      initial={{ width: "0%" }}
                       whileInView={{ width: "63.3%" }}
-                      viewport={{ once: true }}
+                      viewport={{ once: false }}
                       transition={{ duration: 1.5, ease: "easeOut" }}
                       className="h-full bg-gradient-to-r from-mana to-mana-bright"
                     />
@@ -765,9 +828,9 @@ export function InteractiveLanding() {
                   </div>
                   <div className="h-2 w-full bg-abyss rounded-full overflow-hidden border border-mist">
                     <motion.div
-                      initial={{ width: 0 }}
+                      initial={{ width: "0%" }}
                       whileInView={{ width: "94.6%" }}
-                      viewport={{ once: true }}
+                      viewport={{ once: false }}
                       transition={{ duration: 1.5, ease: "easeOut" }}
                       className="h-full bg-gradient-to-r from-mana to-mana-bright"
                     />
@@ -786,164 +849,10 @@ export function InteractiveLanding() {
         </div>
       </section>
 
-      {/* --- PRICING SECTION --- */}
-      <section id="pricing" className="relative py-24 px-6 border-t border-mist/20 bg-void/40">
-        <div className="mx-auto max-w-5xl">
-          <div className="text-center">
-            <h2 className="text-display text-glow-mana uppercase">Select Level Plan</h2>
-            <p className="mt-4 text-silver">Unlock shadow summons and S-Rank parameter tracking capabilities.</p>
 
-            <div className="mt-8 flex justify-center items-center gap-4">
-              <span className={`text-sm ${!isAnnual ? "text-mana font-bold" : "text-ash"}`}>Monthly</span>
-              <button
-                onClick={handleToggleBilling}
-                className="relative h-6 w-12 rounded-full bg-shade border border-mist transition-colors"
-              >
-                <motion.div
-                  animate={{ x: isAnnual ? 24 : 2 }}
-                  className="h-4.5 w-4.5 rounded-full bg-mana shadow shadow-mana/50"
-                />
-              </button>
-              <span className={`text-sm ${isAnnual ? "text-mana font-bold" : "text-ash"}`}>
-                Annual <span className="text-xs text-success font-mono font-bold bg-success-dark/20 border border-success/30 px-1.5 py-0.5 rounded ml-1">Save 20%</span>
-              </span>
-            </div>
-          </div>
-
-          <div className="mt-16 grid gap-8 md:grid-cols-2 max-w-3xl mx-auto">
-            {/* Free Plan */}
-            <motion.div
-              whileHover={{ y: -4 }}
-              className="surface p-8 border border-mist/40 bg-depth/20 backdrop-blur rounded-2xl flex flex-col justify-between"
-            >
-              <div>
-                <span className="font-mono text-xs uppercase text-slate-500">Rank E Hunter</span>
-                <h3 className="text-2xl font-bold uppercase text-moonlight mt-2">D-Class Free</h3>
-                <p className="mt-4 text-4xl font-extrabold">$0</p>
-                <ul className="mt-8 space-y-4 text-sm text-slate-400">
-                  <li className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-cyan-400" />
-                    <span>Daily Quest Board (5 Quests)</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-cyan-400" />
-                    <span>Basic level parameter tracker</span>
-                  </li>
-                </ul>
-              </div>
-              <Button
-                onClick={handleAriseClick}
-                className="mt-8 w-full bg-transparent hover:bg-abyss border border-mist uppercase font-bold"
-              >
-                Begin Quest
-              </Button>
-            </motion.div>
-
-            {/* Premium Plan */}
-            <motion.div
-              whileHover={{ y: -4 }}
-              className="relative p-8 border border-mana/40 bg-depth/60 backdrop-blur rounded-2xl flex flex-col justify-between shadow-[0_0_35px_rgba(6,182,212,0.1)]"
-            >
-              <div className="absolute -top-3 right-6 rounded-full bg-mana text-moonlight px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider">
-                Recommended
-              </div>
-
-              <div>
-                <span className="font-mono text-xs uppercase text-cyan-400">Rank S Monarch</span>
-                <h3 className="text-2xl font-bold uppercase text-glow-mana text-moonlight mt-2">Shadow Lord Pro</h3>
-                <p className="mt-4 text-4xl font-extrabold">
-                  {isAnnual ? "$8/mo" : "$10/mo"}
-                </p>
-                <ul className="mt-8 space-y-4 text-sm text-slate-400">
-                  <li className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-cyan-400" />
-                    <span>Unlimited Summons & Quests</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-cyan-400" />
-                    <span>Shadow Army Extraction (Custom Avatars)</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-mana" />
-                    <span>S-Rank Premium Fanfare loops & SFX pack</span>
-                  </li>
-                </ul>
-              </div>
-              <Button
-                onClick={handleAriseClick}
-                className="mt-8 w-full bg-gradient-to-r from-mana to-mana-bright text-moonlight font-bold uppercase rounded-xl border-0"
-              >
-                Extract Shadow
-              </Button>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* --- TESTIMONIALS SECTION --- */}
-      <section id="testimonials" className="relative py-24 border-t border-mist/20 overflow-hidden">
-        <div className="mx-auto max-w-7xl px-6 text-center">
-          <h2 className="text-display text-glow-mana uppercase">Monarch Testimonials</h2>
-        </div>
-
-        {/* Marquee Row */}
-        <div className="mt-16 flex flex-col gap-6 w-full">
-          <div className="relative flex overflow-hidden select-none w-full [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]">
-            <div className="flex gap-6 animate-marquee shrink-0 hover:[animation-play-state:paused] whitespace-nowrap">
-              {[
-                { name: "Jin-Woo", role: "Monarch", quote: "The status indicators and XP bars are completely flawless." },
-                { name: "Cha Hae-In", role: "S-Rank Hunter", quote: "Highly immersive soundscape, custom actions make productivity feel like real battles." },
-                { name: "Woo Jin-Chul", role: "Chairman Association", quote: "A masterpiece of UX choreography. Every animation feels calculated and earned." },
-                { name: "Yoo Jin-Ho", role: "Guild Master", quote: "The interface makes daily quest tracking look like a true leveling status screen." }
-              ].map((test, idx) => (
-                <div
-                  key={idx}
-                  className="w-[300px] inline-block border border-mist/40 bg-depth/30 backdrop-blur rounded-2xl p-6 whitespace-normal"
-                >
-                  <p className="text-sm text-silver italic">"{test.quote}"</p>
-                  <div className="mt-6 flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-depth flex items-center justify-center font-bold text-mana border border-mana/20 text-xs">
-                      {test.name[0]}
-                    </div>
-                    <div className="text-left">
-                      <p className="text-xs font-bold text-moonlight">{test.name}</p>
-                      <p className="text-[10px] text-ash uppercase">{test.role}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex gap-6 aria-hidden:true animate-marquee shrink-0 hover:[animation-play-state:paused] whitespace-nowrap">
-              {[
-                { name: "Jin-Woo", role: "Monarch", quote: "The status indicators and XP bars are completely flawless." },
-                { name: "Cha Hae-In", role: "S-Rank Hunter", quote: "Highly immersive soundscape, custom actions make productivity feel like real battles." },
-                { name: "Woo Jin-Chul", role: "Chairman Association", quote: "A masterpiece of UX choreography. Every animation feels calculated and earned." },
-                { name: "Yoo Jin-Ho", role: "Guild Master", quote: "The interface makes daily quest tracking look like a true leveling status screen." }
-              ].map((test, idx) => (
-                <div
-                  key={idx + 4}
-                  className="w-[300px] inline-block border border-mist/40 bg-depth/30 backdrop-blur rounded-2xl p-6 whitespace-normal"
-                >
-                  <p className="text-sm text-silver italic">"{test.quote}"</p>
-                  <div className="mt-6 flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-depth flex items-center justify-center font-bold text-mana border border-mana/20 text-xs">
-                      {test.name[0]}
-                    </div>
-                    <div className="text-left">
-                      <p className="text-xs font-bold text-moonlight">{test.name}</p>
-                      <p className="text-[10px] text-ash uppercase">{test.role}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* --- FOOTER & EASTER EGG --- */}
-      <footer className="border-t border-mist/20 bg-void py-12 px-6 relative overflow-hidden">
+      <footer className="border-t border-mist/20 bg-void py-12 px-6 relative z-10 overflow-hidden">
         <div className="mx-auto max-w-7xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2 font-display text-lg font-bold tracking-wider text-mana uppercase">
             <Sword className="h-5 w-5" />
@@ -973,6 +882,7 @@ export function InteractiveLanding() {
           </button>
         </div>
       </footer>
+      </motion.div>
     </div>
   );
 }
