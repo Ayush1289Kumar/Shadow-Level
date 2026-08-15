@@ -85,6 +85,98 @@ function Dashboard() {
     }
   }, [positiveHabitsCount, yesterdayPositiveCount, todayStr]);
 
+  // Deep Danger pulsating warn loop for the Penalty Zone
+  useEffect(() => {
+    if (!showPenaltyZone) return;
+
+    const isMuted = localStorage.getItem("shadow_muted") === "true";
+    if (isMuted) return;
+
+    let ctx: AudioContext | null = null;
+    let osc1: OscillatorNode | null = null;
+    let osc2: OscillatorNode | null = null;
+    let gainNode: GainNode | null = null;
+    let filter: BiquadFilterNode | null = null;
+    let modulationInterval: number | null = null;
+
+    const startSound = () => {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      ctx = new AudioCtx();
+
+      osc1 = ctx.createOscillator();
+      osc2 = ctx.createOscillator();
+      gainNode = ctx.createGain();
+      filter = ctx.createBiquadFilter();
+
+      // Deep danger sub frequencies (38Hz and 76Hz)
+      osc1.type = "sawtooth";
+      osc1.frequency.setValueAtTime(38, ctx.currentTime);
+
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(76, ctx.currentTime);
+
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(100, ctx.currentTime);
+      filter.Q.setValueAtTime(8, ctx.currentTime);
+
+      gainNode.gain.setValueAtTime(0, ctx.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.28, ctx.currentTime + 1.2);
+
+      osc1.connect(filter);
+      osc2.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      osc1.start();
+      osc2.start();
+
+      let time = 0;
+      modulationInterval = setInterval(() => {
+        if (!ctx || !filter || !gainNode) return;
+        try {
+          const cutoff = 110 + Math.sin(time) * 40;
+          filter.frequency.linearRampToValueAtTime(cutoff, ctx.currentTime + 0.3);
+
+          const volume = 0.2 + Math.sin(time) * 0.08;
+          gainNode.gain.linearRampToValueAtTime(volume, ctx.currentTime + 0.3);
+
+          time += 0.45;
+        } catch (e) { /* ignore */ }
+      }, 300) as any;
+    };
+
+    const handleUnlock = () => {
+      if (ctx && ctx.state === "suspended") {
+        void ctx.resume();
+      }
+    };
+    window.addEventListener("click", handleUnlock, { passive: true });
+    window.addEventListener("touchstart", handleUnlock, { passive: true });
+
+    startSound();
+
+    return () => {
+      window.removeEventListener("click", handleUnlock);
+      window.removeEventListener("touchstart", handleUnlock);
+      if (modulationInterval) clearInterval(modulationInterval);
+      if (gainNode && ctx) {
+        try {
+          gainNode.gain.cancelScheduledValues(ctx.currentTime);
+          gainNode.gain.setValueAtTime(gainNode.gain.value, ctx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
+          setTimeout(() => {
+            try {
+              osc1?.stop();
+              osc2?.stop();
+              void ctx?.close();
+            } catch (e) { /* ignore */ }
+          }, 600);
+        } catch (e) { /* ignore */ }
+      }
+    };
+  }, [showPenaltyZone]);
+
   const getRank = (streak: number) => {
     if (streak >= 90) return "S";
     if (streak >= 30) return "A";
@@ -202,20 +294,48 @@ function Dashboard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, filter: "blur(10px)" }}
           >
+            {/* Pulsating Danger Vignette Edge Overlay */}
             <motion.div
-              className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(220,38,38,0.2)_0%,transparent_70%)]"
+              className="absolute inset-0 pointer-events-none z-10 border-[12px] border-destructive/30"
+              animate={{
+                opacity: [0.35, 0.8, 0.35],
+                boxShadow: [
+                  "inset 0 0 80px rgba(255,0,60,0.45)",
+                  "inset 0 0 160px rgba(255,0,60,0.85)",
+                  "inset 0 0 80px rgba(255,0,60,0.45)"
+                ]
+              }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+            />
+
+            <motion.div
+              className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(255,0,60,0.22)_0%,transparent_70%)]"
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
             <motion.div
-              initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.9, y: 20 }}
-              animate={shouldReduceMotion ? { opacity: 1 } : { scale: 1, y: 0 }}
-              className="glass border-destructive/50 shadow-[0_0_50px_rgba(220,38,38,0.3)] max-w-lg p-8 relative overflow-hidden"
+              initial={shouldReduceMotion ? { opacity: 0 } : { scale: 0.9, y: 20, x: 0 }}
+              animate={shouldReduceMotion ? { opacity: 1 } : { 
+                scale: 1, 
+                y: 0,
+                x: [0, -3, 3, -3, 3, -1, 1, 0] // Rattling system alert entry
+              }}
+              transition={{
+                x: { duration: 0.5, ease: "easeInOut", delay: 0.1 }
+              }}
+              className="glass border-penalty/60 box-glow-penalty max-w-lg p-8 relative overflow-hidden shadow-[0_0_60px_rgba(255,0,60,0.4)]"
             >
-              <div className="text-destructive font-mono text-xl tracking-[0.3em] mb-2 uppercase animate-pulse">
+              {/* Animated scanline sweep */}
+              <motion.div 
+                className="absolute left-0 w-full h-[2px] bg-penalty/50 z-20 pointer-events-none"
+                animate={{ top: ["0%", "100%"] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: "linear" }}
+              />
+
+              <div className="text-penalty text-glow-penalty font-mono text-xl tracking-[0.3em] mb-2 uppercase animate-pulse">
                 [Warning]
               </div>
-              <h2 className="font-display text-4xl text-white mb-6 uppercase tracking-wider">
+              <h2 className="font-display text-4xl text-white text-glow-penalty mb-6 uppercase tracking-wider">
                 The Penalty Zone
               </h2>
               <p className="text-muted-foreground mb-8 text-lg">

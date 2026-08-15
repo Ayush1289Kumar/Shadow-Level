@@ -1,16 +1,16 @@
 # Graph Report - Shadow-Level  (2026-08-15)
 
 ## Corpus Check
-- 105 files · ~956,702 words
+- 105 files · ~956,991 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 921 nodes · 1587 edges · 108 communities (42 shown, 66 thin omitted)
+- 921 nodes · 1586 edges · 107 communities (41 shown, 66 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `45ec8b50`
+- Built from commit: `1a76253d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -18,8 +18,8 @@
 - audio.ts
 - Implementation Plan — Gemini AI Frame-Scrubbed Dungeon Gate
 - sidebar.tsx
-- dashboard.tsx
-- table.tsx
+- me.tsx
+- select.tsx
 - 🚀 AI Project Operating System (AI-POS) — Local Development
 - UI/UX, Animation & Design — Agent Skill Reference
 - aren_interactive.md
@@ -34,7 +34,7 @@
 - menubar.tsx
 - Shadow Level — Changelog
 - SECURITY.md — Local Development
-- tabs.tsx
+- accordion.tsx
 - dependencies
 - form.tsx
 - devDependencies
@@ -50,16 +50,16 @@
 - package.json
 - alert.tsx
 - Audio Assets — Drop Real Files Here
-- toggle-group.tsx
+- light-lines.tsx
 - setup.ts
 - rules/graphify.md
 - workflows/graphify.md
-- sheet.tsx
+- @radix-ui/react-progress
 - clsx
 - class-variance-authority
 - date-fns
 - embla-carousel-react
-- @types/react
+- eslint-config-prettier
 - badge.tsx
 - cmdk
 - eslint-plugin-react-refresh
@@ -80,7 +80,6 @@
 - @radix-ui/react-label
 - @radix-ui/react-menubar
 - @radix-ui/react-popover
-- @radix-ui/react-progress
 - @radix-ui/react-radio-group
 - @radix-ui/react-scroll-area
 - @radix-ui/react-select
@@ -133,41 +132,41 @@
 10. `levelProgress()` - 11 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `AccordionItem` --calls--> `cn()`  [EXTRACTED]
+  src/components/ui/accordion.tsx → src/lib/utils.ts
+- `AccordionTrigger` --calls--> `cn()`  [EXTRACTED]
+  src/components/ui/accordion.tsx → src/lib/utils.ts
+- `AccordionContent` --calls--> `cn()`  [EXTRACTED]
+  src/components/ui/accordion.tsx → src/lib/utils.ts
 - `AlertDialogOverlay` --calls--> `cn()`  [EXTRACTED]
   src/components/ui/alert-dialog.tsx → src/lib/utils.ts
 - `AlertDialogContent` --calls--> `cn()`  [EXTRACTED]
-  src/components/ui/alert-dialog.tsx → src/lib/utils.ts
-- `AlertDialogHeader()` --calls--> `cn()`  [EXTRACTED]
-  src/components/ui/alert-dialog.tsx → src/lib/utils.ts
-- `AlertDialogFooter()` --calls--> `cn()`  [EXTRACTED]
-  src/components/ui/alert-dialog.tsx → src/lib/utils.ts
-- `AlertDialogTitle` --calls--> `cn()`  [EXTRACTED]
   src/components/ui/alert-dialog.tsx → src/lib/utils.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (108 total, 66 thin omitted)
+## Communities (107 total, 66 thin omitted)
 
 ### Community 0 - "audio.ts"
-Cohesion: 0.13
-Nodes (12): assetUrl(), AudioBridge(), AudioSettingsState, getSharedAudioContext(), sound, SOUND_SPECS, SoundKey, SoundManager (+4 more)
+Cohesion: 0.10
+Nodes (15): LevelUpSequence(), CyberGlitchText(), CyberGlitchTextProps, assetUrl(), AudioBridge(), AudioSettingsState, getSharedAudioContext(), sound (+7 more)
 
 ### Community 1 - "Implementation Plan — Gemini AI Frame-Scrubbed Dungeon Gate"
 Cohesion: 0.14
 Nodes (13): Automated, Implementation Plan — Gemini AI Frame-Scrubbed Dungeon Gate, Manual, [MODIFY] `docs/aren_interactive.md`, [MODIFY] [`InteractiveLanding.tsx`](file:///d:/Vibe%20Coding/Projects/Shadow-Level/src/components/InteractiveLanding.tsx), Open Questions, Phase 1 — Video Frame Extraction (FFmpeg), Phase 2 — Canvas Scroll Scrubber (+5 more)
 
 ### Community 2 - "sidebar.tsx"
-Cohesion: 0.07
-Nodes (32): Input, Separator, Sidebar, SidebarContent, SidebarContext, SidebarContextProps, SidebarFooter, SidebarGroup (+24 more)
+Cohesion: 0.06
+Nodes (40): Input, Separator, SheetContent, SheetContentProps, SheetDescription, SheetFooter(), SheetHeader(), SheetOverlay (+32 more)
 
-### Community 3 - "dashboard.tsx"
-Cohesion: 0.08
-Nodes (26): ExpBar(), Habit, HabitCard(), HabitCardProps, LevelProgress(), LevelUpSequence(), RankBadge(), Avatar (+18 more)
+### Community 3 - "me.tsx"
+Cohesion: 0.17
+Nodes (13): ExpBar(), LevelProgress(), RankBadge(), Avatar, AvatarFallback, AvatarImage, compressAvatar(), computeLevel() (+5 more)
 
-### Community 4 - "table.tsx"
-Cohesion: 0.22
-Nodes (8): Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow
+### Community 4 - "select.tsx"
+Cohesion: 0.25
+Nodes (7): SelectContent, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger
 
 ### Community 5 - "🚀 AI Project Operating System (AI-POS) — Local Development"
 Cohesion: 0.06
@@ -195,7 +194,7 @@ Nodes (21): AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialo
 
 ### Community 11 - "utils.ts"
 Cohesion: 0.08
-Nodes (15): HoverCardContent, InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot, MorphText(), MorphTextProps, PopoverContent (+7 more)
+Nodes (18): HoverCardContent, InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot, MorphText(), MorphTextProps, PopoverContent (+10 more)
 
 ### Community 12 - "routeTree.gen.ts"
 Cohesion: 0.10
@@ -225,21 +224,21 @@ Nodes (19): 2026-08-09 — Major Migration, 2026-08-12 — UI/UX Overhaul & Grap
 Cohesion: 0.14
 Nodes (13): Check 0 — Local Environment Security, Check 1 — Secret Leak Prevention, Check 2 — Personal Data Flow Audit, Check 3 — Pre-Deploy Production Audit, Check 4 — Deep Security Audit for Complex Logic, Check 5 — Attacker's Perspective Review, Environment Setup, How to Use (+5 more)
 
-### Community 19 - "tabs.tsx"
+### Community 19 - "accordion.tsx"
 Cohesion: 0.50
-Nodes (3): TabsContent, TabsList, TabsTrigger
+Nodes (3): AccordionContent, AccordionItem, AccordionTrigger
 
 ### Community 20 - "dependencies"
 Cohesion: 0.15
 Nodes (13): canvas-confetti, @hookform/resolvers, dependencies, canvas-confetti, @hookform/resolvers, @radix-ui/react-accordion, @radix-ui/react-navigation-menu, @radix-ui/react-slider (+5 more)
 
 ### Community 21 - "form.tsx"
-Cohesion: 0.23
-Nodes (10): FormControl, FormDescription, FormFieldContext, FormFieldContextValue, FormItem, FormItemContext, FormItemContextValue, FormLabel (+2 more)
+Cohesion: 0.19
+Nodes (12): FormControl, FormDescription, FormFieldContext, FormFieldContextValue, FormItem, FormItemContext, FormItemContextValue, FormLabel (+4 more)
 
 ### Community 22 - "devDependencies"
 Cohesion: 0.15
-Nodes (13): eslint, eslint-config-prettier, globals, devDependencies, eslint, eslint-config-prettier, globals, typescript (+5 more)
+Nodes (13): eslint, globals, devDependencies, eslint, globals, @types/react, typescript, typescript-eslint (+5 more)
 
 ### Community 23 - "chart.tsx"
 Cohesion: 0.25
@@ -251,7 +250,7 @@ Nodes (9): scripts, build, deploy, dev, predeploy, preview, test, test:ui (+1 mo
 
 ### Community 25 - "cn"
 Cohesion: 0.07
-Nodes (41): AccordionContent, AccordionItem, AccordionTrigger, Breadcrumb, BreadcrumbEllipsis(), BreadcrumbItem, BreadcrumbLink, BreadcrumbList (+33 more)
+Nodes (44): Breadcrumb, BreadcrumbEllipsis(), BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator(), Card (+36 more)
 
 ### Community 26 - "⚔️ Shadow Level — RPG Habit Tracker"
 Cohesion: 0.10
@@ -266,8 +265,8 @@ Cohesion: 0.25
 Nodes (7): Core Features (MVP — Complete), Data Storage, Deployment, Non-Goals (Out of Scope), Purpose, Shadow Level — Product Requirements Document, Target Users
 
 ### Community 29 - "queries.ts"
-Cohesion: 0.07
-Nodes (74): AppNav(), items, CinematicLoader(), CursorRipple, CustomCursor(), InteractiveLanding(), RequireAuth(), Label (+66 more)
+Cohesion: 0.06
+Nodes (79): AppNav(), items, Habit, HabitCard(), HabitCardProps, CinematicLoader(), CursorRipple, CustomCursor() (+71 more)
 
 ### Community 30 - "carousel.tsx"
 Cohesion: 0.19
@@ -289,13 +288,9 @@ Nodes (4): Alert, AlertDescription, AlertTitle, alertVariants
 Cohesion: 0.50
 Nodes (3): Audio Assets — Drop Real Files Here, Folder layout, Rules / tips
 
-### Community 35 - "toggle-group.tsx"
-Cohesion: 0.43
-Nodes (5): ToggleGroup, ToggleGroupContext, ToggleGroupItem, Toggle, toggleVariants
-
-### Community 39 - "sheet.tsx"
-Cohesion: 0.25
-Nodes (8): SheetContent, SheetContentProps, SheetDescription, SheetFooter(), SheetHeader(), SheetOverlay, SheetTitle, sheetVariants
+### Community 35 - "light-lines.tsx"
+Cohesion: 0.50
+Nodes (3): AnimatedLightRef, LightLines(), LightLinesProps
 
 ### Community 45 - "badge.tsx"
 Cohesion: 0.67
@@ -309,17 +304,17 @@ Nodes (3): Badge(), BadgeProps, badgeVariants
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `cn` to `alert.tsx`, `sidebar.tsx`, `dashboard.tsx`, `table.tsx`, `toggle-group.tsx`, `sheet.tsx`, `dropdown-menu.tsx`, `button.tsx`, `utils.ts`, `badge.tsx`, `command.tsx`, `menubar.tsx`, `tabs.tsx`, `form.tsx`, `chart.tsx`, `navigation-menu.tsx`, `queries.ts`, `carousel.tsx`?**
+- **Why does `cn()` connect `cn` to `audio.ts`, `alert.tsx`, `sidebar.tsx`, `me.tsx`, `light-lines.tsx`, `select.tsx`, `dropdown-menu.tsx`, `button.tsx`, `utils.ts`, `badge.tsx`, `command.tsx`, `menubar.tsx`, `accordion.tsx`, `form.tsx`, `chart.tsx`, `navigation-menu.tsx`, `queries.ts`, `carousel.tsx`?**
   _High betweenness centrality (0.178) - this node is a cross-community bridge._
-- **Why does `dependencies` connect `dependencies` to `package.json`, `clsx`, `class-variance-authority`, `date-fns`, `embla-carousel-react`, `cmdk`, `framer-motion`, `input-otp`, `lenis`, `lucide-react`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-menubar`, `@radix-ui/react-popover`, `@radix-ui/react-progress`, `@radix-ui/react-radio-group`, `@radix-ui/react-scroll-area`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-slot`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toggle`, `@radix-ui/react-toggle-group`, `@radix-ui/react-tooltip`, `react-dom`, `react-hook-form`, `react-resizable-panels`, `recharts`, `sonner`, `tailwind-merge`, `@tailwindcss/vite`, `@tanstack/react-query`, `@tanstack/react-router`, `@tanstack/router-plugin`, `tw-animate-css`, `vaul`, `vite-tsconfig-paths`, `zod`, `zustand`?**
+- **Why does `dependencies` connect `dependencies` to `package.json`, `@radix-ui/react-progress`, `clsx`, `class-variance-authority`, `date-fns`, `embla-carousel-react`, `cmdk`, `framer-motion`, `input-otp`, `lenis`, `lucide-react`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-menubar`, `@radix-ui/react-popover`, `@radix-ui/react-radio-group`, `@radix-ui/react-scroll-area`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-slot`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toggle`, `@radix-ui/react-toggle-group`, `@radix-ui/react-tooltip`, `react-dom`, `react-hook-form`, `react-resizable-panels`, `recharts`, `sonner`, `tailwind-merge`, `@tailwindcss/vite`, `@tanstack/react-query`, `@tanstack/react-router`, `@tanstack/router-plugin`, `tw-animate-css`, `vaul`, `vite-tsconfig-paths`, `zod`, `zustand`?**
   _High betweenness centrality (0.027) - this node is a cross-community bridge._
-- **Why does `Button` connect `button.tsx` to `sidebar.tsx`, `dashboard.tsx`, `cn`, `queries.ts`, `carousel.tsx`?**
+- **Why does `Button` connect `button.tsx` to `sidebar.tsx`, `me.tsx`, `cn`, `queries.ts`, `carousel.tsx`?**
   _High betweenness centrality (0.016) - this node is a cross-community bridge._
 - **What connects `$schema`, `style`, `rsc` to the rest of the system?**
   _349 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `audio.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.12698412698412698 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10037878787878787 - nodes in this community are weakly interconnected._
 - **Should `Implementation Plan — Gemini AI Frame-Scrubbed Dungeon Gate` be split into smaller, more focused modules?**
   _Cohesion score 0.14285714285714285 - nodes in this community are weakly interconnected._
 - **Should `sidebar.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.06827880512091039 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05735430157261795 - nodes in this community are weakly interconnected._

@@ -345,8 +345,8 @@
     "semantic_hash": ""
   },
   "src/lib/audio.ts": {
-    "mtime": 1786734692.9388154,
-    "ast_hash": "48b3ac45299a0607dfd392abb3e3b5cf",
+    "mtime": 1786809204.379209,
+    "ast_hash": "c01618106a6f9179bb3fdd3d4d74816d",
     "semantic_hash": ""
   },
   "src/lib/image.ts": {
@@ -410,8 +410,8 @@
     "semantic_hash": ""
   },
   "src/routes/dashboard.tsx": {
-    "mtime": 1786730433.5628526,
-    "ast_hash": "336487c5db87dce92a20b01f40957ce8",
+    "mtime": 1786809116.2895403,
+    "ast_hash": "53880cc9cae75b00231ac23273dc6003",
     "semantic_hash": ""
   },
   "src/routes/habits.tsx": {
@@ -625,8 +625,8 @@
     "semantic_hash": ""
   },
   "src/components/InteractiveLanding.tsx": {
-    "mtime": 1786808605.1759615,
-    "ast_hash": "14dbc8983a689a72dc22407a5b71320c",
+    "mtime": 1786808795.7751727,
+    "ast_hash": "b9ffa189faa078a9a9a6edc3b383b897",
     "semantic_hash": ""
   },
   "implementation_plan.md": {

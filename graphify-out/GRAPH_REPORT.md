@@ -1,7 +1,7 @@
 # Graph Report - Shadow-Level  (2026-08-15)
 
 ## Corpus Check
-- 105 files · ~956,670 words
+- 105 files · ~957,095 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `45ec8b50`
+- Built from commit: `1a76253d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -54,7 +54,7 @@
 - setup.ts
 - rules/graphify.md
 - workflows/graphify.md
-- canvas-confetti
+- @radix-ui/react-progress
 - clsx
 - class-variance-authority
 - date-fns
@@ -80,11 +80,11 @@
 - @radix-ui/react-label
 - @radix-ui/react-menubar
 - @radix-ui/react-popover
+- canvas-confetti
 - @radix-ui/react-radio-group
 - @radix-ui/react-scroll-area
 - @radix-ui/react-select
 - @radix-ui/react-separator
-- @radix-ui/react-slot
 - @radix-ui/react-switch
 - @radix-ui/react-tabs
 - @radix-ui/react-toggle
@@ -230,7 +230,7 @@ Nodes (3): AccordionContent, AccordionItem, AccordionTrigger
 
 ### Community 20 - "dependencies"
 Cohesion: 0.15
-Nodes (13): @hookform/resolvers, dependencies, @hookform/resolvers, @radix-ui/react-accordion, @radix-ui/react-navigation-menu, @radix-ui/react-progress, @radix-ui/react-slider, react (+5 more)
+Nodes (13): @hookform/resolvers, dependencies, @hookform/resolvers, @radix-ui/react-accordion, @radix-ui/react-navigation-menu, @radix-ui/react-slider, @radix-ui/react-slot, react (+5 more)
 
 ### Community 21 - "form.tsx"
 Cohesion: 0.19
@@ -306,7 +306,7 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `cn()` connect `cn` to `audio.ts`, `alert.tsx`, `sidebar.tsx`, `me.tsx`, `light-lines.tsx`, `select.tsx`, `dropdown-menu.tsx`, `button.tsx`, `utils.ts`, `badge.tsx`, `command.tsx`, `menubar.tsx`, `accordion.tsx`, `form.tsx`, `chart.tsx`, `navigation-menu.tsx`, `queries.ts`, `carousel.tsx`?**
   _High betweenness centrality (0.178) - this node is a cross-community bridge._
-- **Why does `dependencies` connect `dependencies` to `package.json`, `canvas-confetti`, `clsx`, `class-variance-authority`, `date-fns`, `embla-carousel-react`, `cmdk`, `framer-motion`, `input-otp`, `lenis`, `lucide-react`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-menubar`, `@radix-ui/react-popover`, `@radix-ui/react-radio-group`, `@radix-ui/react-scroll-area`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-slot`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toggle`, `@radix-ui/react-toggle-group`, `@radix-ui/react-tooltip`, `react-dom`, `react-hook-form`, `react-resizable-panels`, `recharts`, `sonner`, `tailwind-merge`, `@tailwindcss/vite`, `@tanstack/react-query`, `@tanstack/react-router`, `@tanstack/router-plugin`, `tw-animate-css`, `vaul`, `vite-tsconfig-paths`, `zod`, `zustand`?**
+- **Why does `dependencies` connect `dependencies` to `package.json`, `@radix-ui/react-progress`, `clsx`, `class-variance-authority`, `date-fns`, `embla-carousel-react`, `cmdk`, `framer-motion`, `input-otp`, `lenis`, `lucide-react`, `@radix-ui/react-alert-dialog`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-avatar`, `@radix-ui/react-checkbox`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-label`, `@radix-ui/react-menubar`, `@radix-ui/react-popover`, `canvas-confetti`, `@radix-ui/react-radio-group`, `@radix-ui/react-scroll-area`, `@radix-ui/react-select`, `@radix-ui/react-separator`, `@radix-ui/react-switch`, `@radix-ui/react-tabs`, `@radix-ui/react-toggle`, `@radix-ui/react-toggle-group`, `@radix-ui/react-tooltip`, `react-dom`, `react-hook-form`, `react-resizable-panels`, `recharts`, `sonner`, `tailwind-merge`, `@tailwindcss/vite`, `@tanstack/react-query`, `@tanstack/react-router`, `@tanstack/router-plugin`, `tw-animate-css`, `vaul`, `vite-tsconfig-paths`, `zod`, `zustand`?**
   _High betweenness centrality (0.027) - this node is a cross-community bridge._
 - **Why does `Button` connect `button.tsx` to `sidebar.tsx`, `me.tsx`, `cn`, `queries.ts`, `carousel.tsx`?**
   _High betweenness centrality (0.016) - this node is a cross-community bridge._

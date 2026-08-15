@@ -54,7 +54,7 @@ const SOUND_SPECS: Record<SoundKey, SoundSpec> = {
   rewardClaim: { path: "/audio/sfx/reward-claim.mp3", category: "sfx", volume: 0.7, cooldown: 1500 },
   buttonClick: { path: "/audio/sfx/button-click.mp3", category: "ui", volume: 0.4, cooldown: 250 },
   hover: { path: "/audio/sfx/hover.mp3", category: "ui", volume: 0.25, cooldown: 400 },
-  error: { path: "/audio/sfx/error.mp3", category: "ui", volume: 0.5, cooldown: 500 },
+  error: { path: "/audio/sfx/error.mp3", category: "ui", volume: 1.0, cooldown: 500 },
   success: { path: "/audio/sfx/success.mp3", category: "ui", volume: 0.5, cooldown: 500 },
   shadowExtract: { path: "/audio/sfx/shadow-extract.mp3", category: "sfx", volume: 0.9, cooldown: 3000 },
   dungeonEnter: { path: "/audio/sfx/dungeon-enter.mp3", category: "sfx", volume: 0.8, cooldown: 3000 },
@@ -239,7 +239,12 @@ class WebAudioPlaceholder {
         break;
       }
       case "error": {
-        this.tone(300, "sawtooth", 0.4, 0.18, 0, 180);
+        // Deep sub-bass drop (from 90Hz down to 30Hz) for danger weight
+        this.tone(90, "sawtooth", 0.8, 0.65, 0, 30);
+        // Discordant alarm frequency layer
+        this.tone(140, "sawtooth", 0.6, 0.45, 0.05, 130);
+        // Noise splash for impact texture
+        this.noise(0.5, 0.18, 600, 150);
         break;
       }
       case "modalOpen": {
@@ -406,6 +411,9 @@ class SoundManager {
 
     if (this.available.has(key)) {
       this.playFile(key, volume);
+      if (key === "error") {
+        WebAudioPlaceholder.synthesize("error");
+      }
     } else {
       // File not confirmed yet (HEAD still in-flight) or missing → synthesize.
       WebAudioPlaceholder.synthesize(key);
